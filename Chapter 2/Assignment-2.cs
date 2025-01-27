@@ -23,7 +23,7 @@ class MyClass {
         return (long)((long)(prefixSumArray[arrayRightLimit] - prefixSumArray[arrayLeftLimit - 1]) / (arrayRightLimit - arrayLeftLimit + 1));
     }
     static void processQuery(int queryCount, long[] prefixSumArray) {
-        for (var x = 0; x < queryCount; x++)
+        for (var queryIndex = 0; queryIndex < queryCount; queryIndex++)
         {
             var subarraySize = getSubarraySize();
             var meanOfSubarray = calculateMeanOfSubarray(prefixSumArray, subarraySize[0], subarraySize[1]);
