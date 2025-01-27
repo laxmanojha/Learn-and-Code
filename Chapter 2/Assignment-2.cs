@@ -31,9 +31,9 @@ class MyClass {
         }
     }
     static void Main(string[] args) {
-        var NQ = getElementAndQueryCount();
-        var arr = getArrayElements();
-        long[] sumarr = getPrefixSumArray(arr, NQ[0]);
-        processQuery(NQ[1], sumarr);
+        var arrayElementsAndQueryCount = getElementAndQueryCount();
+        var userEnteredElements = getArrayElements();
+        long[] prefixSumArray = getPrefixSumArray(userEnteredElements, arrayElementsAndQueryCount[0]);
+        processQuery(arrayElementsAndQueryCount[1], prefixSumArray);
     }
 }
