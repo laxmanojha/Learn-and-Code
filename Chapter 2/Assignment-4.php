@@ -7,6 +7,14 @@ class Book {
     function getAuthor() {
         return "John Doe";
     }
+
+    function turnPage() {
+        // pointer to next page
+    }
+ 
+    function getCurrentPage() {
+        return "current page content";
+    }
 }
 
 class BookFolder {
@@ -23,12 +31,6 @@ class Library {
         // returns the position in the library
         // ie. shelf number & room number
     }
-}
-
-class Pagination {
-
-    function turnPage($book);
-    function getCurrentPage($book);
 }
 
 interface Printer {
