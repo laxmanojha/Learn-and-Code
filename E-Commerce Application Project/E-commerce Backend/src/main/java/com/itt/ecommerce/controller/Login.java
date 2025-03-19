@@ -3,6 +3,7 @@ package com.itt.ecommerce.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import com.google.gson.JsonObject;
 import com.itt.ecommerce.dto.UserDto;
 import com.itt.ecommerce.service.UserService;
 
@@ -20,7 +21,20 @@ public class Login extends HttpServlet{
         String password = request.getParameter("password");
         UserDto user = new UserDto(email, password); 
         
-        String result = UserService.authenticateUser(user);
-        out.write(result);
+        boolean result = UserService.authenticateUser(user);
+        
+        JsonObject jsonResponse = new JsonObject();
+        if (result) {
+            jsonResponse.addProperty("success", true);
+            jsonResponse.addProperty("message", "User authenticated successfully.");
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Authentication failed. User does not exists.");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        
+        out.write(jsonResponse.toString());
+        out.flush();
 	}
 }

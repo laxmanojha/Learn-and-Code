@@ -4,19 +4,13 @@ import com.itt.ecommerce.dao.UserDao;
 import com.itt.ecommerce.dto.UserDto;
 
 public class UserService {
-	public static String authenticateUser(UserDto user) {
+	public static boolean authenticateUser(UserDto user) {
 		UserDto userData = UserDao.getUser(user);
-		if (userData == null)
-				return "User authentication failed";
-		else
-			return "User authenticated successfully " + "\n" + "Welcome " + userData.getFullName();
+		return userData != null;
 	}
 	
-	public static String registerUser(UserDto user) {
+	public static boolean registerUser(UserDto user) {
 		boolean result = UserDao.addUser(user);
-		if (result)
-			return "User profile created successfully";
-		else
-			return "User profile creation failed";
+		return result;
 	}
 }

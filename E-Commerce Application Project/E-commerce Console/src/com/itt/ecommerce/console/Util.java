@@ -8,6 +8,9 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.nio.charset.StandardCharsets;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class Util {
 	public static void loginUser(String username, String password) throws IOException, InterruptedException {
         String url = "http://localhost:8080/E-Commerce-Application/user/login";
@@ -26,9 +29,27 @@ public class Util {
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Printing response
-        System.out.println("Response Code: " + response.statusCode());
-        System.out.println("Response Body: " + response.body());
+        int statusCode = response.statusCode();
+        System.out.println("Response Code: " + statusCode);
+
+        // Reading response body
+        String responseBody = response.body();
+        System.out.println("Response Body: " + responseBody);
+
+        // Parsing JSON response
+        try {
+            JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
+            boolean success = jsonResponse.get("success").getAsBoolean();
+            String message = jsonResponse.get("message").getAsString();
+
+            if (success) {
+                System.out.println("Login Successful: " + message);
+            } else {
+                System.out.println("Login Failed: " + message);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to parse JSON response: " + e.getMessage());
+        }
     }
 	
 	public static void registerUser(String name, String username, String password) throws IOException, InterruptedException {
@@ -48,8 +69,26 @@ public class Util {
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Printing response
-        System.out.println("Response Code: " + response.statusCode());
-        System.out.println("Response Body: " + response.body());
+        int statusCode = response.statusCode();
+        System.out.println("Response Code: " + statusCode);
+
+        // Reading response body
+        String responseBody = response.body();
+        System.out.println("Response Body: " + responseBody);
+
+        // Parsing JSON response
+        try {
+            JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
+            boolean success = jsonResponse.get("success").getAsBoolean();
+            String message = jsonResponse.get("message").getAsString();
+
+            if (success) {
+                System.out.println("Registration Successful: " + message);
+            } else {
+                System.out.println("Registration Failed: " + message);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to parse JSON response: " + e.getMessage());
+        }
     }
 }
