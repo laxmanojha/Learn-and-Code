@@ -20,21 +20,21 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    System.out.print("Enter email: ");
-                    String email = sc.nextLine();
+                    System.out.print("Enter username: ");
+                    String username = sc.nextLine();
                     System.out.print("Enter password: ");
                     String password = sc.nextLine();
-                    Util.loginUser(email, password);
+                    Util.loginUser(username, password);
                     break;
 
                 case 2:
                     System.out.print("Enter name: ");
                     String name = sc.nextLine();
-                    System.out.print("Enter email: ");
-                    String regEmail = sc.nextLine();
+                    System.out.print("Enter username: ");
+                    String regUserName = sc.nextLine();
                     System.out.print("Enter password: ");
                     String regPassword = sc.nextLine();
-                    Util.registerUser(name, regEmail, regPassword);
+                    Util.registerUser(name, regUserName, regPassword);
                     break;
 
                 case 3:

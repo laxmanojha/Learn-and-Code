@@ -16,7 +16,7 @@ public class Login extends HttpServlet{
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
 
-        String email = request.getParameter("email");
+        String email = request.getParameter("username");
         String password = request.getParameter("password");
         UserDto user = new UserDto(email, password); 
         

@@ -9,11 +9,11 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.nio.charset.StandardCharsets;
 
 public class Util {
-	public static void loginUser(String email, String password) throws IOException, InterruptedException {
+	public static void loginUser(String username, String password) throws IOException, InterruptedException {
         String url = "http://localhost:8080/E-Commerce-Application/user/login";
 
         // Creating form data (application/x-www-form-urlencoded)
-        String formData = "email=" + email + "&password=" + password;
+        String formData = "username=" + username + "&password=" + password;
 
         // Building HTTP request
         HttpRequest request = HttpRequest.newBuilder()
@@ -31,11 +31,11 @@ public class Util {
         System.out.println("Response Body: " + response.body());
     }
 	
-	public static void registerUser(String name, String email, String password) throws IOException, InterruptedException {
+	public static void registerUser(String name, String username, String password) throws IOException, InterruptedException {
         String url = "http://localhost:8080/E-Commerce-Application/user/register";
 
         // Creating form data (application/x-www-form-urlencoded)
-        String formData = "name=" + name + "&email=" + email + "&password=" + password;
+        String formData = "fullname=" + name + "&username=" + username + "&password=" + password;
 
         // Building HTTP request
         HttpRequest request = HttpRequest.newBuilder()

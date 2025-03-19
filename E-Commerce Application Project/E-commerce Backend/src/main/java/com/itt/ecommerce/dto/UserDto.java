@@ -2,25 +2,25 @@ package com.itt.ecommerce.dto;
 
 public class UserDto {
     private int id;
-    private String name;
-    private String email;
+    private String fullName;
+    private String userName;
     private String password;
 
-    public UserDto(String email, String password) {
-        this.email = email;
+    public UserDto(String userName, String password) {
+        this.userName = userName;
         this.password = password;
     }
 
-    public UserDto(String name, String email, String password) {
-        this.name = name;
-        this.email = email;
+    public UserDto(String fullName, String userName, String password) {
+        this.fullName = fullName;
+        this.userName = userName;
         this.password = password;
     }
 
-    public UserDto(int id, String name, String email, String password) {
+    public UserDto(int id, String fullName, String userName, String password) {
         this.id = id;
-        this.name = name;
-        this.email = email;
+        this.fullName = fullName;
+        this.userName = userName;
         this.password = password;
     }
 
@@ -28,12 +28,12 @@ public class UserDto {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getFullName() {
+        return fullName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUserName() {
+        return userName;
     }
 
     public String getPassword() {
@@ -42,6 +42,6 @@ public class UserDto {
 
     @Override
     public String toString() {
-        return "UserDto [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + "]";
+        return "UserDto [id=" + id + ", fullName=" + fullName + ", userName=" + userName + ", password=" + password + "]";
     }
 }

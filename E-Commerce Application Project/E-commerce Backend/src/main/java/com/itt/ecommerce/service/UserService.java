@@ -9,7 +9,7 @@ public class UserService {
 		if (userData == null)
 				return "User authentication failed";
 		else
-			return "User authenticated successfully " + "\n" + "Welcome " + userData.getName();
+			return "User authenticated successfully " + "\n" + "Welcome " + userData.getFullName();
 	}
 	
 	public static String registerUser(UserDto user) {

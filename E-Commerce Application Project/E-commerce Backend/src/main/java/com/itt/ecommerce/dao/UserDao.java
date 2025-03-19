@@ -9,10 +9,10 @@ import com.itt.ecommerce.dto.UserDto;
 
 public class UserDao {
     public static boolean addUser(UserDto user) {
-        String url = "jdbc:mysql://localhost:3306/employee";
+        String url = "jdbc:mysql://localhost:3306/ecommerce_application";
         String username = "root";
         String password = "Rj@1465887732";
-        String query = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+        String query = "INSERT INTO users (full_name, username, password) VALUES (?, ?, ?)";
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -20,8 +20,8 @@ public class UserDao {
             try (Connection con = DriverManager.getConnection(url, username, password);
                  PreparedStatement ps = con.prepareStatement(query)) {
 
-                ps.setString(1, user.getName());
-                ps.setString(2, user.getEmail());
+                ps.setString(1, user.getFullName());
+                ps.setString(2, user.getUserName());
                 ps.setString(3, user.getPassword());
 
                 int rowsInserted = ps.executeUpdate();
@@ -35,22 +35,22 @@ public class UserDao {
     }
     
     public static UserDto getUser(UserDto user) {
-        String url = "jdbc:mysql://localhost:3306/employee";
+        String url = "jdbc:mysql://localhost:3306/ecommerce_application";
         String username = "root";
         String dbPassword = "Rj@1465887732";
-        String query = "SELECT * FROM users WHERE email = ? AND password = ?";
+        String query = "SELECT * FROM users WHERE username = ? AND password = ?";
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection con = DriverManager.getConnection(url, username, dbPassword);
                  PreparedStatement ps = con.prepareStatement(query)) {
 
-                ps.setString(1, user.getEmail());
+                ps.setString(1, user.getUserName());
                 ps.setString(2, user.getPassword());
 
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return new UserDto(rs.getInt("user_id"), rs.getString("username"), rs.getString("email"), rs.getString("password"));
+                        return new UserDto(rs.getInt("user_id"), rs.getString("full_name"), rs.getString("username"), rs.getString("password"));
                     }
                 }
             }
