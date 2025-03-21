@@ -4,48 +4,97 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException, InterruptedException {
-        Scanner sc = new Scanner(System.in);
-        int choice;
+    private static final Scanner sc = new Scanner(System.in);
 
+    public static void main(String[] args) {
+        try {
+            runApplication();
+        } catch (IOException | InterruptedException e) {
+            System.err.println("An error occurred: " + e.getMessage());
+        } finally {
+            sc.close();
+        }
+    }
+
+    private static void runApplication() throws IOException, InterruptedException {
+        int choice;
         do {
-            System.out.println("\n===== E-Commerce Console App =====");
-            System.out.println("1. Login");
-            System.out.println("2. Register");
-            System.out.println("3. Exit");
-            System.out.print("Enter your choice: ");
-            
-            choice = sc.nextInt();
-            sc.nextLine(); // Consume newline
+            showMainMenu();
+            choice = getUserChoice();
 
             switch (choice) {
-                case 1:
-                    System.out.print("Enter username: ");
-                    String username = sc.nextLine();
-                    System.out.print("Enter password: ");
-                    String password = sc.nextLine();
-                    Util.loginUser(username, password);
-                    break;
-
-                case 2:
-                    System.out.print("Enter name: ");
-                    String name = sc.nextLine();
-                    System.out.print("Enter username: ");
-                    String regUserName = sc.nextLine();
-                    System.out.print("Enter password: ");
-                    String regPassword = sc.nextLine();
-                    Util.registerUser(name, regUserName, regPassword);
-                    break;
-
-                case 3:
-                    System.out.println("Exiting the application...");
-                    break;
-
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+                case 1 -> handleLogin();
+                case 2 -> handleRegistration();
+                case 3 -> System.out.println("Exiting the application...");
+                default -> System.out.println("Invalid choice. Please try again.");
             }
         } while (choice != 3);
+    }
 
-        sc.close();
+    private static void showMainMenu() {
+        System.out.println("\n===== E-Commerce Console App =====");
+        System.out.println("1. Login");
+        System.out.println("2. Register");
+        System.out.println("3. Exit");
+        System.out.print("Enter your choice: ");
+    }
+
+    private static int getUserChoice() {
+        try {
+            return Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a number.");
+            return -1;
+        }
+    }
+
+    private static void handleLogin() throws IOException, InterruptedException {
+        System.out.print("Enter username: ");
+        String username = sc.nextLine();
+        System.out.print("Enter password: ");
+        String password = sc.nextLine();
+
+        boolean loginSuccess = Util.loginUser(username, password);
+        if (loginSuccess) {
+            handleUserDashboard(username);
+        }
+    }
+
+    private static void handleRegistration() throws IOException, InterruptedException {
+        System.out.print("Enter name: ");
+        String name = sc.nextLine();
+        System.out.print("Enter username: ");
+        String regUserName = sc.nextLine();
+        System.out.print("Enter password: ");
+        String regPassword = sc.nextLine();
+
+        Util.registerUser(name, regUserName, regPassword);
+    }
+
+    private static void handleUserDashboard(String username) throws IOException, InterruptedException {
+        int choice;
+        do {
+            showUserDashboard();
+            choice = getUserChoice();
+
+            switch (choice) {
+                case 1 -> Util.viewUserDetails(username);
+                case 2 -> Util.orderProduct(username);
+                case 3 -> Util.viewCart(username);
+                case 4 -> Util.viewOrderHistory(username);
+                case 5 -> System.out.println("Logging out...");
+                default -> System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 5);
+    }
+
+    private static void showUserDashboard() {
+        System.out.println("\n===== User Dashboard =====");
+        System.out.println("1. View Details");
+        System.out.println("2. Order Something");
+        System.out.println("3. View Cart");
+        System.out.println("4. Order History");
+        System.out.println("5. Logout");
+        System.out.print("Enter your choice: ");
     }
 }

@@ -12,7 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class Util {
-	public static void loginUser(String username, String password) throws IOException, InterruptedException {
+	public static boolean loginUser(String username, String password) throws IOException, InterruptedException {
         String url = "http://localhost:8080/E-Commerce-Application/user/login";
 
         // Creating form data (application/x-www-form-urlencoded)
@@ -43,13 +43,16 @@ public class Util {
             String message = jsonResponse.get("message").getAsString();
 
             if (success) {
-                System.out.println("Login Successful: " + message);
-            } else {
-                System.out.println("Login Failed: " + message);
+            	System.out.println("Login Success: " + message);
+            	return true;
             }
+            
         } catch (Exception e) {
             System.err.println("Failed to parse JSON response: " + e.getMessage());
         }
+        
+        System.out.println("Login Failed!");
+        return false;
     }
 	
 	public static void registerUser(String name, String username, String password) throws IOException, InterruptedException {
@@ -90,5 +93,25 @@ public class Util {
         } catch (Exception e) {
             System.err.println("Failed to parse JSON response: " + e.getMessage());
         }
+    }
+	
+	public static void viewUserDetails(String username) {
+        System.out.println("\nFetching user details for " + username + "...");
+        // Implement API call to fetch user details from the backend
+    }
+
+    public static void orderProduct(String username) {
+        System.out.println("\nPlacing an order for " + username + "...");
+        // Implement API call to order a product
+    }
+
+    public static void viewCart(String username) {
+        System.out.println("\nFetching cart for " + username + "...");
+        // Implement API call to view user's cart
+    }
+
+    public static void viewOrderHistory(String username) {
+        System.out.println("\nFetching order history for " + username + "...");
+        // Implement API call to fetch order history
     }
 }
