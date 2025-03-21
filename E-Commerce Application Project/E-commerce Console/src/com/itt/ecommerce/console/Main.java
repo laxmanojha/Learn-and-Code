@@ -2,6 +2,9 @@ package com.itt.ecommerce.console;
 
 import java.io.IOException;
 import java.util.Scanner;
+import com.itt.ecommerce.service.CartService;
+import com.itt.ecommerce.service.OrderService;
+import com.itt.ecommerce.service.UserService;
 
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
@@ -54,7 +57,7 @@ public class Main {
         System.out.print("Enter password: ");
         String password = sc.nextLine();
 
-        boolean loginSuccess = Util.loginUser(username, password);
+        boolean loginSuccess = UserService.loginUser(username, password);
         if (loginSuccess) {
             handleUserDashboard(username);
         }
@@ -68,7 +71,7 @@ public class Main {
         System.out.print("Enter password: ");
         String regPassword = sc.nextLine();
 
-        boolean registrationSuccess = Util.registerUser(name, regUserName, regPassword);
+        boolean registrationSuccess = UserService.registerUser(name, regUserName, regPassword);
         if (registrationSuccess) {
             System.out.println("Regitration successful! Congratulations " + name);
         }
@@ -81,10 +84,10 @@ public class Main {
             choice = getUserChoice();
 
             switch (choice) {
-                case 1 -> Util.viewUserDetails(username);
-                case 2 -> Util.orderProduct(username);
-                case 3 -> Util.viewCart(username);
-                case 4 -> Util.viewOrderHistory(username);
+                case 1 -> UserService.viewUserDetails(username);
+                case 2 -> OrderService.orderProduct(username);
+                case 3 -> CartService.viewCart(username);
+                case 4 -> OrderService.viewOrderHistory(username);
                 case 5 -> System.out.println("Logging out...");
                 default -> System.out.println("Invalid choice. Please try again.");
             }
@@ -94,7 +97,7 @@ public class Main {
     private static void showUserDashboard() {
         System.out.println("\n===== User Dashboard =====");
         System.out.println("1. View Details");
-        System.out.println("2. Order Something");
+        System.out.println("2. View Products");
         System.out.println("3. View Cart");
         System.out.println("4. Order History");
         System.out.println("5. Logout");
