@@ -12,87 +12,58 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class Util {
-	public static boolean loginUser(String username, String password) throws IOException, InterruptedException {
-        String url = "http://localhost:8080/E-Commerce-Application/user/login";
+	private static final String BASE_URL = "http://localhost:8080/E-Commerce-Application";
+    private static final HttpClient client = HttpClient.newHttpClient();
 
-        // Creating form data (application/x-www-form-urlencoded)
+    public static boolean loginUser(String username, String password) throws IOException, InterruptedException {
+        String url = BASE_URL + "/user/login";
         String formData = "username=" + username + "&password=" + password;
 
-        // Building HTTP request
+        HttpResponse<String> response = sendPostRequest(url, formData);
+        return processResponse(response, "Login");
+    }
+
+    public static boolean registerUser(String name, String username, String password) throws IOException, InterruptedException {
+        String url = BASE_URL + "/user/register";
+        String formData = "fullname=" + name + "&username=" + username + "&password=" + password;
+
+        HttpResponse<String> response = sendPostRequest(url, formData);
+        return processResponse(response, "Registration");
+    }
+
+    private static HttpResponse<String> sendPostRequest(String url, String formData) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .POST(BodyPublishers.ofString(formData, StandardCharsets.UTF_8))
                 .build();
 
-        // Sending request
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
 
+    private static boolean processResponse(HttpResponse<String> response, String action) {
         int statusCode = response.statusCode();
-        System.out.println("Response Code: " + statusCode);
-
-        // Reading response body
         String responseBody = response.body();
+
+        System.out.println("Response Code: " + statusCode);
         System.out.println("Response Body: " + responseBody);
 
-        // Parsing JSON response
         try {
             JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
             boolean success = jsonResponse.get("success").getAsBoolean();
             String message = jsonResponse.get("message").getAsString();
 
             if (success) {
-            	System.out.println("Login Success: " + message);
-            	return true;
+                System.out.println(action + " Successful: " + message);
+                return true;
+            } else {
+                System.out.println(action + " Failed: " + message);
             }
-            
         } catch (Exception e) {
             System.err.println("Failed to parse JSON response: " + e.getMessage());
         }
         
-        System.out.println("Login Failed!");
         return false;
-    }
-	
-	public static void registerUser(String name, String username, String password) throws IOException, InterruptedException {
-        String url = "http://localhost:8080/E-Commerce-Application/user/register";
-
-        // Creating form data (application/x-www-form-urlencoded)
-        String formData = "fullname=" + name + "&username=" + username + "&password=" + password;
-
-        // Building HTTP request
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(BodyPublishers.ofString(formData, StandardCharsets.UTF_8))
-                .build();
-
-        // Sending request
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        int statusCode = response.statusCode();
-        System.out.println("Response Code: " + statusCode);
-
-        // Reading response body
-        String responseBody = response.body();
-        System.out.println("Response Body: " + responseBody);
-
-        // Parsing JSON response
-        try {
-            JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
-            boolean success = jsonResponse.get("success").getAsBoolean();
-            String message = jsonResponse.get("message").getAsString();
-
-            if (success) {
-                System.out.println("Registration Successful: " + message);
-            } else {
-                System.out.println("Registration Failed: " + message);
-            }
-        } catch (Exception e) {
-            System.err.println("Failed to parse JSON response: " + e.getMessage());
-        }
     }
 	
 	public static void viewUserDetails(String username) {

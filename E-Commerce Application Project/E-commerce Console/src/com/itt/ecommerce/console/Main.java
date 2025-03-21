@@ -68,7 +68,10 @@ public class Main {
         System.out.print("Enter password: ");
         String regPassword = sc.nextLine();
 
-        Util.registerUser(name, regUserName, regPassword);
+        boolean registrationSuccess = Util.registerUser(name, regUserName, regPassword);
+        if (registrationSuccess) {
+            System.out.println("Regitration successful! Congratulations " + name);
+        }
     }
 
     private static void handleUserDashboard(String username) throws IOException, InterruptedException {
