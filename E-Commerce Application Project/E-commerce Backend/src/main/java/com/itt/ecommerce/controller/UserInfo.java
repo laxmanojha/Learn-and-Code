@@ -2,7 +2,11 @@ package com.itt.ecommerce.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.itt.ecommerce.dto.UserDto;
 import com.itt.ecommerce.service.UserService;
@@ -13,33 +17,35 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/user/register")
-public class Register extends HttpServlet {
+
+@WebServlet("/user")
+public class UserInfo extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
+        
+        String username = request.getParameter("username");
 
-        String name = request.getParameter("fullname");
-        String email = request.getParameter("username");
-        String password = request.getParameter("password");
-
-        UserDto user = new UserDto(name, email, password); 
-        boolean isRegistered = UserService.registerUser(user);
-
+        UserDto userInfo = UserService.getUserInfo(username);
         JsonObject jsonResponse = new JsonObject();
-        if (isRegistered) {
+        Gson gson = new Gson();
+
+        if (userInfo != null) {
             jsonResponse.addProperty("success", true);
-            jsonResponse.addProperty("message", "User registered successfully.");
+            
+            JsonElement userJson = gson.toJsonTree(userInfo);
+            jsonResponse.add("userInfo", userJson);
+
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
             jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Registration failed. User may already exist.");
+            jsonResponse.addProperty("message", "Error in fetching user details.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
-        
-        out.write(jsonResponse.toString());
+
+        out.write(gson.toJson(jsonResponse));
         out.flush();
     }
+
 }

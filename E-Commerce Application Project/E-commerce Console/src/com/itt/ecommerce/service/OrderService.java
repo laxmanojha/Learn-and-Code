@@ -7,7 +7,6 @@ import com.itt.ecommerce.dto.CategoryDto;
 
 public class OrderService {
 	
-	
 	public static void orderProduct(String username) throws IOException, InterruptedException {
 		System.out.println("\nTaking order for " + username + "...");
 		List<CategoryDto> allCategories = CategoryService.getAllCategories();

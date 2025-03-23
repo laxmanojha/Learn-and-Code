@@ -8,18 +8,20 @@ import com.itt.ecommerce.dto.UserDto;
 import com.itt.ecommerce.service.UserService;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@WebServlet("/user/login")
 public class Login extends HttpServlet{
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
 
-        String email = request.getParameter("username");
+        String username = request.getParameter("username");
         String password = request.getParameter("password");
-        UserDto user = new UserDto(email, password); 
+        UserDto user = new UserDto(username, password); 
         
         boolean result = UserService.authenticateUser(user);
         

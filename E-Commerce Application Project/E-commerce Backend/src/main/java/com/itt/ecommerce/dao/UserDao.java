@@ -34,7 +34,7 @@ public class UserDao {
         }
     }
     
-    public static UserDto getUser(UserDto user) {
+    public static UserDto getUserBasedOnUserCredentials(UserDto user) {
         String url = "jdbc:mysql://localhost:3306/ecommerce_application";
         String username = "root";
         String dbPassword = "Rj@1465887732";
@@ -47,6 +47,31 @@ public class UserDao {
 
                 ps.setString(1, user.getUserName());
                 ps.setString(2, user.getPassword());
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new UserDto(rs.getInt("user_id"), rs.getString("full_name"), rs.getString("username"), rs.getString("password"));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static UserDto getUserBasedOnUsername(String userName) {
+        String url = "jdbc:mysql://localhost:3306/ecommerce_application";
+        String username = "root";
+        String dbPassword = "Rj@1465887732";
+        String query = "SELECT * FROM users WHERE username = ?;";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection con = DriverManager.getConnection(url, username, dbPassword);
+                 PreparedStatement ps = con.prepareStatement(query)) {
+
+                ps.setString(1, userName);
 
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {

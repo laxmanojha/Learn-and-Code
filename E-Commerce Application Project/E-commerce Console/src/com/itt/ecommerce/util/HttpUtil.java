@@ -7,8 +7,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.nio.charset.StandardCharsets;
+
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.itt.ecommerce.dto.UserDto;
 
 public class HttpUtil {
     private static final HttpClient client = HttpClient.newHttpClient();
@@ -57,4 +60,36 @@ public class HttpUtil {
         
         return false;
     }
+    
+    public static void processUserDetailsResponse(HttpResponse<String> response) {
+        String responseBody = response.body();
+        int statusCode = response.statusCode();
+        
+        System.out.println("Response Code: " + statusCode);
+        System.out.println("Response Body: " + responseBody);
+
+        Gson gson = new Gson();
+
+        try {
+            JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
+            
+            if (jsonResponse.get("success").getAsBoolean()) {
+                JsonObject userJson = jsonResponse.getAsJsonObject("userInfo");
+
+                // Parse user details into a DTO
+                UserDto user = gson.fromJson(userJson, UserDto.class);
+                
+                // Display user details
+                System.out.println("\n--- User Details ---");
+                System.out.println("User ID: " + user.getId());
+                System.out.println("Full Name: " + user.getFullName());
+                System.out.println("Username: " + user.getUserName());
+            } else {
+                System.out.println("Error: " + jsonResponse.get("message").getAsString());
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to parse JSON response: " + e.getMessage());
+        }
+    }
+
 }

@@ -23,7 +23,12 @@ public class UserService {
         return HttpUtil.processResponse(response, "Registration");
     }
 
-    public static void viewUserDetails(String username) {
+    public static void viewUserDetails(String username) throws IOException, InterruptedException {
         System.out.println("\nFetching user details for " + username + "...");
+        String url = BASE_URL + "/user";
+        String formData = "username=" + username;
+        
+        HttpResponse<String> response = HttpUtil.sendPostRequest(url, formData);
+        HttpUtil.processUserDetailsResponse(response);
     }
 }

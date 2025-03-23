@@ -2,28 +2,4 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://jakarta.ee/xml/ns/jakartaee" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd" id="WebApp_ID" version="6.0">
   <display-name>E-Commerce-Application</display-name>
   
-  <servlet>
-  		<servlet-name>LoginServlet</servlet-name>
-  		<servlet-class>com.itt.ecommerce.controller.Login</servlet-class>
-  </servlet>
-  <servlet-mapping>
-  		<servlet-name>LoginServlet</servlet-name>
-  		<url-pattern>/user/login</url-pattern>
-  </servlet-mapping>
-  <servlet>
-  		<servlet-name>RegisterServlet</servlet-name>
-  		<servlet-class>com.itt.ecommerce.controller.Register</servlet-class>
-  </servlet>
-  <servlet-mapping>
-  		<servlet-name>RegisterServlet</servlet-name>
-  		<url-pattern>/user/register</url-pattern>
-  </servlet-mapping>
-  <servlet>
-  		<servlet-name>ProductCategoryServlet</servlet-name>
-  		<servlet-class>com.itt.ecommerce.controller.ProductCategory</servlet-class>
-  </servlet>
-  <servlet-mapping>
-  		<servlet-name>ProductCategoryServlet</servlet-name>
-  		<url-pattern>/category</url-pattern>
-  </servlet-mapping>
 </web-app>
