@@ -84,4 +84,29 @@ public class UserDao {
         }
         return null;
     }
+    
+    public static int getUserIDByUsername(String userName) {
+        String url = "jdbc:mysql://localhost:3306/ecommerce_application";
+        String username = "root";
+        String dbPassword = "Rj@1465887732";
+        String query = "SELECT * FROM users WHERE username = ?;";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection con = DriverManager.getConnection(url, username, dbPassword);
+                 PreparedStatement ps = con.prepareStatement(query)) {
+
+                ps.setString(1, userName);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt("user_id");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
 }

@@ -47,5 +47,4 @@ public class UserInfo extends HttpServlet {
         out.write(gson.toJson(jsonResponse));
         out.flush();
     }
-
 }
