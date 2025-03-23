@@ -8,6 +8,8 @@ public class CartItemDto {
 	private String productName;
 	private float productPrice;
 	
+	public CartItemDto() {}
+	
 	public CartItemDto(int cartItemId, int cartId, int productId, int quantity, String productName, float productPrice) {
 		super();
 		this.cartItemId = cartItemId;

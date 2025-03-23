@@ -34,6 +34,31 @@ public class CartDao {
         }
         return -1;
     }
+	
+	public static int getUserIDByCartID(int cartId) {
+        String url = "jdbc:mysql://localhost:3306/ecommerce_application";
+        String username = "root";
+        String dbPassword = "Rj@1465887732";
+        String query = "SELECT * FROM cart WHERE cart_id = ?;";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection con = DriverManager.getConnection(url, username, dbPassword);
+                 PreparedStatement ps = con.prepareStatement(query)) {
+
+                ps.setInt(1, cartId);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt("user_id");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
 
 	public static boolean addUserIdToCart(int userId) {
 		String url = "jdbc:mysql://localhost:3306/ecommerce_application";
@@ -103,6 +128,29 @@ public class CartDao {
 				int rowsInserted = ps.executeUpdate();
                 
                 return rowsInserted > 0;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public static boolean removeItemsFromCart(int cartId) {
+		String url = "jdbc:mysql://localhost:3306/ecommerce_application";
+		String username = "root";
+		String dbPassword = "Rj@1465887732";
+		String query = "DELETE FROM cart WHERE cart_id = ?;";
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			try (Connection con = DriverManager.getConnection(url, username, dbPassword);
+					PreparedStatement ps = con.prepareStatement(query)) {
+
+				ps.setInt(1, cartId);
+
+				int rowsAffected = ps.executeUpdate();
+                
+                return rowsAffected > 0;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
