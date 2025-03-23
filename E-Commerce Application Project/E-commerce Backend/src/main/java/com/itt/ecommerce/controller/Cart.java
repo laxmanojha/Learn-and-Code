@@ -54,7 +54,7 @@ public class Cart extends HttpServlet {
     	JsonObject jsonResponse = new JsonObject();
 
         if (success == 1) {
-        	jsonResponse.addProperty("success", false);
+        	jsonResponse.addProperty("success", true);
             jsonResponse.addProperty("message", message);
             response.setStatus(HttpServletResponse.SC_OK);
         } else {

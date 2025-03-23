@@ -5,11 +5,13 @@ import java.util.List;
 import com.itt.ecommerce.dao.CartDao;
 import com.itt.ecommerce.dao.OrderDao;
 import com.itt.ecommerce.dao.ProductDao;
+import com.itt.ecommerce.dao.UserDao;
 import com.itt.ecommerce.dto.CartItemDto;
+import com.itt.ecommerce.dto.OrderHistoryDto;
 
 public class OrderService {
 	
-	public static String makeAnOrder(List<CartItemDto> cartItems) {
+	public static String completeOrder(List<CartItemDto> cartItems) {
 		if (cartItems == null)
 			return "0:No cart items received to place an order";
 		
@@ -41,17 +43,22 @@ public class OrderService {
 		}
 		return message;
 	}
-	
+
 	private static int getUserId(CartItemDto cartItem) {
-		int cartId = cartItem.getCartId();
-		return CartDao.getUserIDByCartID(cartId);
+	    int cartId = cartItem.getCartId();
+	    return CartDao.getUserIDByCartID(cartId);
 	}
 	
 	private static float getTotalPrice(List<CartItemDto> cartItems) {
-		float totalPrice = 0;
-		for (CartItemDto cartItem: cartItems) {
-			totalPrice += cartItem.getProductPrice();
-		}
-		return totalPrice;
+	    float totalPrice = 0;
+	    for (CartItemDto cartItem : cartItems) {
+	        totalPrice += cartItem.getProductPrice() * cartItem.getQuantity();
+	    }
+	    return totalPrice;
+	}
+
+	public static List<OrderHistoryDto> getOrderHistory(String username) {
+	    int userId = UserDao.getUserIDByUsername(username);
+	    return OrderDao.getOrderHistory(userId);
 	}
 }

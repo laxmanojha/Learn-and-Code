@@ -4,9 +4,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.itt.ecommerce.dto.CartItemDto;
+import com.itt.ecommerce.dto.CategoryDto;
+import com.itt.ecommerce.dto.OrderHistoryDto;
 
 public class OrderDao {
 	public static int getOrderIdByUserId(int userId) {
@@ -103,6 +106,37 @@ public class OrderDao {
 	        e.printStackTrace();
 	    }
 	    return false;
+	}
+	
+	public static List<OrderHistoryDto> getOrderHistory(int userId) {
+		String url = "jdbc:mysql://localhost:3306/ecommerce_application";
+        String username = "root";
+        String dbPassword = "Rj@1465887732";
+        String query = "SELECT *, oi.quantity*oi.price as quantities_total_price FROM orders o " + 
+        				"INNER JOIN order_items oi ON o.order_id = oi.order_id " +
+        				"INNER JOIN products p ON p.product_id = oi.product_id " +
+        				"INNER JOIN categories c ON p.category_id = c.category_id " +
+        				"WHERE o.user_id = ?;";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection con = DriverManager.getConnection(url, username, dbPassword);
+                 PreparedStatement ps = con.prepareStatement(query)) {
+            	
+            	ps.setInt(1, userId);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                	List<OrderHistoryDto> allProductHistory = new ArrayList<OrderHistoryDto>();
+                    while (rs.next()) {
+                        allProductHistory.add(new OrderHistoryDto(rs.getString("c.category_name"), rs.getString("p.product_name"), rs.getFloat("p.price"), rs.getInt("oi.quantity"), rs.getFloat("quantities_total_price"), rs.getDate("o.order_date")));
+                    }
+                    return allProductHistory;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
 	}
 
 }
