@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/cart/*")
-public class FetchAllCartItems extends HttpServlet {
+public class Cart extends HttpServlet {
 	
 	private static final Gson gson = new Gson();
 	
@@ -34,7 +34,7 @@ public class FetchAllCartItems extends HttpServlet {
         String pathInfo = request.getPathInfo();
 
         if (pathInfo == null || pathInfo.equals("/")) {
-        	addProductToCart();
+        	addProductToCart(request, response, out);
         } else {
         	String username = pathInfo.split("/")[1];
 
@@ -42,8 +42,29 @@ public class FetchAllCartItems extends HttpServlet {
         }
     }
     
-    private static void addProductToCart() {
+    private static void addProductToCart(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+    	String username = request.getParameter("username");
+    	int productId = Integer.parseInt(request.getParameter("productId"));
+    	int quantity = Integer.parseInt(request.getParameter("quantity"));
     	
+    	String result = CartService.addToCart(username, productId, quantity);
+    	int success = Integer.parseInt(result.split(":")[0]);
+    	String message = result.split(":")[1];
+    	
+    	JsonObject jsonResponse = new JsonObject();
+
+        if (success == 1) {
+        	jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", message);
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", message);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+        out.write(jsonResponse.toString());
+        out.flush();
     }
     
     private static void fetchAllCartItems(String username, HttpServletResponse response, PrintWriter out) {

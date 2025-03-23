@@ -35,4 +35,29 @@ public class ProductDao {
 		}
 		return null;
 	}
+	
+	public static ProductDto getProductById(int productId) {
+		String url = "jdbc:mysql://localhost:3306/ecommerce_application";
+		String username = "root";
+		String dbPassword = "Rj@1465887732";
+		String query = "SELECT * FROM products WHERE product_id = ?";
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			try (Connection con = DriverManager.getConnection(url, username, dbPassword);
+					PreparedStatement ps = con.prepareStatement(query)) {
+
+				ps.setInt(1, productId);
+
+				try (ResultSet rs = ps.executeQuery()) {
+					if (rs.next()) {
+						return (new ProductDto(rs.getInt("product_id"), rs.getString("product_name"), rs.getInt("category_id"), rs.getFloat("price"), rs.getInt("stock_quantity")));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

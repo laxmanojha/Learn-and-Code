@@ -34,6 +34,29 @@ public class CartDao {
         }
         return -1;
     }
+
+	public static boolean addUserIdToCart(int userId) {
+		String url = "jdbc:mysql://localhost:3306/ecommerce_application";
+        String username = "root";
+        String dbPassword = "Rj@1465887732";
+        String query = "INSERT INTO cart(user_id) VALUES(?);";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection con = DriverManager.getConnection(url, username, dbPassword);
+                 PreparedStatement ps = con.prepareStatement(query)) {
+
+                ps.setInt(1, userId);
+
+                int rowsInserted = ps.executeUpdate();
+                
+                return rowsInserted > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+	}
 	
 	public static List<CartItemDto> getAllCartItems(int cartId) {
 		String url = "jdbc:mysql://localhost:3306/ecommerce_application";
@@ -60,5 +83,30 @@ public class CartDao {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static boolean addItemToCart(int cartId, int productId, int quantity) {
+		String url = "jdbc:mysql://localhost:3306/ecommerce_application";
+		String username = "root";
+		String dbPassword = "Rj@1465887732";
+		String query = "INSERT INTO cart_items(cart_id, product_id, quantity) VALUES(?, ?, ?);";
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			try (Connection con = DriverManager.getConnection(url, username, dbPassword);
+					PreparedStatement ps = con.prepareStatement(query)) {
+
+				ps.setInt(1, cartId);
+				ps.setInt(2, productId);
+				ps.setInt(3, quantity);
+
+				int rowsInserted = ps.executeUpdate();
+                
+                return rowsInserted > 0;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }
