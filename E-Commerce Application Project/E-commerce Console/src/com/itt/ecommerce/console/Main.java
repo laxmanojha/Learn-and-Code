@@ -92,7 +92,7 @@ public class Main {
                 case 6 -> System.out.println("Logging out...");
                 default -> System.out.println("Invalid choice. Please try again.");
             }
-        } while (choice != 5);
+        } while (choice != 6);
     }
 
     private static void showUserDashboard() {

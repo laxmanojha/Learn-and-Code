@@ -85,8 +85,8 @@ public class Order extends HttpServlet {
 
         if (orderHistory != null && !orderHistory.isEmpty()) {
             jsonResponse.addProperty("success", true);
-            JsonArray categoryJsonArray = gson.toJsonTree(orderHistory).getAsJsonArray();
-            jsonResponse.add("categories", categoryJsonArray);
+            JsonArray orderHistoryJsonArray = gson.toJsonTree(orderHistory).getAsJsonArray();
+            jsonResponse.add("orderHistory", orderHistoryJsonArray);
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
             jsonResponse.addProperty("success", false);

@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import com.itt.ecommerce.dto.CartItemDto;
 import com.itt.ecommerce.dto.CategoryDto;
@@ -128,7 +131,7 @@ public class OrderDao {
                 try (ResultSet rs = ps.executeQuery()) {
                 	List<OrderHistoryDto> allProductHistory = new ArrayList<OrderHistoryDto>();
                     while (rs.next()) {
-                        allProductHistory.add(new OrderHistoryDto(rs.getString("c.category_name"), rs.getString("p.product_name"), rs.getFloat("p.price"), rs.getInt("oi.quantity"), rs.getFloat("quantities_total_price"), rs.getDate("o.order_date")));
+                        allProductHistory.add(new OrderHistoryDto(rs.getString("c.category_name"), rs.getString("p.product_name"), rs.getFloat("p.price"), rs.getInt("oi.quantity"), rs.getFloat("quantities_total_price"), getDateAsString(rs.getDate("o.order_date"))));
                     }
                     return allProductHistory;
                 }
@@ -138,5 +141,9 @@ public class OrderDao {
         }
         return null;
 	}
-
+	
+	private static String getDateAsString(Date orderDate) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH);
+		return dateFormat.format(orderDate);
+	}
 }

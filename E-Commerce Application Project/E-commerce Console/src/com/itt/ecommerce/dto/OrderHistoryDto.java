@@ -1,7 +1,5 @@
 package com.itt.ecommerce.dto;
 
-import java.util.Date;
-
 public class OrderHistoryDto {
 	private String productCategory;
 	private String productName;
