@@ -85,10 +85,11 @@ public class Main {
 
             switch (choice) {
                 case 1 -> UserService.viewUserDetails(username);
-                case 2 -> OrderService.orderProduct(username);
+                case 2 -> CartService.addToCart(username);
                 case 3 -> CartService.viewCart(username);
-                case 4 -> OrderService.viewOrderHistory(username);
-                case 5 -> System.out.println("Logging out...");
+                case 4 -> OrderService.checkOut(username);
+                case 5 -> OrderService.viewOrderHistory(username);
+                case 6 -> System.out.println("Logging out...");
                 default -> System.out.println("Invalid choice. Please try again.");
             }
         } while (choice != 5);
@@ -99,8 +100,9 @@ public class Main {
         System.out.println("1. View Details");
         System.out.println("2. View Products");
         System.out.println("3. View Cart");
-        System.out.println("4. Order History");
-        System.out.println("5. Logout");
+        System.out.println("4. Check Out");
+        System.out.println("5. Order History");
+        System.out.println("6. Logout");
         System.out.print("Enter your choice: ");
     }
 }

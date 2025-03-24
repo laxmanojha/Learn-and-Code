@@ -3,7 +3,6 @@ package com.itt.ecommerce.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.http.HttpResponse;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -14,4 +14,8 @@ public class CartDto {
     public List<CartItemDto> getCartItems() {
         return cartItems;
     }
+    
+    public void setCartItems(List<CartItemDto> cartItems) {
+        this.cartItems = cartItems;
+    }
 }
