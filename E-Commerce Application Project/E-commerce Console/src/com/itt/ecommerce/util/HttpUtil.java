@@ -76,10 +76,8 @@ public class HttpUtil {
             if (jsonResponse.get("success").getAsBoolean()) {
                 JsonObject userJson = jsonResponse.getAsJsonObject("userInfo");
 
-                // Parse user details into a DTO
                 UserDto user = gson.fromJson(userJson, UserDto.class);
                 
-                // Display user details
                 System.out.println("\n--- User Details ---");
                 System.out.println("User ID: " + user.getId());
                 System.out.println("Full Name: " + user.getFullName());
