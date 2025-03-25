@@ -87,12 +87,13 @@ public class Main {
                 case 1 -> UserService.viewUserDetails(username);
                 case 2 -> CartService.addToCart(username);
                 case 3 -> CartService.viewCart(username);
-                case 4 -> OrderService.checkOut(username);
-                case 5 -> OrderService.viewOrderHistory(username);
-                case 6 -> System.out.println("Logging out...");
+                case 4 -> editCart(username);
+                case 5 -> OrderService.checkOut(username);
+                case 6 -> OrderService.viewOrderHistory(username);
+                case 7 -> System.out.println("Logging out...");
                 default -> System.out.println("Invalid choice. Please try again.");
             }
-        } while (choice != 6);
+        } while (choice != 7);
     }
 
     private static void showUserDashboard() {
@@ -100,9 +101,43 @@ public class Main {
         System.out.println("1. View Details");
         System.out.println("2. View Products");
         System.out.println("3. View Cart");
-        System.out.println("4. Check Out");
-        System.out.println("5. Order History");
-        System.out.println("6. Logout");
+        System.out.println("4. Edit Cart");
+        System.out.println("5. Check Out");
+        System.out.println("6. Order History");
+        System.out.println("7. Logout");
         System.out.print("Enter your choice: ");
+    }
+    
+    private static void editCart(String username) throws IOException, InterruptedException {
+        int choice;
+        do {
+            System.out.println("\nEdit Cart Menu:");
+            System.out.println("1: Delete a specific product from the cart");
+            System.out.println("2: Delete all products from the cart");
+            System.out.println("3: Go back to the main menu");
+            System.out.print("Enter your choice: ");
+
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1 -> {
+                    System.out.print("Enter the Product ID to remove: ");
+                    int productId = sc.nextInt();
+                    CartService.removeProduct(username, productId);
+                }
+                case 2 -> {
+                    System.out.println("Are you sure you want to delete all products from the cart? (yes/no)");
+                    String confirm = sc.next();
+                    if (confirm.equalsIgnoreCase("yes")) {
+                        CartService.removeAllProduct(username);
+                    } else {
+                        System.out.println("Operation canceled.");
+                    }
+                }
+                case 3 -> System.out.println("Returning to main menu...");
+                default -> System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 3);
     }
 }

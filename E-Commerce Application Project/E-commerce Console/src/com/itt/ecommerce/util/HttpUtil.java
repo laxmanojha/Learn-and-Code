@@ -36,6 +36,16 @@ public class HttpUtil {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    public static HttpResponse<String> sendDeleteRequest(String url) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .DELETE()
+                .header("Content-Type", "application/json")
+                .build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
     public static boolean processResponse(HttpResponse<String> response, String action) {
         int statusCode = response.statusCode();
         String responseBody = response.body();

@@ -34,7 +34,7 @@ public class OrderService {
 		if (allItemsOrdered) {
 			boolean stockQuantityUpdated = ProductDao.updateProductStockQuantity(cartItems);
 			int cartId = CartDao.getCartIDByUserID(userId);
-			boolean itemsDeletedFromCart = CartDao.removeItemsFromCart(cartId);
+			boolean itemsDeletedFromCart = CartDao.removeAllItemsFromCart(cartId);
 			
 			if (stockQuantityUpdated && itemsDeletedFromCart)
 				message = "1:Item order completion successful.";

@@ -21,23 +21,22 @@ public class CartService {
 	
 	public static void addToCart(String username) throws IOException, InterruptedException {
 		HttpResponse<String> response = null;
-		do {
-			System.out.println("\nTaking order for " + username + "...");
-			List<CategoryDto> allCategories = CategoryService.getAllCategories();
-			showCategories(allCategories);
-			
-			int userChoiceCategoryId = getUserChoiceCategoryId();
-			List<ProductDto> allProducts = CategoryService.getAllProductsOfCategory(userChoiceCategoryId);
-			showProducts(allProducts);
-			
-			int selectedProductId = getUserChoiceProductId(allProducts);
-			int productQuantity = getProductQuantity(selectedProductId, allProducts);
-			
-			String url = BASE_URL + "/cart";
-	        String formData = "username=" + username + "&productId=" + selectedProductId + "&quantity=" + productQuantity;
-	
-	        response = HttpUtil.sendPostRequest(url, formData);
-		} while(!HttpUtil.processResponse(response, "Add to cart"));
+		System.out.println("\nTaking order for " + username + "...");
+		List<CategoryDto> allCategories = CategoryService.getAllCategories();
+		showCategories(allCategories);
+		
+		int userChoiceCategoryId = getUserChoiceCategoryId();
+		List<ProductDto> allProducts = CategoryService.getAllProductsOfCategory(userChoiceCategoryId);
+		showProducts(allProducts);
+		
+		int selectedProductId = getUserChoiceProductId(allProducts);
+		int productQuantity = getProductQuantity(selectedProductId, allProducts);
+		
+		String url = BASE_URL + "/cart";
+        String formData = "username=" + username + "&productId=" + selectedProductId + "&quantity=" + productQuantity;
+
+        response = HttpUtil.sendPostRequest(url, formData);
+		HttpUtil.processResponse(response, "Add to cart");
 	}
 	
 	private static void showCategories(List<CategoryDto> allCategories) {
@@ -158,7 +157,7 @@ public class CartService {
 	}
 	
 	public static List<CartItemDto> getCartItems(String username) throws IOException, InterruptedException {
-		String url = BASE_URL + "/cart/" + username;
+		String url = BASE_URL + "/cart?username=" + username;
 		HttpResponse<String> response = HttpUtil.sendGetRequest(url);
 		return parseCartResponse(response.body());
 	}
@@ -193,5 +192,19 @@ public class CartService {
 	                item.getCartItemId(), item.getProductId(), item.getProductName(),
 	                item.getQuantity(), item.getProductPrice());
 	    }
+	}
+	
+	public static void removeProduct(String username, int productId) throws IOException, InterruptedException {
+		String url = BASE_URL + "/cart/" + productId + "?username=" + username;
+		
+		HttpResponse<String> response = HttpUtil.sendDeleteRequest(url);
+		HttpUtil.processResponse(response, "Product removal");
+	}
+	
+	public static void removeAllProduct(String username) throws IOException, InterruptedException {
+		String url = BASE_URL + "/cart?username=" + username;
+		
+		HttpResponse<String> response = HttpUtil.sendDeleteRequest(url);
+		HttpUtil.processResponse(response, "All Products removeal");
 	}
 }

@@ -35,8 +35,9 @@ public class OrderService {
 	
 	public static void viewOrderHistory(String username) throws IOException, InterruptedException {
 		System.out.println("\nFetching order history for " + username + "...");
-        String url = BASE_URL + "/order/order-history" + "?username=" + username;
-        HttpResponse<String> response = HttpUtil.sendGetRequest(url);
+        String url = BASE_URL + "/order/order-history";
+        String formData = "username=" + username;
+        HttpResponse<String> response = HttpUtil.sendPostRequest(url, formData);
         
         if (response.statusCode() == 200) {
         	List<OrderHistoryDto> orderHistory = parseOrderHistoryResponse(response.body());

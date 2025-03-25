@@ -40,6 +40,32 @@ public class CartService {
 		return message;
 	}
 	
+	public static String removeProduct(String username, int productId) {
+		String message = null;
+		int cartId = getCartId(username);
+		boolean result = CartDao.removeItemFromCart(cartId, productId);
+		
+		if(result) {
+			message = "1:Product with ID " + productId + " successfully removed.";
+		} else {
+			message = "0:Failed in removing Product with ID " + productId;
+		}
+		return message;
+	}
+	
+	public static String removeAllProduct(String username) {
+		String message = null;
+		int cartId = getCartId(username);
+		boolean result = CartDao.removeAllItemsFromCart(cartId);
+		
+		if(result) {
+			message = "1:All products are successfully removed.";
+		} else {
+			message = "0:Failed in removing all products from cart.";
+		}
+		return message;
+	}
+	
 	private static int getCartId(String username) {
 		int userId = UserDao.getUserIDByUsername(username);
 		int cartId = CartDao.getCartIDByUserID(userId);
@@ -51,4 +77,5 @@ public class CartService {
 		}
 		return cartId;
 	}
+	
 }

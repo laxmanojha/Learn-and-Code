@@ -1,5 +1,6 @@
 package com.itt.ecommerce.dao;
 
+import java.security.Timestamp;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -130,9 +131,21 @@ public class OrderDao {
 
                 try (ResultSet rs = ps.executeQuery()) {
                 	List<OrderHistoryDto> allProductHistory = new ArrayList<OrderHistoryDto>();
-                    while (rs.next()) {
-                        allProductHistory.add(new OrderHistoryDto(rs.getString("c.category_name"), rs.getString("p.product_name"), rs.getFloat("p.price"), rs.getInt("oi.quantity"), rs.getFloat("quantities_total_price"), getDateAsString(rs.getDate("o.order_date"))));
-                    }
+                	SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss", Locale.ENGLISH);
+
+                	while (rs.next()) {
+                	    java.sql.Timestamp timestamp = rs.getTimestamp("o.order_date"); // Get full date-time
+                	    String formattedDate = timestamp != null ? dateFormat.format(timestamp) : "N/A"; // Convert to String
+
+                	    allProductHistory.add(new OrderHistoryDto(
+                	        rs.getString("c.category_name"),
+                	        rs.getString("p.product_name"),
+                	        rs.getFloat("p.price"),
+                	        rs.getInt("oi.quantity"),
+                	        rs.getFloat("quantities_total_price"),
+                	        formattedDate  // Pass formatted date-time string
+                	    ));
+                	}
                     return allProductHistory;
                 }
             }
