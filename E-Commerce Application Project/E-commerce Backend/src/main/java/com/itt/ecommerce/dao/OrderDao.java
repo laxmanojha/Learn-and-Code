@@ -1,18 +1,16 @@
 package com.itt.ecommerce.dao;
 
-import java.security.Timestamp;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import com.itt.ecommerce.dto.CartItemDto;
-import com.itt.ecommerce.dto.CategoryDto;
 import com.itt.ecommerce.dto.OrderHistoryDto;
 
 public class OrderDao {
@@ -20,7 +18,7 @@ public class OrderDao {
         String url = "jdbc:mysql://localhost:3306/ecommerce_application";
         String username = "root";
         String dbPassword = "Rj@1465887732";
-        String query = "SELECT * FROM orders WHERE user_id = ?;";
+        String query = "SELECT * FROM orders o WHERE user_id = ? ORDER BY order_id DESC;";
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -134,8 +132,8 @@ public class OrderDao {
                 	SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss", Locale.ENGLISH);
 
                 	while (rs.next()) {
-                	    java.sql.Timestamp timestamp = rs.getTimestamp("o.order_date"); // Get full date-time
-                	    String formattedDate = timestamp != null ? dateFormat.format(timestamp) : "N/A"; // Convert to String
+                	    Timestamp timestamp = rs.getTimestamp("o.order_date");
+                	    String formattedDate = timestamp != null ? dateFormat.format(timestamp) : "N/A";
 
                 	    allProductHistory.add(new OrderHistoryDto(
                 	        rs.getString("c.category_name"),
@@ -143,7 +141,7 @@ public class OrderDao {
                 	        rs.getFloat("p.price"),
                 	        rs.getInt("oi.quantity"),
                 	        rs.getFloat("quantities_total_price"),
-                	        formattedDate  // Pass formatted date-time string
+                	        formattedDate
                 	    ));
                 	}
                     return allProductHistory;
@@ -153,10 +151,5 @@ public class OrderDao {
             e.printStackTrace();
         }
         return null;
-	}
-	
-	private static String getDateAsString(Date orderDate) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH);
-		return dateFormat.format(orderDate);
 	}
 }

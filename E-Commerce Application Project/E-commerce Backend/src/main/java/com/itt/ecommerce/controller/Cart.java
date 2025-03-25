@@ -119,19 +119,15 @@ public class Cart extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("DEBUG: DELETE request received");
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
         String pathInfo = request.getPathInfo();
-        System.out.println("DEBUG: Path info = " + pathInfo);
 
         String username = request.getParameter("username");
-        System.out.println("DEBUG: Username = " + username);
 
         if (username == null || username.isEmpty()) {
-            System.out.println("ERROR: Username is missing");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.write("{\"success\": false, \"message\": \"Username is required\"}");
             out.flush();
@@ -141,7 +137,6 @@ public class Cart extends HttpServlet {
         JsonObject jsonResponse = new JsonObject();
 
         if (pathInfo == null || pathInfo.equals("/")) {
-            System.out.println("DEBUG: Deleting all products");
             String result = CartService.removeAllProduct(username);
             int success = Integer.parseInt(result.split(":")[0]);
             String message = result.split(":")[1];
@@ -152,7 +147,6 @@ public class Cart extends HttpServlet {
         } else {
             try {
                 int productId = Integer.parseInt(pathInfo.substring(1));
-                System.out.println("DEBUG: Deleting product ID = " + productId);
                 String result = CartService.removeProduct(username, productId);
                 int success = Integer.parseInt(result.split(":")[0]);
                 String message = result.split(":")[1];
