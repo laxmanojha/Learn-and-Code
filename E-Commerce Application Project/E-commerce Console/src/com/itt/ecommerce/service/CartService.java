@@ -19,27 +19,15 @@ public class CartService {
 	private static final String BASE_URL = "http://localhost:8080/E-Commerce-Application";
 	private static final Gson gson = new Gson();
 	
-	public static void addToCart(String username) throws IOException, InterruptedException {
-		HttpResponse<String> response = null;
-		System.out.println("\nTaking order for " + username + "...");
-		List<CategoryDto> allCategories = CategoryService.getAllCategories();
-		showCategories(allCategories);
-		
-		int userChoiceCategoryId = getUserChoiceCategoryId();
-		List<ProductDto> allProducts = CategoryService.getAllProductsOfCategory(userChoiceCategoryId);
-		showProducts(allProducts);
-		
-		int selectedProductId = getUserChoiceProductId(allProducts);
-		int productQuantity = getProductQuantity(selectedProductId, allProducts);
-		
-		String url = BASE_URL + "/cart";
-        String formData = "username=" + username + "&productId=" + selectedProductId + "&quantity=" + productQuantity;
+	public static void addToCart(String username, int categoryId, int productId, int quantity) throws IOException, InterruptedException {
+	    String url = BASE_URL + "/cart";
+	    String formData = "username=" + username + "&productId=" + productId + "&quantity=" + quantity;
 
-        response = HttpUtil.sendPostRequest(url, formData);
-		HttpUtil.processResponse(response, "Add to cart");
+	    HttpResponse<String> response = HttpUtil.sendPostRequest(url, formData);
+	    HttpUtil.processResponse(response, "Add to Cart");
 	}
 	
-	private static void showCategories(List<CategoryDto> allCategories) {
+	public static void showCategories(List<CategoryDto> allCategories) {
         allCategories.sort(Comparator.comparingInt(CategoryDto::getCategory_id));
 
         System.out.println("+------------+--------------------------+");
@@ -53,7 +41,7 @@ public class CartService {
         System.out.println("+------------+--------------------------+");
 	}
 	
-	private static void showProducts(List<ProductDto> allProducts) {
+	public static void showProducts(List<ProductDto> allProducts) {
 		allProducts.sort(Comparator.comparingInt(ProductDto::getProduct_id));
 
         System.out.println("+------------+--------------------------+");
@@ -67,56 +55,96 @@ public class CartService {
         System.out.println("+------------+--------------------------+");
 	}
 	
-	private static int getUserChoiceCategoryId() {
+	public static void takeCartInputAndAdd(String username) throws IOException, InterruptedException {
+	    System.out.println("\nTaking order for " + username + "...");
+
+	    while (true) {
+	        // Step 1: Show all categories and get user selection
+	        List<CategoryDto> allCategories = CategoryService.getAllCategories();
+	        showCategoriesWithBackOption(allCategories);
+
+	        int userChoiceCategoryId = getUserChoiceCategoryIdWithBack();
+	        if (userChoiceCategoryId == -1) return; // Go back to main menu
+
+	        while (true) {
+	            // Step 2: Show all products from selected category and get user selection
+	            List<ProductDto> allProducts = CategoryService.getAllProductsOfCategory(userChoiceCategoryId);
+	            showProductsWithBackOption(allProducts);
+
+	            int selectedProductId = getUserChoiceProductIdWithBack(allProducts);
+	            if (selectedProductId == -1) break; // Go back to category selection
+
+	            // Step 3: Get quantity for the selected product
+	            int productQuantity = getProductQuantityWithBack(selectedProductId, allProducts);
+	            if (productQuantity == -1) continue; // Go back to product selection
+
+	            // Step 4: Call the API function with selected values
+	            addToCart(username, userChoiceCategoryId, selectedProductId, productQuantity);
+	            return; // Successfully added to cart, return to main menu
+	        }
+	    }
+	}
+
+	// Show categories with a "Go Back" option
+	private static void showCategoriesWithBackOption(List<CategoryDto> categories) {
+	    showCategories(categories);
+	    System.out.println("0: Go Back");
+	}
+
+	// Show products with a "Go Back" option
+	private static void showProductsWithBackOption(List<ProductDto> products) {
+	    showProducts(products);
+	    System.out.println("0: Go Back");
+	}
+
+	// Get user input for category with "Go Back"
+	private static int getUserChoiceCategoryIdWithBack() {
 	    Scanner scanner = new Scanner(System.in);
-	    int categoryId = -1;
+	    int categoryId;
 	    
 	    while (true) {
-	        System.out.print("Please enter category ID (1-20) to continue shopping: ");
+	        System.out.print("Enter category ID (or 0 to go back): ");
 	        String input = scanner.nextLine().trim();
 
 	        try {
 	            categoryId = Integer.parseInt(input);
 
-	            if (categoryId >= 1 && categoryId <= 20) { 
-	                break;
-	            } else {
-	                System.out.println("Error: Category ID must be between 1 and 20. Please try again.");
-	            }
+	            if (categoryId == 0) return -1; // Go back
+	            if (categoryId >= 1 && categoryId <= 20) return categoryId;
+
+	            System.out.println("Error: Category ID must be between 1 and 20.");
 	        } catch (NumberFormatException e) {
-	            System.out.println("Error: Invalid input. Please enter a valid integer between 1 and 20.");
+	            System.out.println("Error: Invalid input. Enter a valid integer.");
 	        }
 	    }
-
-	    return categoryId;
 	}
-	
-	private static int getUserChoiceProductId(List<ProductDto> allProducts) {
+
+	// Get user input for product with "Go Back"
+	private static int getUserChoiceProductIdWithBack(List<ProductDto> allProducts) {
 	    Scanner scanner = new Scanner(System.in);
-	    
+
 	    while (true) {
-	        System.out.print("Please enter product ID (shown above) to continue shopping: ");
+	        System.out.print("Enter product ID (or 0 to go back): ");
 	        String input = scanner.nextLine().trim();
 
 	        try {
-	            final int enteredProductId = Integer.parseInt(input);
+	            int productId = Integer.parseInt(input);
+	            if (productId == 0) return -1; // Go back to category selection
 
-	            boolean exists = allProducts.stream().anyMatch(p -> p.getProduct_id() == enteredProductId);
+	            boolean exists = allProducts.stream().anyMatch(p -> p.getProduct_id() == productId);
+	            if (exists) return productId;
 
-	            if (exists) { 
-	                return enteredProductId;
-	            } else {
-	                System.out.println("Error: Product ID must be from the displayed list. Please try again.");
-	            }
+	            System.out.println("Error: Product ID must be from the displayed list.");
 	        } catch (NumberFormatException e) {
-	            System.out.println("Error: Invalid input. Please enter a valid integer ID.");
+	            System.out.println("Error: Invalid input. Enter a valid integer.");
 	        }
 	    }
 	}
-	
-	private static int getProductQuantity(int selectedProductId, List<ProductDto> allProducts) {
-	    Scanner scanner = new Scanner(System.in);
 
+	// Get user input for quantity with "Go Back"
+	private static int getProductQuantityWithBack(int selectedProductId, List<ProductDto> allProducts) {
+	    Scanner scanner = new Scanner(System.in);
+	    
 	    ProductDto selectedProduct = allProducts.stream()
 	            .filter(p -> p.getProduct_id() == selectedProductId)
 	            .findFirst()
@@ -128,26 +156,22 @@ public class CartService {
 	    }
 
 	    int stockQuantity = selectedProduct.getStock_quantity();
-	    int quantity = 0;
 
 	    while (true) {
-	        System.out.print("Enter quantity (Available stock: " + stockQuantity + "): ");
+	        System.out.print("Enter quantity (or 0 to go back, Available stock: " + stockQuantity + "): ");
 	        String input = scanner.nextLine().trim();
 
 	        try {
-	            quantity = Integer.parseInt(input);
+	            int quantity = Integer.parseInt(input);
+	            if (quantity == 0) return -1; // Go back to product selection
 
-	            if (quantity > 0 && quantity <= stockQuantity) {
-	                break;
-	            } else {
-	                System.out.println("Error: Quantity must be between 1 and " + stockQuantity + ". Try again.");
-	            }
+	            if (quantity > 0 && quantity <= stockQuantity) return quantity;
+
+	            System.out.println("Error: Quantity must be between 1 and " + stockQuantity + ".");
 	        } catch (NumberFormatException e) {
-	            System.out.println("Error: Invalid input. Please enter a valid integer quantity.");
+	            System.out.println("Error: Invalid input. Enter a valid integer.");
 	        }
 	    }
-
-	    return quantity;
 	}
 	
 	public static void viewCart(String username) throws IOException, InterruptedException {

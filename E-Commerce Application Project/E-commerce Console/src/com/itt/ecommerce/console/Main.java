@@ -85,7 +85,7 @@ public class Main {
 
             switch (choice) {
                 case 1 -> UserService.viewUserDetails(username);
-                case 2 -> CartService.addToCart(username);
+                case 2 -> CartService.takeCartInputAndAdd(username);
                 case 3 -> CartService.viewCart(username);
                 case 4 -> editCart(username);
                 case 5 -> OrderService.checkOut(username);
