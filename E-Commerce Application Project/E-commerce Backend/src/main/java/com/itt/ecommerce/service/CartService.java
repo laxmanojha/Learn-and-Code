@@ -66,6 +66,19 @@ public class CartService {
 		return message;
 	}
 	
+	public static String updateCart(String username, int productId, int quantity) {
+		String message = null;
+		int cartId = getCartId(username);
+		boolean result = CartDao.updateItemInCart(quantity, cartId, productId);
+		
+		if(result) {
+			message = "1:Product quanitty successfully updated.";
+		} else {
+			message = "0:Failed in updating product quantity.";
+		}
+		return message;
+	}
+	
 	private static int getCartId(String username) {
 		int userId = UserDao.getUserIDByUsername(username);
 		int cartId = CartDao.getCartIDByUserID(userId);

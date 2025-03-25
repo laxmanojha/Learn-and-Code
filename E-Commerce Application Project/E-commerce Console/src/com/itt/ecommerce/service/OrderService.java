@@ -69,13 +69,13 @@ public class OrderService {
             return;
         }
 
-        System.out.printf("%-20s %-20s %-10s %-10s %-15s %-20s%n", 
+        System.out.println("+---------------------------+---------------------------+------------+----------+---------------+------------------------+");
+        System.out.printf("| %-25s | %-25s | %-10s | %-8s | %-13s | %-22s |\n",
                           "Product Category", "Product Name", "Price", "Qty", "Total Price", "Order Date");
-        System.out.println("----------------------------------------------------------------------------------------------");
-
+        System.out.println("+---------------------------+---------------------------+------------+----------+---------------+------------------------+");
 
         for (OrderHistoryDto order : orderHistory) {
-            System.out.printf("%-20s %-20s %-10.2f %-10d %-15.2f %-20s%n",
+            System.out.printf("| %-25s | %-25s | %-10.2f | %-8d | %-13.2f | %-22s |\n",
                               order.getProductCategory(),
                               order.getProductName(),
                               order.getProductPrice(),
@@ -83,6 +83,9 @@ public class OrderService {
                               order.getTotalProductsPrice(),
                               order.getOrderDate());
         }
+
+        System.out.println("+---------------------------+---------------------------+------------+----------+---------------+------------------------+");
     }
+
 
 }

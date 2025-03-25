@@ -159,6 +159,31 @@ public class CartDao {
 		return false;
 	}
 	
+	public static boolean updateItemInCart(int quantity, int cartId, int productId) {
+		String url = "jdbc:mysql://localhost:3306/ecommerce_application";
+		String username = "root";
+		String dbPassword = "Rj@1465887732";
+		String query = "UPDATE cart_items SET quantity = ? WHERE cart_id = ? AND product_id = ?;";
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			try (Connection con = DriverManager.getConnection(url, username, dbPassword);
+					PreparedStatement ps = con.prepareStatement(query)) {
+
+				ps.setInt(1, quantity);
+				ps.setInt(2, cartId);
+				ps.setInt(3, productId);
+
+				int rowsAffected = ps.executeUpdate();
+                
+                return rowsAffected > 0;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public static boolean removeAllItemsFromCart(int cartId) {
 		String url = "jdbc:mysql://localhost:3306/ecommerce_application";
 		String username = "root";

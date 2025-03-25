@@ -1,5 +1,6 @@
 package com.itt.ecommerce.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.itt.ecommerce.dto.CartItemDto;
 import com.itt.ecommerce.service.CartService;
 
@@ -72,6 +74,37 @@ public class Cart extends HttpServlet {
         }
 
         String result = CartService.addToCart(username, productId, quantity);
+        int success = Integer.parseInt(result.split(":")[0]);
+        String message = result.split(":")[1];
+
+        JsonObject jsonResponse = new JsonObject();
+        jsonResponse.addProperty("success", success == 1);
+        jsonResponse.addProperty("message", message);
+        response.setStatus(success == 1 ? HttpServletResponse.SC_OK : HttpServletResponse.SC_BAD_REQUEST);
+
+        out.write(jsonResponse.toString());
+        out.flush();
+    }
+    
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+
+        BufferedReader reader = request.getReader();
+        StringBuilder requestBody = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            requestBody.append(line);
+        }
+
+        JsonObject json = JsonParser.parseString(requestBody.toString()).getAsJsonObject();
+        String username = json.get("username").getAsString();
+        int productId = json.get("productId").getAsInt();
+        int quantity = json.get("quantity").getAsInt();
+
+        String result = CartService.updateCart(username, productId, quantity);
         int success = Integer.parseInt(result.split(":")[0]);
         String message = result.split(":")[1];
 

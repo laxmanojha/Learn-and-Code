@@ -45,6 +45,16 @@ public class HttpUtil {
 
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
+    
+    public static HttpResponse<String> sendPutRequest(String url, String requestBody) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json")
+                .build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
 
     public static boolean processResponse(HttpResponse<String> response, String action) {
         int statusCode = response.statusCode();
