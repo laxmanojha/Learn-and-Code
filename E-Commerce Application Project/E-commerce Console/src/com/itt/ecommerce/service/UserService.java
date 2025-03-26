@@ -1,5 +1,6 @@
 package com.itt.ecommerce.service;
 
+import com.itt.ecommerce.dto.UserDto;
 import com.itt.ecommerce.util.HttpUtil;
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -15,9 +16,9 @@ public class UserService {
         return HttpUtil.processResponse(response, "Login");
     }
 
-    public static boolean registerUser(String name, String username, String password) throws IOException, InterruptedException {
+    public static boolean registerUser(UserDto user) throws IOException, InterruptedException {
         String url = BASE_URL + "/user/register";
-        String formData = "fullname=" + name + "&username=" + username + "&password=" + password;
+        String formData = "fullname=" + user.getFullName() + "&username=" + user.getUserName() + "&password=" + user.getPassword();
 
         HttpResponse<String> response = HttpUtil.sendPostRequest(url, formData);
         return HttpUtil.processResponse(response, "Registration");

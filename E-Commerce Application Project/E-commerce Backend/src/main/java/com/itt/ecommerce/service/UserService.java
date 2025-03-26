@@ -9,7 +9,7 @@ public class UserService {
 		String message = null;
 		UserDto userStoredData = UserDao.getUserBasedOnUserCredentials(user);
 		if (userStoredData == null)
-			message = "0:User does exists with username -> " + user.getUserName();
+			message = "0:User does not exists with username -> " + user.getUserName();
 		else {			
 			boolean passwordMatched = Util.verifyPassword(user.getPassword(), userStoredData.getPassword());
 			

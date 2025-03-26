@@ -2,6 +2,8 @@ package com.itt.ecommerce.console;
 
 import java.io.IOException;
 import java.util.Scanner;
+
+import com.itt.ecommerce.dto.UserDto;
 import com.itt.ecommerce.service.CartService;
 import com.itt.ecommerce.service.OrderService;
 import com.itt.ecommerce.service.UserService;
@@ -70,8 +72,10 @@ public class Main {
         String regUserName = sc.nextLine();
         System.out.print("Enter password: ");
         String regPassword = sc.nextLine();
+        
+        UserDto user = new UserDto(name, regUserName, regPassword);
 
-        boolean registrationSuccess = UserService.registerUser(name, regUserName, regPassword);
+        boolean registrationSuccess = UserService.registerUser(user);
         if (registrationSuccess) {
             System.out.println("Regitration successful! Congratulations " + name);
         }

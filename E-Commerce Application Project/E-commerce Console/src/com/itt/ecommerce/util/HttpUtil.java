@@ -57,11 +57,7 @@ public class HttpUtil {
     }
 
     public static boolean processResponse(HttpResponse<String> response, String action) {
-        int statusCode = response.statusCode();
         String responseBody = response.body();
-
-        System.out.println("Response Code: " + statusCode);
-        System.out.println("Response Body: " + responseBody);
 
         try {
             JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
@@ -83,10 +79,6 @@ public class HttpUtil {
     
     public static void processUserDetailsResponse(HttpResponse<String> response) {
         String responseBody = response.body();
-        int statusCode = response.statusCode();
-        
-        System.out.println("Response Code: " + statusCode);
-        System.out.println("Response Body: " + responseBody);
 
         Gson gson = new Gson();
 
