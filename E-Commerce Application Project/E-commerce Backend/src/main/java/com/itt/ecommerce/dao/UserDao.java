@@ -38,7 +38,7 @@ public class UserDao {
         String url = "jdbc:mysql://localhost:3306/ecommerce_application";
         String username = "root";
         String dbPassword = "Rj@1465887732";
-        String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+        String query = "SELECT * FROM users WHERE username = ?";
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -46,7 +46,6 @@ public class UserDao {
                  PreparedStatement ps = con.prepareStatement(query)) {
 
                 ps.setString(1, user.getUserName());
-                ps.setString(2, user.getPassword());
 
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {

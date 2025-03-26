@@ -99,7 +99,7 @@ public class Main {
     private static void showUserDashboard() {
         System.out.println("\n===== User Dashboard =====");
         System.out.println("1. View Details");
-        System.out.println("2. View Products");
+        System.out.println("2. Add To Cart");
         System.out.println("3. View Cart");
         System.out.println("4. Edit Cart");
         System.out.println("5. Check Out");

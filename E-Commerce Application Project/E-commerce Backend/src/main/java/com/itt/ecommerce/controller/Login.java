@@ -23,16 +23,18 @@ public class Login extends HttpServlet{
         String password = request.getParameter("password");
         UserDto user = new UserDto(username, password); 
         
-        boolean result = UserService.authenticateUser(user);
+        String result = UserService.authenticateUser(user);
+        int loginSuccess = Integer.parseInt(result.split(":")[0]);
+        String message = result.split(":")[1];
         
         JsonObject jsonResponse = new JsonObject();
-        if (result) {
+        if (loginSuccess == 1) {
             jsonResponse.addProperty("success", true);
-            jsonResponse.addProperty("message", "User authenticated successfully.");
+            jsonResponse.addProperty("message", message);
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
             jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Authentication failed. User does not exists.");
+            jsonResponse.addProperty("message", message);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
         

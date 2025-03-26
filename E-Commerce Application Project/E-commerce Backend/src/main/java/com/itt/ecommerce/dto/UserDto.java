@@ -39,6 +39,10 @@ public class UserDto {
     public String getPassword() {
         return password;
     }
+    
+    public void setPassword(String hashedPassword) {
+        this.password = hashedPassword;
+    }
 
     @Override
     public String toString() {
