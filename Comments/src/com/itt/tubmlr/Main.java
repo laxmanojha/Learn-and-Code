@@ -34,6 +34,10 @@ public class Main {
         
         try {
         	apiHandler = new ApiHandler();
+        	/*In below function:
+        	 * first argument is url.
+        	 * second argument is query parameter num(i.e. number of posts)
+        	 * third argument is query parameter start(i.e. posts reading start point)*/
         	HttpResponse<String> response = apiHandler.sendGetRequest(blogName, range[1] - range[0], range[0]);
         	String jsonResponse = apiHandler.parseResponse(response);
         	
