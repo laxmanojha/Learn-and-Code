@@ -1,7 +1,7 @@
 package com.itt.tubmlr.infoextractor;
 
-import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONException;
 import com.itt.tubmlr.dto.BlogInfoDto;
 
 public class BlogInfoExtractor {
