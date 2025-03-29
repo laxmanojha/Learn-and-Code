@@ -50,3 +50,12 @@ Thumbs.db
 
 learn-code.iml
 out/
+
+E-Commerce Application Project/E-commerce Backend/.classpath
+E-Commerce Application Project/E-commerce Backend/.project
+E-Commerce Application Project/E-commerce Backend/.settings/
+E-Commerce Application Project/E-commerce Backend/src/main/webapp/META-INF/
+E-Commerce Application Project/E-commerce Console/.classpath
+E-Commerce Application Project/E-commerce Console/.project
+E-Commerce Application Project/E-commerce Console/.settings/
+E-Commerce Application Project/E-commerce Console/.gitignore
