@@ -3,6 +3,7 @@ package com.itt.tubmlr;
 import java.util.Scanner;
 import java.net.http.HttpResponse;
 import com.itt.tubmlr.util.ApiHandler;
+import com.itt.tubmlr.dto.ApiRequestParamsDto;
 import com.itt.tubmlr.dto.BlogInfoDto;
 import com.itt.tubmlr.util.UserInputHandler;
 import com.itt.tubmlr.infoextractor.PostExtractor;
@@ -35,11 +36,12 @@ public class Main {
         
         try {
         	apiHandler = new ApiHandler();
-        	/*In below function:
+        	/*In below constructor:
         	 * first argument is url.
         	 * second argument is query parameter num(i.e. number of posts)
         	 * third argument is query parameter start(i.e. posts reading start point)*/
-        	HttpResponse<String> response = apiHandler.sendGetRequest(blogName, range[1] - range[0], range[0]);
+        	ApiRequestParamsDto apiRequestParamsDto = new ApiRequestParamsDto(blogName, range[1] - range[0] + 1, range[0]);
+        	HttpResponse<String> response = apiHandler.sendGetRequest(apiRequestParamsDto);
         	String jsonResponse = apiHandler.parseResponse(response);
         	
         	blogInfoExtractor = new BlogInfoExtractor();

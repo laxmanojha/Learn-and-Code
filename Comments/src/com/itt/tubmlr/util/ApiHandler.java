@@ -5,12 +5,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import com.itt.tubmlr.dto.ApiRequestParamsDto;
+
 public class ApiHandler {
 
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
-    public HttpResponse<String> sendGetRequest(String blogName, int num, int start) throws Exception {
-        String urlString = "https://" + blogName + ".tumblr.com/api/read/json?type=photo&num=" + num + "&start=" + start;
+    public HttpResponse<String> sendGetRequest(ApiRequestParamsDto apiRequestParams) throws Exception {
+        String urlString = "https://" + apiRequestParams.getBlogName() + ".tumblr.com/api/read/json?type=photo&num=" + apiRequestParams.getNum() + "&start=" + apiRequestParams.getStart();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(urlString))
                 .GET()
