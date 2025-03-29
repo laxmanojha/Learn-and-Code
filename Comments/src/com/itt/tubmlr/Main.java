@@ -18,13 +18,14 @@ public class Main {
         UserInputHandler userInputHandler = null;
         String blogName = null;
         int[] range = {};
+        boolean askInputAgain = true;
         
-        while (true) {
+        while (askInputAgain) {
         	try {
         		userInputHandler = new UserInputHandler();
         		blogName = userInputHandler.getBlogName(scanner);
         		range = userInputHandler.getPostRange(scanner);
-        		break;
+        		askInputAgain = false;
         	} catch (IllegalArgumentException e) {
         		System.out.println(e.getMessage());
         	} catch (Exception e) {
