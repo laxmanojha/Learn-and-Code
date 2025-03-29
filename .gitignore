@@ -50,3 +50,9 @@ Thumbs.db
 
 learn-code.iml
 out/
+E-Commerce Application Project/
+/bin/
+Comments/.classpath
+Comments/.gitignore
+Comments/.project
+Comments/src/module-info.java
