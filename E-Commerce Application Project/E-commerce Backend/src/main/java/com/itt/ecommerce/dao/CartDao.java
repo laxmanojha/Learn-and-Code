@@ -10,11 +10,13 @@ import com.itt.ecommerce.dto.CartItemDto;
 import com.itt.ecommerce.util.DatabaseConfig;
 
 public class CartDao {
+	
+	private static Connection con = DatabaseConfig.getConnection();
+	
 	public static int getCartIDByUserID(int userId) {
         String query = "SELECT * FROM cart WHERE user_id = ?;";
 
-        try (Connection con = DatabaseConfig.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setInt(1, userId);
 
@@ -32,8 +34,7 @@ public class CartDao {
 	public static int getUserIDByCartID(int cartId) {
         String query = "SELECT * FROM cart WHERE cart_id = ?;";
 
-        try (Connection con = DatabaseConfig.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setInt(1, cartId);
 
@@ -51,8 +52,7 @@ public class CartDao {
 	public static boolean addUserIdToCart(int userId) {
         String query = "INSERT INTO cart(user_id) VALUES(?);";
 
-        try (Connection con = DatabaseConfig.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setInt(1, userId);
 
@@ -68,8 +68,7 @@ public class CartDao {
 	public static List<CartItemDto> getAllCartItems(int cartId) {
 		String query = "SELECT * FROM cart_items c INNER JOIN products p ON c.product_id = p.product_id WHERE c.cart_id = ?";
 
-		try (Connection con = DatabaseConfig.getInstance().getConnection();
-				PreparedStatement ps = con.prepareStatement(query)) {
+		try (PreparedStatement ps = con.prepareStatement(query)) {
 
 			ps.setInt(1, cartId);
 
@@ -89,8 +88,7 @@ public class CartDao {
 	public static boolean addItemToCart(int cartId, int productId, int quantity) {
 		String query = "INSERT INTO cart_items(cart_id, product_id, quantity) VALUES(?, ?, ?);";
 
-		try (Connection con = DatabaseConfig.getInstance().getConnection();
-				PreparedStatement ps = con.prepareStatement(query)) {
+		try (PreparedStatement ps = con.prepareStatement(query)) {
 
 			ps.setInt(1, cartId);
 			ps.setInt(2, productId);
@@ -108,8 +106,7 @@ public class CartDao {
 	public static boolean removeItemFromCart(int cartId, int productId) {
 		String query = "DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?;";
 
-		try (Connection con = DatabaseConfig.getInstance().getConnection();
-				PreparedStatement ps = con.prepareStatement(query)) {
+		try (PreparedStatement ps = con.prepareStatement(query)) {
 
 			ps.setInt(1, cartId);
 			ps.setInt(2, productId);
@@ -126,8 +123,7 @@ public class CartDao {
 	public static boolean updateItemInCart(int quantity, int cartId, int productId) {
 		String query = "UPDATE cart_items SET quantity = ? WHERE cart_id = ? AND product_id = ?;";
 
-		try (Connection con = DatabaseConfig.getInstance().getConnection();
-				PreparedStatement ps = con.prepareStatement(query)) {
+		try (PreparedStatement ps = con.prepareStatement(query)) {
 
 			ps.setInt(1, quantity);
 			ps.setInt(2, cartId);
@@ -145,8 +141,7 @@ public class CartDao {
 	public static boolean removeAllItemsFromCart(int cartId) {
 		String query = "DELETE FROM cart WHERE cart_id = ?;";
 
-		try (Connection con = DatabaseConfig.getInstance().getConnection();
-				PreparedStatement ps = con.prepareStatement(query)) {
+		try (PreparedStatement ps = con.prepareStatement(query)) {
 
 			ps.setInt(1, cartId);
 

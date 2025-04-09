@@ -8,11 +8,13 @@ import com.itt.ecommerce.dto.UserDto;
 import com.itt.ecommerce.util.DatabaseConfig;
 
 public class UserDao {
+	
+	private static Connection con = DatabaseConfig.getConnection();
+	
     public static boolean addUser(UserDto user) {
         String query = "INSERT INTO users (full_name, username, password) VALUES (?, ?, ?)";
 
-        try (Connection con = DatabaseConfig.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, user.getFullName());
             ps.setString(2, user.getUserName());
@@ -30,8 +32,7 @@ public class UserDao {
     public static UserDto getUserBasedOnUserCredentials(UserDto user) {
         String query = "SELECT * FROM users WHERE username = ?";
 
-        try (Connection con = DatabaseConfig.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, user.getUserName());
 
@@ -49,8 +50,7 @@ public class UserDao {
     public static UserDto getUserBasedOnUsername(String userName) {
         String query = "SELECT * FROM users WHERE username = ?;";
 
-        try (Connection con = DatabaseConfig.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, userName);
 
@@ -68,8 +68,7 @@ public class UserDao {
     public static int getUserIDByUsername(String userName) {
         String query = "SELECT * FROM users WHERE username = ?;";
 
-        try (Connection con = DatabaseConfig.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, userName);
 

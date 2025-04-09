@@ -11,11 +11,13 @@ import com.itt.ecommerce.dto.ProductDto;
 import com.itt.ecommerce.util.DatabaseConfig;
 
 public class ProductDao {
+	
+	private static Connection con = DatabaseConfig.getConnection();
+	
 	public static List<ProductDto> getAllProductsByCategoryId(int category_id) {
 		String query = "SELECT * FROM products WHERE category_id = ?";
 
-		try (Connection con = DatabaseConfig.getInstance().getConnection();
-				PreparedStatement ps = con.prepareStatement(query)) {
+		try (PreparedStatement ps = con.prepareStatement(query)) {
 
 			ps.setInt(1, category_id);
 
@@ -35,8 +37,7 @@ public class ProductDao {
 	public static ProductDto getProductById(int productId) {
 		String query = "SELECT * FROM products WHERE product_id = ?";
 
-		try (Connection con = DatabaseConfig.getInstance().getConnection();
-				PreparedStatement ps = con.prepareStatement(query)) {
+		try (PreparedStatement ps = con.prepareStatement(query)) {
 
 			ps.setInt(1, productId);
 
@@ -53,7 +54,7 @@ public class ProductDao {
 	
 	public static boolean updateProductStockQuantity(List<CartItemDto> cartItems) {
 
-        try (Connection con = DatabaseConfig.getInstance().getConnection()) {
+        try {
 
             con.setAutoCommit(false);
 

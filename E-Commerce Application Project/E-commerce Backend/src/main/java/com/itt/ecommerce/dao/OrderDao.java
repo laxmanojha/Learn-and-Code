@@ -14,11 +14,13 @@ import com.itt.ecommerce.dto.OrderHistoryDto;
 import com.itt.ecommerce.util.DatabaseConfig;
 
 public class OrderDao {
+	
+	private static Connection con = DatabaseConfig.getConnection();
+	
 	public static int getOrderIdByUserId(int userId) {
         String query = "SELECT * FROM orders o WHERE user_id = ? ORDER BY order_id DESC;";
 
-        try (Connection con = DatabaseConfig.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setInt(1, userId);
 
@@ -36,8 +38,7 @@ public class OrderDao {
 	public static boolean addOrderDetails(int userId, float totalPrice) {
 		String query = "INSERT INTO orders(user_id, total_price) VALUES(?, ?);";
 
-		try (Connection con = DatabaseConfig.getInstance().getConnection();
-				PreparedStatement ps = con.prepareStatement(query)) {
+		try (PreparedStatement ps = con.prepareStatement(query)) {
 
 			ps.setInt(1, userId);
 			ps.setFloat(2, totalPrice);
@@ -53,7 +54,7 @@ public class OrderDao {
 	
 	public static boolean addOrderItemDetails(int orderId, List<CartItemDto> cartItems) {
 
-		try (Connection con = DatabaseConfig.getInstance().getConnection()) {
+		try {
 
             con.setAutoCommit(false);
 
@@ -99,8 +100,7 @@ public class OrderDao {
         				"INNER JOIN categories c ON p.category_id = c.category_id " +
         				"WHERE o.user_id = ?;";
 
-        try (Connection con = DatabaseConfig.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
         	
         	ps.setInt(1, userId);
 
