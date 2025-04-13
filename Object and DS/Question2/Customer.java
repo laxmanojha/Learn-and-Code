@@ -22,7 +22,7 @@ public class Customer {
     public float makePayment(float payableAmount) throws Exception {
         float paymentReceived = 0;
 
-        if (myWallet.getTotalMoney() > payableAmount) {
+        if (myWallet.getTotalMoney() >= payableAmount) {
             myWallet.subtractMoney(payableAmount);
             paymentReceived = payableAmount;
         }
