@@ -79,7 +79,6 @@ public class HttpUtil {
     
     public static void processUserDetailsResponse(HttpResponse<String> response) {
         String responseBody = response.body();
-
         Gson gson = new Gson();
 
         try {

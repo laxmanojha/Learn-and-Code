@@ -17,7 +17,7 @@ import com.itt.ecommerce.util.HttpUtil;
 public class CartService {
 	private static final String BASE_URL = "http://localhost:8080/E-Commerce-Application";
 	private static final Gson gson = new Gson();
-    private static final Scanner sc = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
 	
 	public static void addToCart(String username, int categoryId, int productId, int quantity) throws IOException, InterruptedException {
 	    String url = BASE_URL + "/cart";
@@ -96,7 +96,6 @@ public class CartService {
 	}
 
 	private static int getUserChoiceCategoryIdWithBack() {
-	    Scanner scanner = new Scanner(System.in);
 	    int categoryId;
 	    
 	    while (true) {
@@ -117,8 +116,6 @@ public class CartService {
 	}
 
 	private static int getUserChoiceProductIdWithBack(List<ProductDto> allProducts) {
-	    Scanner scanner = new Scanner(System.in);
-
 	    while (true) {
 	        System.out.print("Enter product ID (or 0 to go back): ");
 	        String input = scanner.nextLine().trim();
@@ -138,8 +135,6 @@ public class CartService {
 	}
 
 	private static int getProductQuantityWithBack(int selectedProductId, List<ProductDto> allProducts) {
-	    Scanner scanner = new Scanner(System.in);
-	    
 	    ProductDto selectedProduct = allProducts.stream()
 	            .filter(p -> p.getProduct_id() == selectedProductId)
 	            .findFirst()
@@ -272,7 +267,7 @@ public class CartService {
 
 	private static void removeAllProducts(String username) throws IOException, InterruptedException {
 	    System.out.println("Are you sure you want to delete all products from the cart? (yes/no)");
-	    String confirm = sc.next();
+	    String confirm = scanner.next();
 
 	    if (confirm.equalsIgnoreCase("yes")) {
 	        CartService.removeAllProduct(username);
@@ -284,7 +279,7 @@ public class CartService {
 	private static int getValidIntegerInput() {
 	    while (true) {
 	        try {
-	            String input = sc.nextLine().trim();
+	            String input = scanner.nextLine().trim();
 	            return Integer.parseInt(input);
 	        } catch (NumberFormatException e) {
 	            System.out.print("Invalid input. Please enter a valid number: ");
