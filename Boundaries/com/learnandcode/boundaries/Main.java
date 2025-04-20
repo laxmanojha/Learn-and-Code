@@ -2,26 +2,15 @@ package com.learnandcode.boundaries;
 
 import java.io.IOException;
 import java.util.Scanner;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class Main {
 
     public static void main(String[] args) {
-        try (Scanner sc = new Scanner(System.in)) {
-			System.out.print("Please enter city name: ");
-			String cityName = sc.nextLine();
-			String url = "http://api.openweathermap.org/geo/1.0/direct?q="+ cityName +"&appid=1b1f64195680003a720629d3c36bab3a";
-		    String response = HttpUtil.sendGetRequest(url).body();
-		    JSONArray arr = new JSONArray(response);
-		    for (int i = 0; i < arr.length(); i++) {
-		        JSONObject obj = arr.getJSONObject(i);
-		        System.out.println("Name: " + obj.getString("name"));
-		        System.out.println("Country: " + obj.getString("country"));
-		        System.out.println("State: " + obj.getString("state"));
-		        System.out.println("Latitude: " + obj.getDouble("lat"));
-		        System.out.println("Longitude: " + obj.getDouble("lon"));
-		    }
+        try {
+			String cityName = getUserInput();
+			GeoLocationDto geoLocationDto = ApiClient.getGeoLocationData(cityName);
+			String requestedData = geoLocationDto.toString();
+			System.out.println(requestedData);
 		} catch (IOException e) {
 		    e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -29,5 +18,19 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+    }
+    
+    private static String getUserInput() {
+    	String cityName = null;
+    	try(Scanner sc = new Scanner(System.in)) {
+    		System.out.print("Please enter city name: ");
+			cityName = sc.nextLine();
+			if (cityName.contains(" ")) {
+				cityName = cityName.replace(' ', '-');
+			}
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	return cityName;
     }
 }
