@@ -9,8 +9,7 @@ public class ATM {
     private boolean serverConnected = true;
 
     public boolean checkServerConnection() {
-        // Randomly simulate server issue
-        serverConnected = new Random().nextInt(10) != 0; // 10% chance of failure
+        serverConnected = new Random().nextInt(10) != 0;
         return serverConnected;
     }
 
