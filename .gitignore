@@ -54,3 +54,6 @@ out/
 Comments/
 E-Commerce Application Project/
 .vscode/
+/bin/
+Boundaries/.classpath
+Boundaries/.project
