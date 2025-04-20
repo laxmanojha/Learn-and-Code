@@ -9,7 +9,7 @@ public class ATMSimulator {
             Account account = new Account("12345678", "1234", 10000);
 
             System.out.print("Enter PIN: ");
-            for (int i = 0; i < 3; i++) {
+            for (int index = 0; index < 3; index++) {
                 try {
                     String enteredPin = sc.nextLine();
                     if (account.validatePIN(enteredPin)) {
@@ -19,7 +19,7 @@ public class ATMSimulator {
                 } catch (InvalidPINException | CardBlockedException e) {
                     System.out.println(e.getMessage());
                     if (account.isCardBlocked()) return;
-                    if (i == 2) return;
+                    if (index == 2) return;
                     System.out.print("Try again: ");
                 }
             }
