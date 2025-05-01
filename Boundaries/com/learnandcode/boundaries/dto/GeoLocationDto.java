@@ -1,4 +1,4 @@
-package com.learnandcode.boundaries;
+package com.learnandcode.boundaries.dto;
 
 public class GeoLocationDto {
 	private String city;

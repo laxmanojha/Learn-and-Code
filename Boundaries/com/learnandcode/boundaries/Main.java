@@ -1,15 +1,21 @@
 package com.learnandcode.boundaries;
 
-import java.io.IOException;
 import java.util.Scanner;
+import java.io.IOException;
+import com.learnandcode.boundaries.util.ApiClient;
+import com.learnandcode.boundaries.dto.GeoLocationDto;
 
 public class Main {
 
     public static void main(String[] args) {
         try {
+        	String requestedData = "";
 			String cityName = getUserInput();
 			GeoLocationDto geoLocationDto = ApiClient.getGeoLocationData(cityName);
-			String requestedData = geoLocationDto.toString();
+			if (geoLocationDto != null)
+				requestedData = geoLocationDto.toString();
+			else
+				requestedData = "Entered city is not found!";
 			System.out.println(requestedData);
 		} catch (IOException e) {
 		    e.printStackTrace();

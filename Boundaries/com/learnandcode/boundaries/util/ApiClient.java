@@ -1,10 +1,11 @@
-package com.learnandcode.boundaries;
-
-import java.io.IOException;
-import java.net.http.HttpResponse;
+package com.learnandcode.boundaries.util;
 
 import org.json.JSONArray;
+import java.io.IOException;
 import org.json.JSONObject;
+import java.net.http.HttpResponse;
+import com.learnandcode.boundaries.dto.GeoLocationDto;
+import com.learnandcode.boundaries.constants.ApiConstants;
 
 public class ApiClient {
 	

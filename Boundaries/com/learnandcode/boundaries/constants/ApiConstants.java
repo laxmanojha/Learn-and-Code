@@ -1,4 +1,4 @@
-package com.learnandcode.boundaries;
+package com.learnandcode.boundaries.constants;
 
 public enum ApiConstants {
     BASE_URL("http://api.openweathermap.org/geo/1.0/direct"),
