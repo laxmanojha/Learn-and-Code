@@ -10,9 +10,9 @@ import com.itt.ecommerce.util.DatabaseConfig;
 
 public class CategoryDao {
 	
-	private static Connection con = DatabaseConfig.getConnection();
+	private Connection con = DatabaseConfig.getConnection();
 	
-	public static ArrayList<CategoryDto> getAllCategories() {
+	public ArrayList<CategoryDto> getAllCategories() {
         String query = "SELECT * FROM categories";
 
         try (PreparedStatement ps = con.prepareStatement(query)) {

@@ -5,13 +5,26 @@ import com.itt.ecommerce.dto.UserDto;
 import com.itt.ecommerce.util.Util;
 
 public class UserService {
-	public static String authenticateUser(UserDto user) {
+	
+	private UserDao userDao;
+	private Util util;
+	
+	public UserService() {
+		this(new UserDao(), new Util());
+	}
+	
+	public UserService(UserDao userDao, Util util) {
+        this.userDao = userDao;
+        this.util = util;
+    }
+	
+	public String authenticateUser(UserDto user) {
 		String message = null;
-		UserDto userStoredData = UserDao.getUserBasedOnUserCredentials(user);
+		UserDto userStoredData = userDao.getUserBasedOnUserCredentials(user);
 		if (userStoredData == null)
 			message = "0:User does not exists with username -> " + user.getUserName();
 		else {			
-			boolean passwordMatched = Util.verifyPassword(user.getPassword(), userStoredData.getPassword());
+			boolean passwordMatched = util.verifyPassword(user.getPassword(), userStoredData.getPassword());
 			
 			if (passwordMatched)
 				message = "1:User Authentication Successful.";
@@ -22,15 +35,15 @@ public class UserService {
 		return message;
 	}
 	
-	public static boolean registerUser(UserDto user) {
-		String hashedPassword = Util.hashPassword(user.getPassword()) ;
+	public boolean registerUser(UserDto user) {
+		String hashedPassword = util.hashPassword(user.getPassword()) ;
 		user.setPassword(hashedPassword);
-		boolean result = UserDao.addUser(user);
+		boolean result = userDao.addUser(user);
 		return result;
 	}
 	
-	public static UserDto getUserInfo(String username) {
-		UserDto userInfo = UserDao.getUserBasedOnUsername(username);
+	public UserDto getUserInfo(String username) {
+		UserDto userInfo = userDao.getUserBasedOnUsername(username);
 		if (userInfo != null)
 			return userInfo;
 		return null;

@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ProductCategory extends HttpServlet {
 
     private static final Gson gson = new Gson();
+    private ProductCategoryService productCategoryService = new ProductCategoryService();
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -47,7 +48,7 @@ public class ProductCategory extends HttpServlet {
     }
 
     private void fetchAllCategories(HttpServletResponse response, PrintWriter out) throws IOException {
-        List<CategoryDto> allCategories = ProductCategoryService.getAllCategories();
+        List<CategoryDto> allCategories = productCategoryService.getAllCategories();
         JsonObject jsonResponse = new JsonObject();
 
         if (allCategories != null && !allCategories.isEmpty()) {
@@ -66,7 +67,7 @@ public class ProductCategory extends HttpServlet {
     }
 
     private void fetchProductsByCategory(int categoryId, HttpServletResponse response, PrintWriter out) throws IOException {
-        List<ProductDto> products = ProductCategoryService.getProductsByCategory(categoryId);
+        List<ProductDto> products = productCategoryService.getProductsByCategory(categoryId);
         JsonObject jsonResponse = new JsonObject();
 
         if (products != null && !products.isEmpty()) {

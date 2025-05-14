@@ -7,13 +7,26 @@ import com.itt.ecommerce.dto.CategoryDto;
 import com.itt.ecommerce.dto.ProductDto;
 
 public class ProductCategoryService {
-	public static List<CategoryDto> getAllCategories() {
-		List<CategoryDto> allCategories = CategoryDao.getAllCategories();
+	
+	private CategoryDao categoryDao;
+	private ProductDao productDao;
+	
+	public ProductCategoryService() {
+		this(new CategoryDao(), new ProductDao());
+	}
+	
+	public ProductCategoryService(CategoryDao categoryDao, ProductDao productDao) {
+		this.categoryDao = categoryDao;
+		this.productDao = productDao;
+	}
+	
+	public List<CategoryDto> getAllCategories() {
+		List<CategoryDto> allCategories = categoryDao.getAllCategories();
 		return allCategories;
 	}
 	
-	public static List<ProductDto> getProductsByCategory(int category_id) {
-		List<ProductDto> allProducts = ProductDao.getAllProductsByCategoryId(category_id);
+	public List<ProductDto> getProductsByCategory(int category_id) {
+		List<ProductDto> allProducts = productDao.getAllProductsByCategoryId(category_id);
 		return allProducts;
 	}
 }

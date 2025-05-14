@@ -12,9 +12,9 @@ import com.itt.ecommerce.util.DatabaseConfig;
 
 public class ProductDao {
 	
-	private static Connection con = DatabaseConfig.getConnection();
+	private Connection con = DatabaseConfig.getConnection();
 	
-	public static List<ProductDto> getAllProductsByCategoryId(int category_id) {
+	public List<ProductDto> getAllProductsByCategoryId(int category_id) {
 		String query = "SELECT * FROM products WHERE category_id = ?";
 
 		try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -34,7 +34,7 @@ public class ProductDao {
 		return null;
 	}
 	
-	public static ProductDto getProductById(int productId) {
+	public ProductDto getProductById(int productId) {
 		String query = "SELECT * FROM products WHERE product_id = ?";
 
 		try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -52,7 +52,7 @@ public class ProductDao {
 		return null;
 	}
 	
-	public static boolean updateProductStockQuantity(List<CartItemDto> cartItems) {
+	public boolean updateProductStockQuantity(List<CartItemDto> cartItems) {
 
         try {
 

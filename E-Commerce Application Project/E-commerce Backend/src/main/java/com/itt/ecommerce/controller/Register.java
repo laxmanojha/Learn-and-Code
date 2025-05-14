@@ -15,6 +15,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/user/register")
 public class Register extends HttpServlet {
+	
+	private UserService userService = new UserService();
+	
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
@@ -26,7 +29,7 @@ public class Register extends HttpServlet {
         String password = request.getParameter("password");
 
         UserDto user = new UserDto(name, email, password); 
-        boolean isRegistered = UserService.registerUser(user);
+        boolean isRegistered = userService.registerUser(user);
 
         JsonObject jsonResponse = new JsonObject();
         if (isRegistered) {

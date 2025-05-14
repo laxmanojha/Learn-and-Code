@@ -20,6 +20,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/user")
 public class UserInfo extends HttpServlet {
+	
+	private UserService userService = new UserService();
+	
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
@@ -27,7 +30,7 @@ public class UserInfo extends HttpServlet {
         
         String username = request.getParameter("username");
 
-        UserDto userInfo = UserService.getUserInfo(username);
+        UserDto userInfo = userService.getUserInfo(username);
         JsonObject jsonResponse = new JsonObject();
         Gson gson = new Gson();
 

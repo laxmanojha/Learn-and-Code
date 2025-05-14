@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class Cart extends HttpServlet {
 
     private static final Gson gson = new Gson();
+    private CartService cartService = new CartService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -36,7 +37,7 @@ public class Cart extends HttpServlet {
             return;
         }
 
-        List<CartItemDto> allCartItems = CartService.fetchAllCartItems(username);
+        List<CartItemDto> allCartItems = cartService.fetchAllCartItems(username);
         JsonObject jsonResponse = new JsonObject();
 
         if (allCartItems != null && !allCartItems.isEmpty()) {
@@ -73,7 +74,7 @@ public class Cart extends HttpServlet {
             return;
         }
 
-        String result = CartService.addToCart(username, productId, quantity);
+        String result = cartService.addToCart(username, productId, quantity);
         int success = Integer.parseInt(result.split(":")[0]);
         String message = result.split(":")[1];
 
@@ -104,7 +105,7 @@ public class Cart extends HttpServlet {
         int productId = json.get("productId").getAsInt();
         int quantity = json.get("quantity").getAsInt();
 
-        String result = CartService.updateCart(username, productId, quantity);
+        String result = cartService.updateCart(username, productId, quantity);
         int success = Integer.parseInt(result.split(":")[0]);
         String message = result.split(":")[1];
 
@@ -137,7 +138,7 @@ public class Cart extends HttpServlet {
         JsonObject jsonResponse = new JsonObject();
 
         if (pathInfo == null || pathInfo.equals("/")) {
-            String result = CartService.removeAllProduct(username);
+            String result = cartService.removeAllProduct(username);
             int success = Integer.parseInt(result.split(":")[0]);
             String message = result.split(":")[1];
 
@@ -147,7 +148,7 @@ public class Cart extends HttpServlet {
         } else {
             try {
                 int productId = Integer.parseInt(pathInfo.substring(1));
-                String result = CartService.removeProduct(username, productId);
+                String result = cartService.removeProduct(username, productId);
                 int success = Integer.parseInt(result.split(":")[0]);
                 String message = result.split(":")[1];
 

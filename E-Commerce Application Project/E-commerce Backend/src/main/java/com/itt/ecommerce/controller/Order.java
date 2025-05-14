@@ -26,6 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class Order extends HttpServlet {
 	
 	private static final Gson gson = new Gson();
+	private OrderService orderService = new OrderService();
 
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
@@ -40,7 +41,7 @@ public class Order extends HttpServlet {
         }
     }
     
-    private static void completeOrder(PrintWriter out, HttpServletRequest request, HttpServletResponse response) 
+    private void completeOrder(PrintWriter out, HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
     	StringBuilder jsonBuffer = new StringBuilder();
     	List<CartItemDto> cartItems = null;
@@ -58,7 +59,7 @@ public class Order extends HttpServlet {
     		cartItems = cartDto.getCartItems();
     	}
     	
-    	String result = OrderService.completeOrder(cartItems);
+    	String result = orderService.completeOrder(cartItems);
     	int success = Integer.parseInt(result.split(":")[0]);
     	String message = result.split(":")[1];
     	
@@ -78,9 +79,9 @@ public class Order extends HttpServlet {
     	out.flush();
     }
     
-    private static void userOrderHistory(PrintWriter out, HttpServletRequest request, HttpServletResponse response) { 
+    private void userOrderHistory(PrintWriter out, HttpServletRequest request, HttpServletResponse response) { 
     	String username = request.getParameter("username");
-        List<OrderHistoryDto> orderHistory = OrderService.getOrderHistory(username);
+        List<OrderHistoryDto> orderHistory = orderService.getOrderHistory(username);
         JsonObject jsonResponse = new JsonObject();
 
         if (orderHistory != null && !orderHistory.isEmpty()) {

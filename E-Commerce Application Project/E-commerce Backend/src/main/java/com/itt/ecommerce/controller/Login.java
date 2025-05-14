@@ -15,6 +15,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/user/login")
 public class Login extends HttpServlet{
+	
+	private UserService userService = new UserService();
+	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
@@ -23,7 +26,7 @@ public class Login extends HttpServlet{
         String password = request.getParameter("password");
         UserDto user = new UserDto(username, password); 
         
-        String result = UserService.authenticateUser(user);
+        String result = userService.authenticateUser(user);
         int loginSuccess = Integer.parseInt(result.split(":")[0]);
         String message = result.split(":")[1];
         

@@ -9,9 +9,9 @@ import com.itt.ecommerce.util.DatabaseConfig;
 
 public class UserDao {
 	
-	private static Connection con = DatabaseConfig.getConnection();
+	private Connection con = DatabaseConfig.getConnection();
 	
-    public static boolean addUser(UserDto user) {
+    public boolean addUser(UserDto user) {
         String query = "INSERT INTO users (full_name, username, password) VALUES (?, ?, ?)";
 
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -29,7 +29,7 @@ public class UserDao {
         }
     }
     
-    public static UserDto getUserBasedOnUserCredentials(UserDto user) {
+    public UserDto getUserBasedOnUserCredentials(UserDto user) {
         String query = "SELECT * FROM users WHERE username = ?";
 
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -47,7 +47,7 @@ public class UserDao {
         return null;
     }
 
-    public static UserDto getUserBasedOnUsername(String userName) {
+    public UserDto getUserBasedOnUsername(String userName) {
         String query = "SELECT * FROM users WHERE username = ?;";
 
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -65,7 +65,7 @@ public class UserDao {
         return null;
     }
     
-    public static int getUserIDByUsername(String userName) {
+    public int getUserIDByUsername(String userName) {
         String query = "SELECT * FROM users WHERE username = ?;";
 
         try (PreparedStatement ps = con.prepareStatement(query)) {

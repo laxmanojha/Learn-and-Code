@@ -11,8 +11,24 @@ import com.itt.ecommerce.dto.OrderHistoryDto;
 
 public class OrderService {
 	
-	public static String completeOrder(List<CartItemDto> cartItems) {
-		if (cartItems == null)
+	private final OrderDao orderDao;
+    private final ProductDao productDao;
+    private final CartDao cartDao;
+    private final UserDao userDao;
+    
+    public OrderService() {
+    	this(new OrderDao(), new ProductDao(), new CartDao(), new UserDao());
+    }
+
+    public OrderService(OrderDao orderDao, ProductDao productDao, CartDao cartDao, UserDao userDao) {
+        this.orderDao = orderDao;
+        this.productDao = productDao;
+        this.cartDao = cartDao;
+        this.userDao = userDao;
+    }
+	
+	public String completeOrder(List<CartItemDto> cartItems) {
+		if (cartItems == null || cartItems.isEmpty())
 			return "0:No cart items received to place an order";
 		
 		int userId = getUserId(cartItems.get(0));
@@ -21,20 +37,20 @@ public class OrderService {
 		boolean allItemsOrdered = false;
 		String message = null;
 		
-		boolean orderCreated = OrderDao.addOrderDetails(userId, totalPrice);
+		boolean orderCreated = orderDao.addOrderDetails(userId, totalPrice);
 		
 		if (orderCreated)
-			orderId = OrderDao.getOrderIdByUserId(userId);
+			orderId = orderDao.getOrderIdByUserId(userId);
 		else
 			message = "0:Order creation failed.";
 		
 		if (orderId != -1)
-			allItemsOrdered = OrderDao.addOrderItemDetails(orderId, cartItems);
+			allItemsOrdered = orderDao.addOrderItemDetails(orderId, cartItems);
 		
 		if (allItemsOrdered) {
-			boolean stockQuantityUpdated = ProductDao.updateProductStockQuantity(cartItems);
-			int cartId = CartDao.getCartIDByUserID(userId);
-			boolean itemsDeletedFromCart = CartDao.removeAllItemsFromCart(cartId);
+			boolean stockQuantityUpdated = productDao.updateProductStockQuantity(cartItems);
+			int cartId = cartDao.getCartIDByUserID(userId);
+			boolean itemsDeletedFromCart = cartDao.removeAllItemsFromCart(cartId);
 			
 			if (stockQuantityUpdated && itemsDeletedFromCart)
 				message = "1:Item order completion successful.";
@@ -44,12 +60,12 @@ public class OrderService {
 		return message;
 	}
 
-	private static int getUserId(CartItemDto cartItem) {
+	private int getUserId(CartItemDto cartItem) {
 	    int cartId = cartItem.getCartId();
-	    return CartDao.getUserIDByCartID(cartId);
+	    return cartDao.getUserIDByCartID(cartId);
 	}
 	
-	private static float getTotalPrice(List<CartItemDto> cartItems) {
+	private float getTotalPrice(List<CartItemDto> cartItems) {
 	    float totalPrice = 0;
 	    for (CartItemDto cartItem : cartItems) {
 	        totalPrice += cartItem.getProductPrice() * cartItem.getQuantity();
@@ -57,8 +73,8 @@ public class OrderService {
 	    return totalPrice;
 	}
 
-	public static List<OrderHistoryDto> getOrderHistory(String username) {
-	    int userId = UserDao.getUserIDByUsername(username);
-	    return OrderDao.getOrderHistory(userId);
+	public List<OrderHistoryDto> getOrderHistory(String username) {
+	    int userId = userDao.getUserIDByUsername(username);
+	    return orderDao.getOrderHistory(userId);
 	}
 }

@@ -12,6 +12,7 @@ import com.itt.ecommerce.constants.StaticConfigurations;
 public class DatabaseConfig {
     private static Connection connection = null;
     private static final int MAKING_CONNECTION_LIMIT = 5;
+    private static StaticConfigurations staticConfigurations = new StaticConfigurations();
 
     private DatabaseConfig() {
         try {
@@ -22,7 +23,7 @@ public class DatabaseConfig {
     }
 
     public static Connection getConnection() {
-    	String applicationPropPath = StaticConfigurations.APPLICATION_PROP_PATH;
+    	String applicationPropPath = staticConfigurations.getPath();
     	Properties dbCredentials = new Properties();
     	try(InputStream input = DatabaseConfig.class.getResourceAsStream(applicationPropPath)) {
     		dbCredentials.load(input);

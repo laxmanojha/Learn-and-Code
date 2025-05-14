@@ -15,9 +15,9 @@ import com.itt.ecommerce.util.DatabaseConfig;
 
 public class OrderDao {
 	
-	private static Connection con = DatabaseConfig.getConnection();
+	private Connection con = DatabaseConfig.getConnection();
 	
-	public static int getOrderIdByUserId(int userId) {
+	public int getOrderIdByUserId(int userId) {
         String query = "SELECT * FROM orders o WHERE user_id = ? ORDER BY order_id DESC;";
 
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -35,7 +35,7 @@ public class OrderDao {
         return -1;
     }
 	
-	public static boolean addOrderDetails(int userId, float totalPrice) {
+	public boolean addOrderDetails(int userId, float totalPrice) {
 		String query = "INSERT INTO orders(user_id, total_price) VALUES(?, ?);";
 
 		try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -52,7 +52,7 @@ public class OrderDao {
 		return false;
 	}
 	
-	public static boolean addOrderItemDetails(int orderId, List<CartItemDto> cartItems) {
+	public boolean addOrderItemDetails(int orderId, List<CartItemDto> cartItems) {
 
 		try {
 
@@ -93,7 +93,7 @@ public class OrderDao {
 	    return false;
 	}
 	
-	public static List<OrderHistoryDto> getOrderHistory(int userId) {
+	public List<OrderHistoryDto> getOrderHistory(int userId) {
         String query = "SELECT *, oi.quantity*oi.price as quantities_total_price FROM orders o " + 
         				"INNER JOIN order_items oi ON o.order_id = oi.order_id " +
         				"INNER JOIN products p ON p.product_id = oi.product_id " +
