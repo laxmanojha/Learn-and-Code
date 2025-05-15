@@ -23,21 +23,37 @@ public class DatabaseConfig {
     }
 
     public static Connection getConnection() {
-    	String applicationPropPath = staticConfigurations.getPath();
-    	Properties dbCredentials = new Properties();
-    	try(InputStream input = DatabaseConfig.class.getResourceAsStream(applicationPropPath)) {
-    		dbCredentials.load(input);
-    		for(int index = 0; index < MAKING_CONNECTION_LIMIT; index++) {
-    			if (connection == null) {
-    				Class.forName((String) dbCredentials.get("className"));
-    				connection = DriverManager.getConnection((String) dbCredentials.get("url"), (String) dbCredentials.get("user"), (String) dbCredentials.get("mysqlPassword"));
-    			} else {
-					break;
-				}
-    		}
-    	} catch (SQLException | ClassNotFoundException | IOException e) {
-    		System.out.println(e.getMessage());
-    	}
-    	return connection;
+        if (connection != null) {
+            return connection;
+        }
+
+        String applicationPropPath = staticConfigurations.getPath();
+        Properties dbCredentials = new Properties();
+        try (InputStream input = DatabaseConfig.class.getResourceAsStream(applicationPropPath)) {
+            dbCredentials.load(input);
+            for (int index = 0; index < MAKING_CONNECTION_LIMIT; index++) {
+                if (connection == null) {
+                    Class.forName((String) dbCredentials.get("className"));
+                    connection = DriverManager.getConnection(
+                        (String) dbCredentials.get("url"), 
+                        (String) dbCredentials.get("user"), 
+                        (String) dbCredentials.get("mysqlPassword")
+                    );
+                } else {
+                    break;
+                }
+            }
+        } catch (SQLException | ClassNotFoundException | IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return connection;
+    }
+
+    public static void setConnection(Connection testConnection) {
+        connection = testConnection;
+    }
+
+    public static void resetConnection() {
+        connection = null;
     }
 }

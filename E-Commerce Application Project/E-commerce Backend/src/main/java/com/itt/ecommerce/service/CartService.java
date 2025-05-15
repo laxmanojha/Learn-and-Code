@@ -38,19 +38,19 @@ public class CartService {
 		
 		if (product.getStock_quantity() < quantity) {
 			message = "0:Quantity can not be more than available stock quantity";
-		}
-		
-		int cartId = getCartId(username);
-		if (cartId == -1) {
-			message = "0:Unable to create cart for " + username; 
-		}
-		
-		boolean itemAddedToCart = cartDao.addItemToCart(cartId, productId, quantity);
-		if (itemAddedToCart)
-			message = "1:" + product.getProduct_name() + " has been added to your cart successfully.";
-		else
-			message = "0:Failed in adding " + product.getProduct_name() + " to cart.";
-		
+		} else {
+			int cartId = getCartId(username);
+			if (cartId == -1) {
+				message = "0:Unable to create cart for " + username; 
+			} else {
+				boolean itemAddedToCart = cartDao.addItemToCart(cartId, productId, quantity);
+				if (itemAddedToCart)
+					message = "1:" + product.getProduct_name() + " has been added to your cart successfully.";
+				else
+					message = "0:Failed in adding " + product.getProduct_name() + " to cart.";			
+			}	
+		}		
+	
 		return message;
 	}
 	
@@ -93,7 +93,7 @@ public class CartService {
 		return message;
 	}
 	
-	private int getCartId(String username) {
+	public int getCartId(String username) {
 		int userId = userDao.getUserIDByUsername(username);
 		int cartId = cartDao.getCartIDByUserID(userId);
 		
@@ -104,5 +104,4 @@ public class CartService {
 		}
 		return cartId;
 	}
-	
 }
