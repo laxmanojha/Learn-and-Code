@@ -28,7 +28,7 @@ public class TestUserService {
     @Test
     public void testAuthenticateUser_PasswordMatched() {
         UserDto inputUser = new UserDto("laxman", "password123");
-        UserDto storedUser = new UserDto("laxman", "$2a$10$abcdefg");  // hashed dummy
+        UserDto storedUser = new UserDto("laxman", "$2a$10$abcdefg");
 
         UserDao mockDao = Mockito.mock(UserDao.class);
         Util mockUtil = Mockito.mock(Util.class);
