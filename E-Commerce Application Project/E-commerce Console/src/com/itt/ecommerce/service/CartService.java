@@ -192,7 +192,7 @@ public class CartService {
         return List.of();
     }
 	
-	private static void showCartItems(List<CartItemDto> allCartItems) {
+	public static void showCartItems(List<CartItemDto> allCartItems) {
 	    if (allCartItems == null || allCartItems.isEmpty()) {
 	        System.out.println("Your cart is empty.");
 	        return;
