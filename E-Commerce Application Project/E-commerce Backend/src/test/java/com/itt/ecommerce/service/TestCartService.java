@@ -2,13 +2,10 @@ package com.itt.ecommerce.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
 import java.util.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-
 import com.itt.ecommerce.dao.CartDao;
 import com.itt.ecommerce.dao.ProductDao;
 import com.itt.ecommerce.dao.UserDao;

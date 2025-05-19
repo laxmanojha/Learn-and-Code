@@ -3,11 +3,9 @@ package com.itt.ecommerce.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
 import com.itt.ecommerce.dao.UserDao;
 import com.itt.ecommerce.dto.UserDto;
 import com.itt.ecommerce.util.Util;
-
 
 public class TestUserService {
 	

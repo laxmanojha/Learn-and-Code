@@ -4,10 +4,8 @@ import com.itt.ecommerce.dto.CartItemDto;
 import com.itt.ecommerce.util.DatabaseConfig;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
-
 import java.sql.*;
 import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

@@ -5,14 +5,11 @@ import com.google.gson.JsonParser;
 import com.itt.ecommerce.dto.CartItemDto;
 import com.itt.ecommerce.service.CartService;
 import jakarta.servlet.http.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-
 import java.io.*;
 import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

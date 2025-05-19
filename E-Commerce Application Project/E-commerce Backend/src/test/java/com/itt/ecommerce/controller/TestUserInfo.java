@@ -4,16 +4,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.itt.ecommerce.dto.UserDto;
 import com.itt.ecommerce.service.UserService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-
 import java.io.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
