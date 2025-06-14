@@ -25,6 +25,11 @@ public class ExternalServerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (!isAdmin(request)) {
+            respondForbidden(response);
+            return;
+        }
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -35,7 +40,7 @@ public class ExternalServerServlet extends HttpServlet {
                 out.write(gson.toJson(servers));
                 response.setStatus(HttpServletResponse.SC_OK);
             } else if (pathInfo.equals("/details")) {
-            	List<ExternalServer> apiKeys = serverService.getAllServersWithApiKeys();
+                List<ExternalServer> apiKeys = serverService.getAllServersWithApiKeys();
                 out.write(gson.toJson(apiKeys));
                 response.setStatus(HttpServletResponse.SC_OK);
             } else {
@@ -47,6 +52,11 @@ public class ExternalServerServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (!isAdmin(request)) {
+            respondForbidden(response);
+            return;
+        }
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -84,6 +94,24 @@ public class ExternalServerServlet extends HttpServlet {
         }
     }
 
+
+    private boolean isAdmin(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute("user");
+        if (userObj instanceof backend.newsaggregation.model.User user) {
+            return user.getRoleId() == 1;
+        }
+        return false;
+    }
+
+    private void respondForbidden(HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        try (PrintWriter out = response.getWriter()) {
+            out.write(errorJson("Access denied: Admins only"));
+        }
+    }
+
     private String successJson(String message) {
         JsonObject json = new JsonObject();
         json.addProperty("success", true);
@@ -98,3 +126,4 @@ public class ExternalServerServlet extends HttpServlet {
         return json.toString();
     }
 }
+

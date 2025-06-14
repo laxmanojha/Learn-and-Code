@@ -25,7 +25,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User getUserByUsername(String username) {
         User user = null;
-        String sql = "SELECT * FROM users WHERE username = ?";
+        String sql = "SELECT * FROM user WHERE username = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -50,7 +50,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean saveUser(User user) {
-        String sql = "INSERT INTO users (username, password, email, role_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO user (username, password, email, role_id) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 

@@ -34,6 +34,10 @@ public class Auth extends HttpServlet {
             case "/signup":
                 handleSignup(request, response);
                 break;
+            case "/logout":
+                request.getSession().invalidate();
+                sendJsonResponse(response, true, "Logged out successfully.", HttpServletResponse.SC_OK);
+                break;
             default:
                 sendJsonResponse(response, false, "Endpoint not found", HttpServletResponse.SC_NOT_FOUND);
                 break;
@@ -49,16 +53,23 @@ public class Auth extends HttpServlet {
             return;
         }
 
-        User user = new User(username, password);
-        String result = userService.authenticateUser(user);
+        User loginUser = new User(username, password);
+        String result = userService.authenticateUser(loginUser);
         String[] resultParts = result.split(":", 2);
         int loginSuccess = Integer.parseInt(resultParts[0]);
         String message = resultParts[1];
 
-        boolean success = loginSuccess == 1;
-        int statusCode = success ? HttpServletResponse.SC_OK : HttpServletResponse.SC_BAD_REQUEST;
-        sendJsonResponse(response, success, message, statusCode);
+        if (loginSuccess == 1) {
+            User fullUser = userService.getUserByUsername(username);
+
+            request.getSession().setAttribute("user", fullUser);
+
+            sendJsonResponse(response, true, message, HttpServletResponse.SC_OK);
+        } else {
+            sendJsonResponse(response, false, message, HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
+
 
     private void handleSignup(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String username = request.getParameter("username");

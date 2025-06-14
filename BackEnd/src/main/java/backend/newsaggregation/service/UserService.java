@@ -50,7 +50,7 @@ public class UserService {
 		return result;
 	}
 	
-	public User getUserInfo(String username) {
+	public User getUserByUsername(String username) {
 		User userInfo = userDao.getUserByUsername(username);
 		if (userInfo != null)
 			return userInfo;
