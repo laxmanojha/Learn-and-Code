@@ -5,100 +5,116 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import backend.newsaggregation.dao.interfaces.NewsDao;
+import backend.newsaggregation.model.NewsArticle;
+import backend.newsaggregation.util.DatabaseConfig;
+
+import java.util.*;
+
 public class NewsDaoImpl implements NewsDao {
 
     private static NewsDaoImpl instance;
 
     private NewsDaoImpl() {}
 
-    public static NewsDaoImpl getInstance() {
+    public static synchronized NewsDaoImpl getInstance() {
         if (instance == null) {
             instance = new NewsDaoImpl();
         }
         return instance;
     }
 
-    @Override
-    public List<News> getNewsByDate(Date date) {
-        String sql = "SELECT * FROM news WHERE DATE(published_at) = ?";
-        return getNewsList(sql, new java.sql.Date(date.getTime()), null, null);
+    private NewsArticle mapRowToArticle(ResultSet rs) throws SQLException {
+        return new NewsArticle(
+            rs.getInt("id"),
+            rs.getString("title"),
+            rs.getString("description"),
+            rs.getString("source"),
+            rs.getString("url"),
+            rs.getInt("category_id"),
+            rs.getTimestamp("published_date")
+        );
+    }
+
+    private String baseQuery(String condition) {
+        return """
+            SELECT na.*, nac.news_category_id AS category_id
+            FROM news_article na
+            LEFT JOIN news_article_category nac ON na.id = nac.news_article_id
+            LEFT JOIN news_category nc ON nac.news_category_id = nc.id
+            """ + condition;
     }
 
     @Override
-    public List<News> getNewsByDateAndCategory(Date date, String category) {
-        String sql = "SELECT * FROM news WHERE DATE(published_at) = ? AND category = ?";
-        return getNewsList(sql, new java.sql.Date(date.getTime()), category, null);
+    public List<NewsArticle> getNewsByDate(Date date) {
+        String sql = baseQuery("WHERE DATE(na.published_date) = ?");
+        return getNewsList(sql, ps -> ps.setDate(1, new java.sql.Date(date.getTime())));
     }
 
     @Override
-    public List<News> getNewsByDateRange(Date startDate, Date endDate) {
-        String sql = "SELECT * FROM news WHERE DATE(published_at) BETWEEN ? AND ?";
-        return getNewsList(sql, null, null, new java.sql.Date[]{new java.sql.Date(startDate.getTime()), new java.sql.Date(endDate.getTime())});
+    public List<NewsArticle> getNewsByDateAndCategory(Date date, String category) {
+        String sql = baseQuery("WHERE DATE(na.published_date) = ? AND nc.category_type = ?");
+        return getNewsList(sql, ps -> {
+            ps.setDate(1, new java.sql.Date(date.getTime()));
+            ps.setString(2, category);
+        });
     }
 
     @Override
-    public List<News> getNewsByDateRangeAndCategory(Date startDate, Date endDate, String category) {
-        String sql = "SELECT * FROM news WHERE DATE(published_at) BETWEEN ? AND ? AND category = ?";
-        return getNewsList(sql, null, category, new java.sql.Date[]{new java.sql.Date(startDate.getTime()), new java.sql.Date(endDate.getTime())});
+    public List<NewsArticle> getNewsByDateRange(Date startDate, Date endDate) {
+        String sql = baseQuery("WHERE na.published_date BETWEEN ? AND ?");
+        return getNewsList(sql, ps -> {
+            ps.setDate(1, new java.sql.Date(startDate.getTime()));
+            ps.setDate(2, new java.sql.Date(endDate.getTime()));
+        });
     }
 
     @Override
-    public News getNewsById(int id) {
-        String sql = "SELECT * FROM news WHERE id = ?";
-        try (Connection conn = DBConnectionUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    public List<NewsArticle> getNewsByDateRangeAndCategory(Date startDate, Date endDate, String category) {
+        String sql = baseQuery("WHERE na.published_date BETWEEN ? AND ? AND nc.category_type = ?");
+        return getNewsList(sql, ps -> {
+            ps.setDate(1, new java.sql.Date(startDate.getTime()));
+            ps.setDate(2, new java.sql.Date(endDate.getTime()));
+            ps.setString(3, category);
+        });
+    }
 
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
+    @Override
+    public NewsArticle getNewsById(int id) {
+        String sql = baseQuery("WHERE na.id = ?");
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            if (rs.next()) {
-                return extractNewsFromResultSet(rs);
-            }
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() ? mapRowToArticle(rs) : null;
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
-    private List<News> getNewsList(String sql, java.sql.Date date, String category, java.sql.Date[] range) {
-        List<News> newsList = new ArrayList<>();
+    private List<NewsArticle> getNewsList(String sql, PreparedStatementSetter setter) {
+        List<NewsArticle> articles = new ArrayList<>();
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        try (Connection conn = DBConnectionUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            if (range != null && range.length == 2) {
-                stmt.setDate(1, range[0]);
-                stmt.setDate(2, range[1]);
-                if (category != null) stmt.setString(3, category);
-            } else {
-                stmt.setDate(1, date);
-                if (category != null) stmt.setString(2, category);
-            }
-
-            ResultSet rs = stmt.executeQuery();
+            setter.set(ps);
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                newsList.add(extractNewsFromResultSet(rs));
+                articles.add(mapRowToArticle(rs));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return newsList;
+        return articles;
     }
 
-    private News extractNewsFromResultSet(ResultSet rs) throws SQLException {
-        News news = new News();
-        news.setId(rs.getInt("id"));
-        news.setTitle(rs.getString("title"));
-        news.setDescription(rs.getString("description"));
-        news.setUrl(rs.getString("url"));
-        news.setSource(rs.getString("source"));
-        news.setCategory(rs.getString("category"));
-        news.setPublishedAt(rs.getTimestamp("published_at"));
-        news.setLikes(rs.getInt("likes"));
-        news.setDislikes(rs.getInt("dislikes"));
-        return news;
+    @FunctionalInterface
+    interface PreparedStatementSetter {
+        void set(PreparedStatement ps) throws SQLException;
     }
 }
+

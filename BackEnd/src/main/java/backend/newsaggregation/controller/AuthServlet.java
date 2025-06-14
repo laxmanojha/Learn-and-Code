@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import backend.newsaggregation.service.UserService;
 
 @WebServlet("/api/auth/*")
-public class Auth extends HttpServlet {
+public class AuthServlet extends HttpServlet {
 
     private final UserService userService = UserService.getInstance();
 
