@@ -1,21 +1,29 @@
 package backend.newsaggregation.service;
 
-import backend.newsaggregation.dao.impl.UserDaoImpl;
+import backend.newsaggregation.dao.interfaces.UserDao;
 import backend.newsaggregation.model.User;
 import backend.newsaggregation.util.Util;
 
 public class UserService {
 	
-	private UserDaoImpl userDao;
+	private static UserService instance;
+	private UserDao userDao;
 	private Util util;
 	
-	public UserService() {
-		this(UserDaoImpl.getInstance(), new Util());
+	private UserService() {
+		this(UserDao.getInstance(), Util.getInstance());
 	}
 	
-	public UserService(UserDaoImpl userDao, Util util) {
+	private UserService(UserDao userDao, Util util) {
         this.userDao = userDao;
         this.util = util;
+    }
+
+    public static UserService getInstance() {
+        if (instance == null) {
+            instance = new UserService();
+        }
+        return instance;
     }
 	
 	public String authenticateUser(User user) {
