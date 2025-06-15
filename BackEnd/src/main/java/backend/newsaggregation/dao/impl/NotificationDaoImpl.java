@@ -4,6 +4,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import backend.newsaggregation.dao.interfaces.NotificationDao;
+import backend.newsaggregation.model.NotificationPref;
+import backend.newsaggregation.util.DatabaseConfig;
+
 public class NotificationDaoImpl implements NotificationDao {
 
     private static NotificationDaoImpl instance;
@@ -18,23 +22,23 @@ public class NotificationDaoImpl implements NotificationDao {
     }
 
     @Override
-    public List<NotificationPreference> getPreferencesByUser(int userId) {
-        List<NotificationPreference> prefs = new ArrayList<>();
+    public List<NotificationPref> getPreferencesByUser(int userId) {
+        List<NotificationPref> prefs = new ArrayList<>();
 
-        String sql = "SELECT * FROM notification_preferences WHERE user_id = ?";
+        String sql = "SELECT * FROM notification_pref WHERE user_id = ?";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                NotificationPreference pref = new NotificationPreference();
+                NotificationPref pref = new NotificationPref();
                 pref.setUserId(rs.getInt("user_id"));
-                pref.setCategory(rs.getString("category"));
-                pref.setKeyword(rs.getString("keyword"));
-                pref.setEnabled(rs.getBoolean("enabled"));
+                pref.setKeywords(rs.getString("keywords"));
+                pref.setEnabled(rs.getBoolean("is_enabled"));
+                pref.setCreated_at(rs.getDate("created_at"));
                 prefs.add(pref);
             }
 
@@ -48,12 +52,12 @@ public class NotificationDaoImpl implements NotificationDao {
     @Override
     public boolean updateCategoryPreference(int userId, String category, boolean enabled) {
         String sql = """
-            INSERT INTO notification_preferences (user_id, category, enabled)
+            INSERT INTO notification_pref (user_id, keyword, enabled)
             VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE enabled = ?
         """;
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
@@ -73,11 +77,11 @@ public class NotificationDaoImpl implements NotificationDao {
     @Override
     public boolean updateKeywordPreference(int userId, String keyword, boolean enabled) {
         String sql = """
-            UPDATE notification_preferences SET enabled = ?
+            UPDATE notification_pref SET enabled = ?
             WHERE user_id = ? AND keyword = ?
         """;
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setBoolean(1, enabled);
@@ -96,11 +100,11 @@ public class NotificationDaoImpl implements NotificationDao {
     @Override
     public boolean addKeywordPreference(int userId, String keyword) {
         String sql = """
-            INSERT INTO notification_preferences (user_id, keyword, enabled)
+            INSERT INTO notification_pref (user_id, keyword, enabled)
             VALUES (?, ?, true)
         """;
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
@@ -122,10 +126,10 @@ public class NotificationDaoImpl implements NotificationDao {
     @Override
     public boolean removeKeywordPreference(int userId, String keyword) {
         String sql = """
-            DELETE FROM notification_preferences WHERE user_id = ? AND keyword = ?
+            DELETE FROM notification_pref WHERE user_id = ? AND keyword = ?
         """;
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);

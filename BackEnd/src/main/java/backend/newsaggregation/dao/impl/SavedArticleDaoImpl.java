@@ -23,12 +23,12 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
 
     @Override
     public boolean saveArticle(int userId, int newsId) {
-        String sql = "INSERT INTO saved_news(user_id, news_article_id) VALUES (?, ?)";
+        String sql = "INSERT INTO saved_news(news_id, user_id) VALUES (?, ?)";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, userId);
-            ps.setInt(2, newsId);
+            ps.setInt(1, newsId);
+            ps.setInt(2, userId);
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -39,7 +39,7 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
 
     @Override
     public boolean deleteSavedArticle(int userId, int newsId) {
-        String sql = "DELETE FROM saved_news WHERE user_id = ? AND news_article_id = ?";
+        String sql = "DELETE FROM saved_news WHERE user_id = ? AND news_id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -55,7 +55,7 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
 
     @Override
     public boolean isArticleSavedByUser(int userId, int newsId) {
-        String sql = "SELECT 1 FROM saved_news WHERE user_id = ? AND news_article_id = ?";
+        String sql = "SELECT 1 FROM saved_news WHERE user_id = ? AND news_id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -74,10 +74,10 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
         List<NewsArticle> savedArticles = new ArrayList<>();
 
         String sql = """
-            SELECT na.*, nac.news_category_id AS category_id
+            SELECT na.*, nac.category_id AS category_id
             FROM saved_news sn
-            JOIN news_article na ON sn.news_article_id = na.id
-            LEFT JOIN news_article_category nac ON na.id = nac.news_article_id
+            JOIN news_article na ON sn.news_id = na.id
+            LEFT JOIN news_article_category nac ON na.id = nac.news_id
             WHERE sn.user_id = ?
         """;
 
@@ -95,7 +95,7 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
                     rs.getString("source"),
                     rs.getString("url"),
                     rs.getInt("category_id"),
-                    rs.getTimestamp("published_date")
+                    rs.getTimestamp("published_at")
                 ));
             }
 

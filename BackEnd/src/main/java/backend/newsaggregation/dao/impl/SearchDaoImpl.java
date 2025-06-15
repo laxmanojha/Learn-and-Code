@@ -30,11 +30,11 @@ public class SearchDaoImpl implements SearchDao {
         NewsArticle article = new NewsArticle();
         article.setId(rs.getInt("id"));
         article.setTitle(rs.getString("title"));
-        article.setContent(rs.getString("content"));
+        article.setContent(rs.getString("description"));
         article.setSource(rs.getString("source"));
         article.setUrl(rs.getString("url"));
         article.setCategoryId(Integer.parseInt(rs.getString("category")));
-        article.setDatePublished(rs.getDate("published_date"));
+        article.setDatePublished(rs.getDate("published_at"));
 //        article.setLikes(rs.getInt("likes"));
 //        article.setDislikes(rs.getInt("dislikes"));
         return article;
@@ -42,48 +42,50 @@ public class SearchDaoImpl implements SearchDao {
 
     @Override
     public List<NewsArticle> searchArticles(String keyword) {
-        String sql = "SELECT * FROM news_articles WHERE title LIKE ? OR content LIKE ?";
+        String sql = "SELECT * FROM news_article WHERE title LIKE ? OR description LIKE ?";
         return search(sql, keyword, null, null);
     }
 
     @Override
     public List<NewsArticle> searchArticles(String keyword, LocalDate startDate, LocalDate endDate) {
         String sql = """
-            SELECT * FROM news_articles 
-            WHERE (title LIKE ? OR content LIKE ?)
-              AND published_date BETWEEN ? AND ?
+            SELECT * FROM news_article 
+            WHERE (title LIKE ? OR description LIKE ?)
+              AND published_at BETWEEN ? AND ?
         """;
         return search(sql, keyword, startDate, endDate);
     }
 
     @Override
     public List<NewsArticle> searchArticlesSorted(String keyword, String sortBy) {
-        String column = "likes";
+        String column = "like_count";
         if ("dislikes".equalsIgnoreCase(sortBy)) {
-            column = "dislikes";
+            column = "dislike_count";
         }
         String sql = """
-            SELECT * FROM news_articles 
-            WHERE title LIKE ? OR content LIKE ?
-            ORDER BY """ + column + " DESC";
+            SELECT * FROM news_article na
+            INNER JOIN news_article_stats nas
+            ON na.id = nas.news_id
+            WHERE title LIKE ? OR description LIKE ?
+            ORDER BY nas.""" + column + " DESC";
 
         return search(sql, keyword, null, null);
     }
     
     @Override
     public List<NewsArticle> searchArticles(String keyword, LocalDate startDate, LocalDate endDate, String sortBy) {
-        String sortColumn = "likes"; // default
+        String sortColumn = "like_count"; // default
         if ("dislikes".equalsIgnoreCase(sortBy)) {
-            sortColumn = "dislikes";
+            sortColumn = "dislike_count";
         }
 
         String sql = """
             SELECT na.*, nac.news_category_id AS category 
             FROM news_article na
-            JOIN news_article_stats nas ON na.id = nas.news_article_id
-            JOIN news_article_category nac ON na.id = nac.news_article_id
+            JOIN news_article_stats nas ON na.id = nas.news_id
+            JOIN news_article_category nac ON na.id = nac.news_id
             WHERE (na.title LIKE ? OR na.description LIKE ?)
-              AND na.published_date BETWEEN ? AND ?
+              AND na.published_at BETWEEN ? AND ?
             ORDER BY nas.""" + sortColumn + " DESC";
 
         return search(sql, keyword, startDate, endDate);

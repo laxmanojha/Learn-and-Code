@@ -1,7 +1,5 @@
 package backend.newsaggregation.service;
 
-import backend.newsaggregation.dao.impl.SavedArticleDaoImpl;
-import backend.newsaggregation.dao.interfaces.NewsDao;
 import backend.newsaggregation.dao.interfaces.SavedArticleDao;
 import backend.newsaggregation.model.NewsArticle;
 
