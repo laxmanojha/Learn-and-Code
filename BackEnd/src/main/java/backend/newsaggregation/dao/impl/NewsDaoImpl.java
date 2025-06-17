@@ -1,15 +1,16 @@
 package backend.newsaggregation.dao.impl;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import backend.newsaggregation.dao.interfaces.NewsDao;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.util.DatabaseConfig;
-
-import java.util.*;
 
 public class NewsDaoImpl implements NewsDao {
 
@@ -48,14 +49,14 @@ public class NewsDaoImpl implements NewsDao {
     @Override
     public List<NewsArticle> getNewsByDate(Date date) {
         String sql = baseQuery("WHERE DATE(na.published_at) = ?");
-        return getNewsList(sql, ps -> ps.setDate(1, new java.sql.Date(date.getTime())));
+        return getNewsList(sql, ps -> ps.setDate(1, new Date(date.getTime())));
     }
 
     @Override
     public List<NewsArticle> getNewsByDateAndCategory(Date date, String category) {
         String sql = baseQuery("WHERE DATE(na.published_at) = ? AND nc.category_type = ?");
         return getNewsList(sql, ps -> {
-            ps.setDate(1, new java.sql.Date(date.getTime()));
+            ps.setDate(1, new Date(date.getTime()));
             ps.setString(2, category);
         });
     }
@@ -64,8 +65,8 @@ public class NewsDaoImpl implements NewsDao {
     public List<NewsArticle> getNewsByDateRange(Date startDate, Date endDate) {
         String sql = baseQuery("WHERE na.published_at BETWEEN ? AND ?");
         return getNewsList(sql, ps -> {
-            ps.setDate(1, new java.sql.Date(startDate.getTime()));
-            ps.setDate(2, new java.sql.Date(endDate.getTime()));
+            ps.setDate(1, new Date(startDate.getTime()));
+            ps.setDate(2, new Date(endDate.getTime()));
         });
     }
 
@@ -73,8 +74,8 @@ public class NewsDaoImpl implements NewsDao {
     public List<NewsArticle> getNewsByDateRangeAndCategory(Date startDate, Date endDate, String category) {
         String sql = baseQuery("WHERE na.published_at BETWEEN ? AND ? AND nc.category_type = ?");
         return getNewsList(sql, ps -> {
-            ps.setDate(1, new java.sql.Date(startDate.getTime()));
-            ps.setDate(2, new java.sql.Date(endDate.getTime()));
+            ps.setDate(1, new Date(startDate.getTime()));
+            ps.setDate(2, new Date(endDate.getTime()));
             ps.setString(3, category);
         });
     }
@@ -117,4 +118,3 @@ public class NewsDaoImpl implements NewsDao {
         void set(PreparedStatement ps) throws SQLException;
     }
 }
-

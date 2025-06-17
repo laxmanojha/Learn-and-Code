@@ -1,5 +1,6 @@
 package backend.newsaggregation.model;
 
+import java.sql.Date;
 
 public class User {
     private int id;
@@ -7,6 +8,7 @@ public class User {
     private String password;
     private String email;
     private int roleId;
+    private Date notificationViewedAt;
     
     public User() {}
     
@@ -22,15 +24,16 @@ public class User {
     	this.roleId = roleId;
     }
     
-    public User(int id, String username, String password, String email, int roleId) {
+    public User(int id, String username, String password, String email, int roleId, Date notificationViewedAt) {
     	this.id = id;
     	this.username = username;
     	this.password = password;
     	this.email = email;
     	this.roleId = roleId;
+    	this.notificationViewedAt = notificationViewedAt;
     }
 
-    public int getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -48,6 +51,10 @@ public class User {
 
 	public int getRoleId() {
 		return roleId;
+	}
+	
+	public Date getNotificationViewedAt() {
+		return notificationViewedAt;
 	}
 
 	public void setId(int id) {
@@ -68,5 +75,9 @@ public class User {
 
 	public void setRoleId(int roleId) {
 		this.roleId = roleId;
+	}
+	
+	public void setNotificationViewedAt(Date notificationViewedAt) {
+		this.notificationViewedAt = notificationViewedAt;
 	}
 }

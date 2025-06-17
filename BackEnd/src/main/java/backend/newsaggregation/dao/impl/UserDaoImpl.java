@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
 
 import backend.newsaggregation.dao.interfaces.UserDao;
 import backend.newsaggregation.model.User;
@@ -38,7 +39,8 @@ public class UserDaoImpl implements UserDao {
                     rs.getString("username"),
                     rs.getString("password"),
                     rs.getString("email"),
-                    rs.getInt("role_id")
+                    rs.getInt("role_id"),
+                    rs.getDate("notification_viewed_at")
                 );
             }
 
@@ -58,6 +60,24 @@ public class UserDaoImpl implements UserDao {
             stmt.setString(2, user.getPassword());
             stmt.setString(3, user.getEmail());
             stmt.setInt(4, user.getRoleId());
+
+            int rowsInserted = stmt.executeUpdate();
+            return rowsInserted > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean saveNotificationViewedTime(User user, Date time) {
+    	String sql = "UPDATE user SET notification_viewed_at = ? WHERE username = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        	stmt.setDate(1, user.getNotificationViewedAt());
+            stmt.setString(2, user.getUsername());
 
             int rowsInserted = stmt.executeUpdate();
             return rowsInserted > 0;

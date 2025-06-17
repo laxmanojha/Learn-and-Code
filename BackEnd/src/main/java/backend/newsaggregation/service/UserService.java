@@ -28,7 +28,7 @@ public class UserService {
 	
 	public String authenticateUser(User user) {
 		String message = null;
-		User userStoredData = userDao.getUserByUsername(user.getUsername());
+		User userStoredData = getUserByUsername(user.getUsername());
 		if (userStoredData == null)
 			message = "0:User does not exists with username -> " + user.getUsername();
 		else {			

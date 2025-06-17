@@ -4,8 +4,10 @@ import java.sql.Date;
 
 public class NotificationPref {
     private int userId;
+    private int categoryId;
     private String keywords;
-    private boolean isEnabled;
+
+	private boolean isEnabled;
     private Date created_at;
     
     public NotificationPref() {}
@@ -34,6 +36,10 @@ public class NotificationPref {
 		return created_at;
 	}
 
+	public int getCategoryId() {
+		return categoryId;
+	}
+	
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
@@ -50,4 +56,7 @@ public class NotificationPref {
 		this.created_at = created_at;
 	}
     
+	public void setCategoryId(int categoryId) {
+		this.categoryId = categoryId;
+	}
 }

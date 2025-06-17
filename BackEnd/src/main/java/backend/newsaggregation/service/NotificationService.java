@@ -1,19 +1,19 @@
 package backend.newsaggregation.service;
 import backend.newsaggregation.model.NotificationPref;
-import backend.newsaggregation.dao.interfaces.NotificationDao;
+import backend.newsaggregation.dao.interfaces.NotificationCategoryPrefDao;
 
 import java.util.List;
 
 public class NotificationService {
 
     private static NotificationService instance;
-    private final NotificationDao notificationDao;
+    private final NotificationCategoryPrefDao notificationDao;
 
     private NotificationService() {
-		this(NotificationDao.getInstance());
+		this(NotificationCategoryPrefDao.getInstance());
 	}
 	
-	private NotificationService(NotificationDao notificationDao) {
+	private NotificationService(NotificationCategoryPrefDao notificationDao) {
         this.notificationDao = notificationDao;
     }
 

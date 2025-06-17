@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.service.NewsService;
+import backend.newsaggregation.service.SearchNewsService;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/api/search")
 public class SearchServlet extends HttpServlet {
-    private final NewsService newsService = NewsService.getInstance();
+    private final SearchNewsService newsService = SearchNewsService.getInstance();
     private final Gson gson = new Gson();
 
     @Override

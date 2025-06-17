@@ -17,6 +17,7 @@ public class ArticleSaveServlet extends HttpServlet {
     private final SavedArticleService savedArticleService = SavedArticleService.getInstance();
     private final Gson gson = new Gson();
 
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");

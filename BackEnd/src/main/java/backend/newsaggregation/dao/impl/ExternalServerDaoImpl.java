@@ -25,7 +25,7 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
     public List<ExternalServer> getAllServersBasicDetails() {
         List<ExternalServer> servers = new ArrayList<>();
         String sql = "SELECT e.id, e.api_name, s.type, e.last_accessed FROM external_server e INNER JOIN"
-        		+ " status s ON e.status_id = s.id";
+        		+ " server_status s ON e.server_status_id = s.id";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -72,7 +72,7 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
     @Override
     public ExternalServer getServerById(int id) {
         ExternalServer server = null;
-        String sql = "SELECT * FROM external_server e INNER JOIN status s ON e.status_id = s.id WHERE e.id = ?";
+        String sql = "SELECT * FROM external_server e INNER JOIN server_status s ON e.server_status_id = s.id WHERE e.id = ?";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

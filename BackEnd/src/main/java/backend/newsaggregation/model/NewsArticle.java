@@ -10,6 +10,8 @@ public class NewsArticle {
     private String url;
     private int categoryId;
     private Date datePublished;
+    private int likes;
+    private int disLikes;
 
     public NewsArticle() {}
 
@@ -50,6 +52,14 @@ public class NewsArticle {
 	public Date getDatePublished() {
 		return datePublished;
 	}
+	
+	public int getLikes() {
+		return this.likes;
+	}
+	
+	public int getDisLikes() {
+		return this.disLikes;
+	}
 
 	public void setId(int id) {
 		this.id = id;
@@ -77,5 +87,13 @@ public class NewsArticle {
 
 	public void setDatePublished(Date datePublished) {
 		this.datePublished = datePublished;
+	}
+	
+	public void setLikes(int likes) {
+		this.likes = likes;
+	}
+	
+	public void setDisLikes(int disLikes) {
+		this.disLikes = disLikes;
 	}
 }
