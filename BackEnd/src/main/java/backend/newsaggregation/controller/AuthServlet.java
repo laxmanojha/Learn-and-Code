@@ -80,7 +80,7 @@ public class AuthServlet extends HttpServlet {
             return;
         }
 
-        User user = new User(username, email, password, 2); // Default roleId = 2 i.e. registering as user
+        User user = new User(username, email, password, 2); //Default roleId = 2 i.e. registering as user
         String result = userService.registerUser(user);
         String[] resultParts = result.split(":", 2);
         int isRegistered = Integer.parseInt(resultParts[0]);
