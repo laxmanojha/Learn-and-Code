@@ -52,10 +52,10 @@ public class NotificationServlet extends HttpServlet {
 
         if ("/config".equals(path)) {
             Map<String, Object> body = parseJsonBody(req);
-            String category = (String) body.get("category");
+            int categoryId = Integer.parseInt((String) body.get("categoryId"));
             boolean enabled = Boolean.parseBoolean(body.get("enabled").toString());
 
-            boolean updated = notificationService.updateCategoryConfig(userId, category, enabled);
+            boolean updated = notificationService.updateCategoryConfig(userId, categoryId, enabled);
             writeSuccess(resp, updated, "Preference updated");
         } else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);

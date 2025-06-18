@@ -1,20 +1,23 @@
 package backend.newsaggregation.service;
 import backend.newsaggregation.model.NotificationPref;
 import backend.newsaggregation.dao.interfaces.NotificationCategoryPrefDao;
+import backend.newsaggregation.dao.interfaces.NotificationKeywordPrefDao;
 
 import java.util.List;
 
 public class NotificationService {
 
     private static NotificationService instance;
-    private final NotificationCategoryPrefDao notificationDao;
+    private final NotificationCategoryPrefDao notificationCategoryPrefDao;
+    private final NotificationKeywordPrefDao notificationKeywordPrefDao;
 
     private NotificationService() {
-		this(NotificationCategoryPrefDao.getInstance());
+		this(NotificationCategoryPrefDao.getInstance(), NotificationKeywordPrefDao.getInstance());
 	}
 	
-	private NotificationService(NotificationCategoryPrefDao notificationDao) {
-        this.notificationDao = notificationDao;
+	private NotificationService(NotificationCategoryPrefDao notificationCategoryPrefDao, NotificationKeywordPrefDao notificationKeywordPrefDao) {
+        this.notificationCategoryPrefDao = notificationCategoryPrefDao;
+        this.notificationKeywordPrefDao = notificationKeywordPrefDao;
     }
 
     public static NotificationService getInstance() {
@@ -25,28 +28,30 @@ public class NotificationService {
     }
 
     public List<NotificationPref> getAllPreferences(int userId) {
-        return notificationDao.getPreferencesByUser(userId);
+        return notificationCategoryPrefDao.getPreferencesByUser(userId);
     }
 
-    public boolean updateCategoryConfig(int userId, String category, boolean enabled) {
-        return notificationDao.updateCategoryPreference(userId, category, enabled);
+    public boolean updateCategoryConfig(int userId, int categoryId, boolean enabled) {
+        return notificationCategoryPrefDao.updateCategoryPreference(userId, categoryId, enabled);
     }
 
     public boolean addKeyword(int userId, String keyword) {
-        return notificationDao.addKeywordPreference(userId, keyword);
+    	List<String> keywords = null;
+        return notificationKeywordPrefDao.addKeywordPreference(userId, keywords);
     }
 
     public boolean removeKeyword(int userId, String keyword) {
-        return notificationDao.removeKeywordPreference(userId, keyword);
+        return notificationKeywordPrefDao.removeKeywordPreference(userId, keyword);
     }
 
     public List<NotificationPref> getKeywordPreferences(int userId) {
-        return notificationDao.getPreferencesByUser(userId).stream()
+        return notificationCategoryPrefDao.getPreferencesByUser(userId).stream()
                 .filter(p -> p.getKeywords() != null)
                 .toList();
     }
 
     public boolean updateKeywordStatus(int userId, String keyword, boolean enabled) {
-        return notificationDao.updateKeywordPreference(userId, keyword, enabled);
+    	List<String> keywords = null;
+        return notificationKeywordPrefDao.updateKeywordPreference(userId, keywords, enabled);
     }
 }

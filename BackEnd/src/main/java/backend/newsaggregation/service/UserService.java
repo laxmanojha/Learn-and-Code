@@ -1,6 +1,7 @@
 package backend.newsaggregation.service;
 
 import backend.newsaggregation.dao.interfaces.UserDao;
+import java.util.regex.Pattern;
 import backend.newsaggregation.model.User;
 import backend.newsaggregation.util.Util;
 
@@ -42,13 +43,50 @@ public class UserService {
 		
 		return message;
 	}
-	
-	public boolean registerUser(User user) {
-		String hashedPassword = util.hashPassword(user.getPassword()) ;
+
+	public String registerUser(User user) {
+	    String message;
+
+	    if (!isValidInput(user)) {
+	        message = "0:Invalid input. Username, email, and password must not be empty.";
+	        return message;
+	    }
+
+	    if (!isValidEmail(user.getEmail())) {
+	        message = "0:Invalid email format.";
+	        return message;
+	    }
+
+	    User existingUser = getUserByUsername(user.getUsername());
+	    if (existingUser != null) {
+	        message = "0:Username already exists.";
+	        return message;
+	    }
+
+	    String hashedPassword = util.hashPassword(user.getPassword()) ;
 		user.setPassword(hashedPassword);
-		boolean result = userDao.saveUser(user);
-		return result;
+		boolean isInserted = userDao.saveUser(user);
+	    message = isInserted ? "1:User registration successful."
+	                         : "0:User registration failed.";
+	    return message;
 	}
+	
+	private boolean isValidInput(User user) {
+	    if (user == null ||
+	        user.getUsername() == null || user.getUsername().trim().isEmpty() ||
+	        user.getEmail() == null || user.getEmail().trim().isEmpty() ||
+	        user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+
+	        return false;
+	    }
+	    return true;
+	}
+
+	private boolean isValidEmail(String email) {
+	    String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+	    return Pattern.matches(emailRegex, email);
+	}
+
 	
 	public User getUserByUsername(String username) {
 		User userInfo = userDao.getUserByUsername(username);

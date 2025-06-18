@@ -8,6 +8,7 @@ public class User {
     private String password;
     private String email;
     private int roleId;
+    private String roleType;
     private Date notificationViewedAt;
     
     public User() {}
@@ -24,12 +25,13 @@ public class User {
     	this.roleId = roleId;
     }
     
-    public User(int id, String username, String password, String email, int roleId, Date notificationViewedAt) {
+    public User(int id, String username, String password, String email, int roleId, String roleType, Date notificationViewedAt) {
     	this.id = id;
     	this.username = username;
     	this.password = password;
     	this.email = email;
     	this.roleId = roleId;
+    	this.roleType = roleType;
     	this.notificationViewedAt = notificationViewedAt;
     }
 
@@ -53,6 +55,10 @@ public class User {
 		return roleId;
 	}
 	
+	public String getRoleType() {
+		return roleType;
+	}
+
 	public Date getNotificationViewedAt() {
 		return notificationViewedAt;
 	}
@@ -75,6 +81,10 @@ public class User {
 
 	public void setRoleId(int roleId) {
 		this.roleId = roleId;
+	}
+
+	public void setRoleType(String roleType) {
+		this.roleType = roleType;
 	}
 	
 	public void setNotificationViewedAt(Date notificationViewedAt) {

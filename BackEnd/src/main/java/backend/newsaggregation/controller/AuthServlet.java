@@ -70,7 +70,6 @@ public class AuthServlet extends HttpServlet {
         }
     }
 
-
     private void handleSignup(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
@@ -82,12 +81,15 @@ public class AuthServlet extends HttpServlet {
         }
 
         User user = new User(username, email, password, 2); // Default roleId = 2 i.e. registering as user
-        boolean isRegistered = userService.registerUser(user);
+        String result = userService.registerUser(user);
+        String[] resultParts = result.split(":", 2);
+        int isRegistered = Integer.parseInt(resultParts[0]);
+        String message = resultParts[1];
 
-        if (isRegistered) {
-            sendJsonResponse(response, true, "User registered successfully.", HttpServletResponse.SC_OK);
+        if (isRegistered == 1) {
+            sendJsonResponse(response, true, message, HttpServletResponse.SC_OK);
         } else {
-            sendJsonResponse(response, false, "Registration failed. User may already exist.", HttpServletResponse.SC_BAD_REQUEST);
+            sendJsonResponse(response, false, message, HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
