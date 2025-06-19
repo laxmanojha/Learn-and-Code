@@ -12,6 +12,7 @@ public interface UserDao {
     }
 	
     User getUserByUsername(String username);
+    User getUserByEmail(String email);
     boolean saveUser(User user);
     boolean saveNotificationViewedTime(User user, Date time);
 }

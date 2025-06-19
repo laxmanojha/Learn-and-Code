@@ -8,6 +8,7 @@ public class ExternalServer {
     private String serverStatus;
     private Date lastAccessed;
     private String apiKey;
+    private String apiUrl;
 
     public ExternalServer() {}
 
@@ -39,6 +40,10 @@ public class ExternalServer {
 		return apiKey;
 	}
 
+	public String getApiUrl() {
+		return apiUrl;
+	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -57,5 +62,9 @@ public class ExternalServer {
 
 	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
+	}
+	
+	public void setApiUrl(String apiUrl) {
+		this.apiUrl = apiUrl;
 	}
 }

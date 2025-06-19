@@ -52,6 +52,7 @@ public class UserService {
 	        return message;
 	    }
 
+	    System.out.println("User email: "+ user.getEmail());
 	    if (!isValidEmail(user.getEmail())) {
 	        message = "0:Invalid email format.";
 	        return message;
@@ -61,6 +62,12 @@ public class UserService {
 	    if (existingUser != null) {
 	        message = "0:Username already exists.";
 	        return message;
+	    }
+	    
+	    existingUser = getUserByEmail(user.getEmail());
+	    if (existingUser != null) {
+	    	message = "0:Email already exists.";
+	    	return message;
 	    }
 
 	    String hashedPassword = util.hashPassword(user.getPassword()) ;
@@ -83,13 +90,21 @@ public class UserService {
 	}
 
 	private boolean isValidEmail(String email) {
-	    String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-	    return Pattern.matches(emailRegex, email);
+	    String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+	    boolean result = Pattern.matches(emailRegex, email);
+	    System.out.println("Validating email: " + email + " → " + result);
+	    return result;
 	}
-
 	
 	public User getUserByUsername(String username) {
 		User userInfo = userDao.getUserByUsername(username);
+		if (userInfo != null)
+			return userInfo;
+		return null;
+	}
+	
+	public User getUserByEmail(String email) {
+		User userInfo = userDao.getUserByEmail(email);
 		if (userInfo != null)
 			return userInfo;
 		return null;

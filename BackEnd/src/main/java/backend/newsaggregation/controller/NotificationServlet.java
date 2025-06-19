@@ -24,6 +24,10 @@ public class NotificationServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = req.getPathInfo();
         int userId = getUserIdFromSession(req);
+        if (userId == -1) {
+        	resp.getWriter().write(errorJson("User not found"));
+        	return;
+        }
         resp.setContentType("application/json");
 
         if (path == null || path.equals("/")) {
@@ -48,6 +52,10 @@ public class NotificationServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = req.getPathInfo();
         int userId = getUserIdFromSession(req);
+        if (userId == -1) {
+        	resp.getWriter().write(errorJson("User not found"));
+        	return;
+        }
         resp.setContentType("application/json");
 
         if ("/config".equals(path)) {
@@ -67,6 +75,10 @@ public class NotificationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = req.getPathInfo();
         int userId = getUserIdFromSession(req);
+        if (userId == -1) {
+        	resp.getWriter().write(errorJson("User not found"));
+        	return;
+        }
         resp.setContentType("application/json");
 
         if ("/keywords".equals(path)) {
@@ -123,10 +135,12 @@ public class NotificationServlet extends HttpServlet {
     }
 
     private int getUserIdFromSession(HttpServletRequest req) {
-        HttpSession session = req.getSession(false);
-        if (session != null && session.getAttribute("userId") != null) {
-            return (int) session.getAttribute("userId");
+    	Object userObj = req.getSession().getAttribute("user");
+    	int userId = -1;
+        if (userObj instanceof backend.newsaggregation.model.User user) {
+            userId = user.getRoleId();
+            System.out.println("User id: " + userId);
         }
-        return 1; // fallback/mock for testing
+        return userId;
     }
 }

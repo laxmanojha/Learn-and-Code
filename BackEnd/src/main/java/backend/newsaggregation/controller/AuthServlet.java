@@ -1,8 +1,14 @@
 package backend.newsaggregation.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import backend.newsaggregation.model.User;
@@ -45,8 +51,23 @@ public class AuthServlet extends HttpServlet {
     }
 
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        StringBuilder jsonBuffer = new StringBuilder();
+    	String username = null;
+    	String password = null;
+    	String line;
+    	
+    	try (BufferedReader reader = request.getReader()) {
+    		while ((line = reader.readLine()) != null) {
+    			jsonBuffer.append(line);
+    		}
+    	}
+    	
+    	ObjectMapper objectMapper = new ObjectMapper();
+    	if (!jsonBuffer.isEmpty()) {
+    		User user = objectMapper.readValue(jsonBuffer.toString(), User.class);
+    		username = user.getUsername();
+    		password = user.getPassword();
+    	}
 
         if (username == null || password == null) {
             sendJsonResponse(response, false, "Missing credentials", HttpServletResponse.SC_BAD_REQUEST);
@@ -54,6 +75,8 @@ public class AuthServlet extends HttpServlet {
         }
 
         User loginUser = new User(username, password);
+        System.out.println("Reached in Auth Servlet.");
+        System.out.println("username " + username + "password " + password);
         String result = userService.authenticateUser(loginUser);
         String[] resultParts = result.split(":", 2);
         int loginSuccess = Integer.parseInt(resultParts[0]);
@@ -63,24 +86,44 @@ public class AuthServlet extends HttpServlet {
             User fullUser = userService.getUserByUsername(username);
 
             request.getSession().setAttribute("user", fullUser);
+            
+            System.out.println("session object: " + request.getSession().getAttribute("user"));
 
-            sendJsonResponse(response, true, message, HttpServletResponse.SC_OK);
+            sendJsonResponse(response, true, message, HttpServletResponse.SC_OK, fullUser);
         } else {
             sendJsonResponse(response, false, message, HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
     private void handleSignup(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String email = request.getParameter("email");
+    	StringBuilder jsonBuffer = new StringBuilder();
+    	String username = null;
+    	String password = null;
+    	String email = null;
+    	String line;
+    	
+    	try (BufferedReader reader = request.getReader()) {
+    		while ((line = reader.readLine()) != null) {
+    			jsonBuffer.append(line);
+    		}
+    	}
+    	
+    	ObjectMapper objectMapper = new ObjectMapper();
+    	if (!jsonBuffer.isEmpty()) {
+    		User user = objectMapper.readValue(jsonBuffer.toString(), User.class);
+    		username = user.getUsername();
+    		password = user.getPassword();
+    		email = user.getEmail();
+    	}
+    	
+    	System.out.println(username +" " + password + " " + email);
 
         if (username == null || password == null || email == null) {
             sendJsonResponse(response, false, "Missing signup information", HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        User user = new User(username, email, password, 2); //Default roleId = 2 i.e. registering as user
+        User user = new User(username, password, email, 2); //Default roleId = 2 i.e. registering as user
         String result = userService.registerUser(user);
         String[] resultParts = result.split(":", 2);
         int isRegistered = Integer.parseInt(resultParts[0]);
@@ -104,5 +147,21 @@ public class AuthServlet extends HttpServlet {
             out.write(json.toString());
             out.flush();
         }
+    }
+    
+    private void sendJsonResponse(HttpServletResponse response, boolean success, String message, int statusCode, User user) throws IOException {
+    	JsonObject json = new JsonObject();
+    	Gson gson = new Gson();
+    	json.addProperty("success", success);
+    	json.addProperty("message", message);
+    	JsonElement userJson = gson.toJsonTree(user);
+        json.add("user", userJson);
+    	
+    	response.setStatus(statusCode);
+    	
+    	try (PrintWriter out = response.getWriter()) {
+    		out.write(json.toString());
+    		out.flush();
+    	}
     }
 }

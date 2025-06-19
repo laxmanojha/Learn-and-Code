@@ -36,12 +36,10 @@ public class NewsServlet extends HttpServlet {
 
         try {
             if (path == null || path.equals("/today")) {
-                // GET /api/news/today
                 List<NewsArticle> articles = newsService.getTodayHeadlines();
                 out.write(gson.toJson(articles));
 
             } else if (path.equals("/date-range")) {
-                // GET /api/news/date-range?start=...&end=...&type=...
                 String start = request.getParameter("start");
                 String end = request.getParameter("end");
                 String type = request.getParameter("type");
@@ -56,7 +54,6 @@ public class NewsServlet extends HttpServlet {
                 out.write(gson.toJson(articles));
 
             } else if (path.equals("/saved")) {
-                // GET /api/news/saved
                 HttpSession session = request.getSession(false);
                 if (session == null || session.getAttribute("userId") == null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -69,7 +66,6 @@ public class NewsServlet extends HttpServlet {
                 out.write(gson.toJson(articles));
 
             } else if (path.equals("/search")) {
-                // GET /api/news/search?query=...&start=...&end=...&sort=...
                 String query = request.getParameter("query");
                 String start = request.getParameter("start");
                 String end = request.getParameter("end");

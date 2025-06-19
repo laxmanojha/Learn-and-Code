@@ -26,10 +26,10 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User getUserByUsername(String username) {
         User user = null;
-        String sql = "SELECT * FROM user WHERE username = ? INNER JOIN user_role ON user.role_id = user_role.id";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        String sql = "SELECT * FROM user INNER JOIN user_role ON user.role_id = user_role.id WHERE username = ? ";
+        try {
+        	Connection conn = DatabaseConfig.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
 
@@ -50,12 +50,41 @@ public class UserDaoImpl implements UserDao {
         }
         return user;
     }
+    
+    @Override
+    public User getUserByEmail(String email) {
+    	User user = null;
+    	String sql = "SELECT * FROM user INNER JOIN user_role ON user.role_id = user_role.id WHERE email = ? ";
+    	try {
+    		Connection conn = DatabaseConfig.getConnection();
+    		PreparedStatement stmt = conn.prepareStatement(sql);
+    		stmt.setString(1, email);
+    		ResultSet rs = stmt.executeQuery();
+    		
+    		if (rs.next()) {
+    			user = new User(
+    					rs.getInt("id"),
+    					rs.getString("username"),
+    					rs.getString("password"),
+    					rs.getString("email"),
+    					rs.getInt("role_id"),
+    					rs.getString("type"),
+    					rs.getDate("notification_viewed_at")
+    					);
+    		}
+    		
+    	} catch (SQLException e) {
+    		e.printStackTrace();
+    	}
+    	return user;
+    }
 
     @Override
     public boolean saveUser(User user) {
         String sql = "INSERT INTO user (username, password, email, role_id) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+        	Connection conn = DatabaseConfig.getConnection();
+        	PreparedStatement stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getPassword());

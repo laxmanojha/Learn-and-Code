@@ -1,6 +1,7 @@
 package backend.newsaggregation.util;
 
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -29,8 +30,12 @@ public class DatabaseConfig {
         }
 
         String applicationPropPath = staticConfigurations.getPath();
+        System.out.println("applicationPropPath: "+ applicationPropPath);
         Properties dbCredentials = new Properties();
         try (InputStream input = DatabaseConfig.class.getResourceAsStream(applicationPropPath)) {
+        	if (input == null) {
+        	    throw new FileNotFoundException("Application.properties not found in classpath.");
+        	}
             dbCredentials.load(input);
             for (int index = 0; index < MAKING_CONNECTION_LIMIT; index++) {
                 if (connection == null) {

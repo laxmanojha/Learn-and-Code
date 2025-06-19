@@ -94,7 +94,6 @@ public class ExternalServerServlet extends HttpServlet {
         }
     }
 
-
     private boolean isAdmin(HttpServletRequest request) {
         Object userObj = request.getSession().getAttribute("user");
         if (userObj instanceof backend.newsaggregation.model.User user) {
@@ -126,4 +125,3 @@ public class ExternalServerServlet extends HttpServlet {
         return json.toString();
     }
 }
-

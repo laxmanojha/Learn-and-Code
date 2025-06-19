@@ -24,17 +24,17 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
     @Override
     public List<ExternalServer> getAllServersBasicDetails() {
         List<ExternalServer> servers = new ArrayList<>();
-        String sql = "SELECT e.id, e.api_name, s.type, e.last_accessed FROM external_server e INNER JOIN"
+        String sql = "SELECT e.id, e.server_name, s.type, e.last_accessed FROM external_server e INNER JOIN"
         		+ " server_status s ON e.server_status_id = s.id";
 
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
+        try {
+        	Connection conn = DatabaseConfig.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 ExternalServer server = new ExternalServer();
                 server.setId(rs.getInt("e.id"));
-                server.setServerName(rs.getString("e.api_name"));
+                server.setServerName(rs.getString("e.server_name"));
                 server.setServerStatus(rs.getString("s.type"));
                 server.setLastAccessed(rs.getTimestamp("e.last_accessed"));
                 servers.add(server);
@@ -49,16 +49,16 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
     @Override
     public List<ExternalServer> getAllServersWithApiKeys() {
         List<ExternalServer> servers = new ArrayList<>();
-        String sql = "SELECT id, api_name, api_key FROM external_server";
+        String sql = "SELECT id, server_name, api_key FROM external_server";
 
-        try (Connection conn = DatabaseConfig.getConnection();
+        try {
+        	 Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
+             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 ExternalServer server = new ExternalServer();
                 server.setId(rs.getInt("id"));
-                server.setServerName(rs.getString("api_name"));
+                server.setServerName(rs.getString("server_name"));
                 server.setApiKey(rs.getString("api_key"));
                 servers.add(server);
             }
@@ -74,16 +74,16 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
         ExternalServer server = null;
         String sql = "SELECT * FROM external_server e INNER JOIN server_status s ON e.server_status_id = s.id WHERE e.id = ?";
 
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        try {
+        	Connection conn = DatabaseConfig.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 server = new ExternalServer();
                 server.setId(rs.getInt("e.id"));
-                server.setServerName(rs.getString("e.api_name"));
+                server.setServerName(rs.getString("e.server_name"));
                 server.setServerStatus(rs.getString("s.type"));
                 server.setLastAccessed(rs.getTimestamp("e.last_accessed"));
                 server.setApiKey(rs.getString("e.api_key"));
@@ -99,9 +99,9 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
     @Override
     public boolean updateApiKey(int id, String newApiKey) {
         String sql = "UPDATE external_server SET api_key = ? WHERE id = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        try {
+        	Connection conn = DatabaseConfig.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, newApiKey);
             stmt.setInt(2, id);
 
