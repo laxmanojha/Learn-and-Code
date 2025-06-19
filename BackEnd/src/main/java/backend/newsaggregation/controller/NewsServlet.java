@@ -1,13 +1,17 @@
 package backend.newsaggregation.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
+import backend.newsaggregation.service.CategoryService;
 import backend.newsaggregation.service.NewsService;
 import backend.newsaggregation.service.SavedArticleService;
 import backend.newsaggregation.service.SearchNewsService;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
@@ -15,7 +19,9 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 
+import backend.newsaggregation.model.Category;
 import backend.newsaggregation.model.NewsArticle;
+import backend.newsaggregation.model.User;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
@@ -24,6 +30,7 @@ public class NewsServlet extends HttpServlet {
     private final NewsService newsService = NewsService.getInstance();
     private final SavedArticleService savedArticleService = SavedArticleService.getInstance();
     private final SearchNewsService searchNewsService = SearchNewsService.getInstance();
+    private final CategoryService categoryService = CategoryService.getInstance();
     private final Gson gson = new Gson();
 
     @Override
@@ -55,15 +62,17 @@ public class NewsServlet extends HttpServlet {
 
             } else if (path.equals("/saved")) {
                 HttpSession session = request.getSession(false);
-                if (session == null || session.getAttribute("userId") == null) {
+                if (session == null || session.getAttribute("user") == null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     out.write(errorJson("Login required"));
                     return;
                 }
 
-                int userId = (int) session.getAttribute("userId");
-                List<NewsArticle> articles = savedArticleService.getSavedArticlesByUser(userId);
-                out.write(gson.toJson(articles));
+                Object userObj = session.getAttribute("user");
+                if (userObj instanceof backend.newsaggregation.model.User user) {
+                	List<NewsArticle> articles = savedArticleService.getSavedArticlesByUser(user.getId());
+                	out.write(gson.toJson(articles));
+                }
 
             } else if (path.equals("/search")) {
                 String query = request.getParameter("query");
@@ -105,18 +114,57 @@ public class NewsServlet extends HttpServlet {
                 int articleId = Integer.parseInt(parts[1]);
 
                 HttpSession session = request.getSession(false);
-                if (session == null || session.getAttribute("userId") == null) {
+                if (session == null || session.getAttribute("user") == null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     out.write(errorJson("Login required"));
                     return;
                 }
 
-                int userId = (int) session.getAttribute("userId");
+                Object userObj = request.getSession().getAttribute("user");
+                int userId = -1;
+                if (userObj instanceof backend.newsaggregation.model.User user) {
+                    userId = ((backend.newsaggregation.model.User) userObj).getId();
+                }
                 boolean saved = savedArticleService.saveArticle(userId, articleId);
 
                 JsonObject result = new JsonObject();
                 result.addProperty("success", saved);
                 result.addProperty("message", saved ? "Article saved." : "Could not save article.");
+                out.write(result.toString());
+            } else if (parts.length == 2 && parts[1].equals("category")) {
+            	if (!isAdmin(request)) {
+                    respondForbidden(response);
+                    return;
+                }
+            	StringBuilder jsonBuffer = new StringBuilder();
+            	String categoryName = null;
+            	String line;
+            	
+            	try (BufferedReader reader = request.getReader()) {
+            		while ((line = reader.readLine()) != null) {
+            			jsonBuffer.append(line);
+            		}
+            	}
+            	
+            	ObjectMapper objectMapper = new ObjectMapper();
+            	if (!jsonBuffer.isEmpty()) {
+            		Category category = objectMapper.readValue(jsonBuffer.toString(), Category.class);
+            		categoryName = category.getName();
+            	}
+
+                HttpSession session = request.getSession(false);
+                User user = (User) session.getAttribute("user");
+                if (session == null || user == null) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    out.write(errorJson("Login required"));
+                    return;
+                }
+
+                boolean saved = categoryService.addCategory(categoryName);
+
+                JsonObject result = new JsonObject();
+                result.addProperty("success", saved);
+                result.addProperty("message", saved ? "Category saved." : "Could not save category.");
                 out.write(result.toString());
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -140,13 +188,17 @@ public class NewsServlet extends HttpServlet {
         try {
             if (path != null && path.startsWith("/saved/")) {
                 HttpSession session = request.getSession(false);
-                if (session == null || session.getAttribute("userId") == null) {
+                if (session == null || session.getAttribute("user") == null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     out.write(errorJson("Login required"));
                     return;
                 }
 
-                int userId = (int) session.getAttribute("userId");
+                int userId = -1;
+                Object userObj = request.getSession().getAttribute("user");
+                if (userObj instanceof backend.newsaggregation.model.User user) {
+                    userId = ((backend.newsaggregation.model.User) userObj).getId();
+                }
                 int articleId = Integer.parseInt(path.substring("/saved/".length()));
 
                 boolean deleted = savedArticleService.deleteSavedArticle(userId, articleId);
@@ -170,5 +222,22 @@ public class NewsServlet extends HttpServlet {
         json.addProperty("success", false);
         json.addProperty("message", msg);
         return json.toString();
+    }
+    
+    private boolean isAdmin(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute("user");
+        if (userObj instanceof backend.newsaggregation.model.User user) {
+            return user.getRoleId() == 1;
+        }
+        return false;
+    }
+
+    private void respondForbidden(HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        try (PrintWriter out = response.getWriter()) {
+            out.write(errorJson("Access denied: Admins only"));
+        }
     }
 }

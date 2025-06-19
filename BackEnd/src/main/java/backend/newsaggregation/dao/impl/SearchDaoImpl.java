@@ -16,12 +16,14 @@ import backend.newsaggregation.util.DatabaseConfig;
 public class SearchDaoImpl implements SearchDao {
 
     private static SearchDaoImpl instance;
+    private static Connection conn;
 
     private SearchDaoImpl() {}
 
     public static SearchDaoImpl getInstance() {
         if (instance == null) {
             instance = new SearchDaoImpl();
+            conn  = DatabaseConfig.getConnection();
         }
         return instance;
     }
@@ -30,11 +32,10 @@ public class SearchDaoImpl implements SearchDao {
     	NewsArticle article = new NewsArticle();
     	article.setId(rs.getInt("id"));
     	article.setTitle(rs.getString("title"));
-    	article.setContent(rs.getString("description"));
+    	article.setSnippet(rs.getString("description"));
     	article.setSource(rs.getString("source"));
     	article.setUrl(rs.getString("url"));
-    	article.setCategoryId(Integer.parseInt(rs.getString("category")));
-    	article.setDatePublished(rs.getDate("published_at"));
+    	article.setPublishedAt(rs.getDate("published_at"));
     	return article;
     }
 
@@ -42,13 +43,10 @@ public class SearchDaoImpl implements SearchDao {
         NewsArticle article = new NewsArticle();
         article.setId(rs.getInt("id"));
         article.setTitle(rs.getString("title"));
-        article.setContent(rs.getString("description"));
+        article.setSnippet(rs.getString("description"));
         article.setSource(rs.getString("source"));
         article.setUrl(rs.getString("url"));
-        article.setCategoryId(Integer.parseInt(rs.getString("category")));
-        article.setDatePublished(rs.getDate("published_at"));
-        article.setLikes(Integer.parseInt(rs.getString("like_count")));
-        article.setDisLikes(Integer.parseInt(rs.getString("dislike_count")));
+        article.setPublishedAt(rs.getDate("published_at"));
         return article;
     }
 
@@ -114,9 +112,8 @@ public class SearchDaoImpl implements SearchDao {
     private List<NewsArticle> search(String sql, String keyword, LocalDate start, LocalDate end, String sortColumn) {
         List<NewsArticle> articles = new ArrayList<>();
 
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, "%" + keyword + "%");
             stmt.setString(2, "%" + keyword + "%");
 

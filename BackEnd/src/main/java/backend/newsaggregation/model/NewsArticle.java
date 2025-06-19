@@ -1,29 +1,58 @@
 package backend.newsaggregation.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class NewsArticle {
-    private int id;
+	private int id;
     private String title;
-    private String content;
-    private String source;
+    private String description;
+    private String snippet;
+    private Date publishedAt;
     private String url;
-    private int categoryId;
-    private Date datePublished;
-    private int likes;
-    private int disLikes;
-
-    public NewsArticle() {}
-
-    public NewsArticle(int id, String title, String content, String source, String url, int categoryId, Date datePublished) {
+    private String imageUrl;
+    private String source;
+    private List<String> categories;
+	
+	public NewsArticle() {}
+	
+	public NewsArticle(int id, String title, String description, String source, String url, int categoryId, Date publishedAt) {
         this.id = id;
         this.title = title;
-        this.content = content;
+        this.description = description;
         this.source = source;
         this.url = url;
-        this.categoryId = categoryId;
-        this.datePublished = datePublished;
+        this.publishedAt = publishedAt;
+        this.categories = new ArrayList<>();
     }
+
+	public NewsArticle(String title, String description, String snippet, Date publishedAt, String url,
+			String imageUrl, String source, List<String> categories) {
+		super();
+		this.title = title;
+		this.description = description;
+		this.snippet = snippet;
+		this.publishedAt = publishedAt;
+		this.url = url;
+		this.imageUrl = imageUrl;
+		this.source = source;
+		this.categories = categories;
+	}
+
+	public NewsArticle(int id, String title, String description, String snippet, Date publishedAt, String url,
+			String imageUrl, String source, List<String> categories) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.description = description;
+		this.snippet = snippet;
+		this.publishedAt = publishedAt;
+		this.url = url;
+		this.imageUrl = imageUrl;
+		this.source = source;
+		this.categories = categories;
+	}
 
 	public int getId() {
 		return id;
@@ -33,32 +62,32 @@ public class NewsArticle {
 		return title;
 	}
 
-	public String getContent() {
-		return content;
+	public String getDescription() {
+		return description;
 	}
 
-	public String getSource() {
-		return source;
+	public String getSnippet() {
+		return snippet;
+	}
+
+	public Date getPublishedAt() {
+		return publishedAt;
 	}
 
 	public String getUrl() {
 		return url;
 	}
 
-	public int getCategoryId() {
-		return categoryId;
+	public String getImageUrl() {
+		return imageUrl;
 	}
 
-	public Date getDatePublished() {
-		return datePublished;
+	public String getSource() {
+		return source;
 	}
-	
-	public int getLikes() {
-		return this.likes;
-	}
-	
-	public int getDisLikes() {
-		return this.disLikes;
+
+	public List<String> getCategories() {
+		return categories;
 	}
 
 	public void setId(int id) {
@@ -69,31 +98,33 @@ public class NewsArticle {
 		this.title = title;
 	}
 
-	public void setContent(String content) {
-		this.content = content;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
-	public void setSource(String source) {
-		this.source = source;
+	public void setSnippet(String snippet) {
+		this.snippet = snippet;
+	}
+
+	public void setPublishedAt(Date publishedAt) {
+		this.publishedAt = publishedAt;
 	}
 
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
-	public void setCategoryId(int categoryId) {
-		this.categoryId = categoryId;
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
-	public void setDatePublished(Date datePublished) {
-		this.datePublished = datePublished;
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public void setCategories(List<String> categories) {
+		this.categories = categories;
 	}
 	
-	public void setLikes(int likes) {
-		this.likes = likes;
-	}
 	
-	public void setDisLikes(int disLikes) {
-		this.disLikes = disLikes;
-	}
 }

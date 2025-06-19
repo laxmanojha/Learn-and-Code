@@ -11,6 +11,7 @@ import backend.newsaggregation.util.DatabaseConfig;
 public class SavedArticleDaoImpl implements SavedArticleDao {
 
     private static SavedArticleDaoImpl instance;
+    private static Connection conn = DatabaseConfig.getConnection();;
 
     private SavedArticleDaoImpl() {}
 
@@ -24,7 +25,7 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
     @Override
     public boolean saveArticle(int userId, int newsId) {
         String sql = "INSERT INTO saved_news(news_id, user_id) VALUES (?, ?)";
-        try (Connection conn = DatabaseConfig.getConnection();
+        try (
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, newsId);
@@ -40,8 +41,8 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
     @Override
     public boolean deleteSavedArticle(int userId, int newsId) {
         String sql = "DELETE FROM saved_news WHERE user_id = ? AND news_id = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try {
+             PreparedStatement ps = conn.prepareStatement(sql);
 
             ps.setInt(1, userId);
             ps.setInt(2, newsId);
@@ -56,8 +57,8 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
     @Override
     public boolean isArticleSavedByUser(int userId, int newsId) {
         String sql = "SELECT 1 FROM saved_news WHERE user_id = ? AND news_id = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try {
+             PreparedStatement ps = conn.prepareStatement(sql);
 
             ps.setInt(1, userId);
             ps.setInt(2, newsId);
@@ -76,13 +77,13 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
         String sql = """
             SELECT na.*, nac.category_id AS category_id
             FROM saved_news sn
-            JOIN news_article na ON sn.news_id = na.id
-            LEFT JOIN news_article_category nac ON na.id = nac.news_id
+            INNER JOIN news_article na ON sn.news_id = na.id
+            INNER JOIN news_article_category nac ON na.id = nac.news_id
             WHERE sn.user_id = ?
         """;
 
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try {
+             PreparedStatement ps = conn.prepareStatement(sql);
 
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();

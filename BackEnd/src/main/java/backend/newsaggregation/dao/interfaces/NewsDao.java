@@ -5,6 +5,8 @@ import java.util.List;
 
 import backend.newsaggregation.dao.impl.NewsDaoImpl;
 import backend.newsaggregation.model.NewsArticle;
+import backend.newsaggregation.model.NewsArticleCategoryInfo;
+import backend.newsaggregation.model.NewsArticle;
 
 public interface NewsDao {
 	
@@ -17,4 +19,9 @@ public interface NewsDao {
     List<NewsArticle> getNewsByDateRange(Date startDate, Date endDate);
     List<NewsArticle> getNewsByDateRangeAndCategory(Date startDate, Date endDate, String category);
     NewsArticle getNewsById(int id);
+    boolean saveNews(NewsArticle item);
+    int getLatestNewsArticleId();
+    int getOrInsertCategoryId(String categoryType);
+    boolean insertNewsCategoryMapping(int newsId, int categoryId);
+    List<NewsArticleCategoryInfo> getAllCategory();
 }
