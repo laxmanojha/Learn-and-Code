@@ -34,10 +34,6 @@ public class NotificationServlet extends HttpServlet {
             // GET /api/notifications → get all preferences
             List<NotificationPref> prefs = notificationService.getAllPreferences(userId);
             resp.getWriter().write(gson.toJson(prefs));
-        } else if (path.equals("/config")) {
-            // GET /api/notifications/config → same as above or separate logic
-            List<NotificationPref> prefs = notificationService.getAllPreferences(userId);
-            resp.getWriter().write(gson.toJson(prefs));
         } else if (path.equals("/keywords")) {
             // GET /api/notifications/keywords → filter only keyword prefs
             List<NotificationPref> keywords = notificationService.getKeywordPreferences(userId);

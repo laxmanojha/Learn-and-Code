@@ -16,6 +16,7 @@ import frontend.newsaggregation.model.User;
 
 public class HttpUtil {
     private static final HttpClient client = HttpClient.newHttpClient();
+    private static String sessionCookie = null;
 
     public static HttpResponse<String> sendPostRequest(String url, String formData) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
@@ -23,37 +24,56 @@ public class HttpUtil {
                 .header("Content-Type", "application/json")
                 .POST(BodyPublishers.ofString(formData, StandardCharsets.UTF_8))
                 .build();
+        
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        return client.send(request, HttpResponse.BodyHandlers.ofString());
+        // Capture JSESSIONID from login
+        if (response.headers().firstValue("Set-Cookie").isPresent()) {
+            sessionCookie = response.headers().firstValue("Set-Cookie").get().split(";")[0]; // JSESSIONID=xxxxx
+        }
+
+        return response;
     }
 
     public static HttpResponse<String> sendGetRequest(String url) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
-                .header("Accept", "application/json")
-                .build();
+                .header("Accept", "application/json");
 
+        if (sessionCookie != null) {
+            builder.header("Cookie", sessionCookie);
+        }
+
+        HttpRequest request = builder.build();
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     public static HttpResponse<String> sendDeleteRequest(String url) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .DELETE()
-                .header("Content-Type", "application/json")
-                .build();
+                .header("Content-Type", "application/json");
 
+        if (sessionCookie != null) {
+            builder.header("Cookie", sessionCookie);
+        }
+
+        HttpRequest request = builder.build();
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
     public static HttpResponse<String> sendPutRequest(String url, String requestBody) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
-                .header("Content-Type", "application/json")
-                .build();
+                .header("Content-Type", "application/json");
 
+        if (sessionCookie != null) {
+            builder.header("Cookie", sessionCookie);
+        }
+
+        HttpRequest request = builder.build();
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
