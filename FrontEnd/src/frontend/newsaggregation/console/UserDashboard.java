@@ -23,16 +23,13 @@ public class UserDashboard {
 
             switch (choice) {
                 case "1":
-                    // TODO: Implement Headlines View
-                    System.out.println("Displaying top headlines...");
+                    HeadlineMenu.startHeadlineMenu(user);
                     break;
                 case "2":
-                    // TODO: Implement Saved Articles
-                    System.out.println("Fetching saved articles...");
+                    SavedArticlesMenu.show(user);
                     break;
                 case "3":
-                    // TODO: Implement Search
-                    System.out.println("Initiating news search...");
+                    SearchMenu.show(user);
                     break;
                 case "4":
                     // TODO: Implement Notifications

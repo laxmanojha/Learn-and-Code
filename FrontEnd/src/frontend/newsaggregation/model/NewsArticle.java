@@ -1,4 +1,4 @@
-package backend.newsaggregation.model;
+package frontend.newsaggregation.model;
 
 import java.util.ArrayList;
 import java.util.Date;

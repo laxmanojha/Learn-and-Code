@@ -68,7 +68,7 @@ public class NotificationService {
     		notificationPreference.setCategoryId(category.getId());
     		notificationPreference.setCategoryType(category.getName());
     		notificationPreference.setEnabled(false);
-    		notificationPreference.setKeyword("");
+    		notificationPreference.setKeywords(null);
     		categoryPreference.add(notificationPreference);
     	}
     	return categoryPreference;

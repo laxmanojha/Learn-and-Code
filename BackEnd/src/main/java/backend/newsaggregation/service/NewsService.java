@@ -31,21 +31,24 @@ public class NewsService {
     public List<NewsArticle> getTodayHeadlines() {
         Date today = Date.valueOf(LocalDate.now());
         List<NewsArticle> newsArticles = newsDao.getNewsByDate(today);
-        return mapCategoriesToNews(newsArticles);
+        for (NewsArticle newsArticle: newsArticles) {
+        	newsArticle = mapCategoriesToNews(newsArticle);
+        }
+        return newsArticles;
     }
     
-    private List<NewsArticle> mapCategoriesToNews(List<NewsArticle> newsArticles) {
-    	List<NewsArticleCategoryInfo> articleCategoryInfos = newsDao.getAllCategory();
-    	for (NewsArticle newsArticle: newsArticles) {
-    		for (NewsArticleCategoryInfo articleCategoryInfo: articleCategoryInfos) {
-    			if (newsArticle.getId() == articleCategoryInfo.getNewsId()) {
-    				newsArticle.getCategories().add(articleCategoryInfo.getCategoryType());
-    			}
-    		}
-    	}
-    	
-    	return newsArticles;
-    }
+//    private List<NewsArticle> mapCategoriesToNews(List<NewsArticle> newsArticles) {
+//    	List<NewsArticleCategoryInfo> articleCategoryInfos = newsDao.getAllCategory();
+//    	for (NewsArticle newsArticle: newsArticles) {
+//    		for (NewsArticleCategoryInfo articleCategoryInfo: articleCategoryInfos) {
+//    			if (newsArticle.getId() == articleCategoryInfo.getNewsId()) {
+//    				newsArticle.getCategories().add(articleCategoryInfo.getCategoryType());
+//    			}
+//    		}
+//    	}
+//    	
+//    	return newsArticles;
+//    }
     
     private NewsArticle mapCategoriesToNews(NewsArticle newsArticle) {
     	List<NewsArticleCategoryInfo> articleCategoryInfos = newsDao.getAllCategory();
@@ -60,12 +63,18 @@ public class NewsService {
 
     public List<NewsArticle> getHeadlinesByDateRange(Date start, Date end) {
     	List<NewsArticle> newsArticles = newsDao.getNewsByDateRange(start, end);
-    	return mapCategoriesToNews(newsArticles);
+    	for (NewsArticle newsArticle: newsArticles) {
+        	newsArticle = mapCategoriesToNews(newsArticle);
+        }
+        return newsArticles;
     }
     
     public List<NewsArticle> getHeadlinesByDateRangeAndCategory(Date start, Date end, String category) {
     	List<NewsArticle> newsArticles = newsDao.getNewsByDateRangeAndCategory(start, end, category);
-    	return mapCategoriesToNews(newsArticles);
+    	for (NewsArticle newsArticle: newsArticles) {
+        	newsArticle = mapCategoriesToNews(newsArticle);
+        }
+        return newsArticles;
     }
 
     public NewsArticle getArticleById(int id) {

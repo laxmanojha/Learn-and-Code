@@ -27,7 +27,7 @@ public class AuthService {
         requestJson.addProperty("password", password);
 
         try {
-            HttpResponse<String> response = HttpUtil.loginAndSetSessionCookie(StaticConfiguration.getBaseUrl() + "/login", requestJson.toString());
+            HttpResponse<String> response = HttpUtil.loginAndSetSessionCookie(StaticConfiguration.getBaseUrl() + "auth/login", requestJson.toString());
             String body = response.body();
 
             JsonObject jsonResponse = JsonParser.parseString(body).getAsJsonObject();
@@ -53,7 +53,7 @@ public class AuthService {
             Gson gson = new Gson();
             String userJson = gson.toJson(user);
 
-            HttpResponse<String> response = HttpUtil.sendPostRequest(StaticConfiguration.getBaseUrl() + "/signup", userJson);
+            HttpResponse<String> response = HttpUtil.sendPostRequest(StaticConfiguration.getBaseUrl() + "auth/signup", userJson);
             return HttpUtil.processResponse(response, "Sign Up");
         } catch (IOException | InterruptedException e) {
             System.err.println("Sign Up failed due to an exception: " + e.getMessage());
@@ -63,7 +63,7 @@ public class AuthService {
     
     public boolean logout() {
 	    try {
-	        HttpResponse<String> response = HttpUtil.sendPostRequest(StaticConfiguration.getBaseUrl() + "/logout", "{}");
+	        HttpResponse<String> response = HttpUtil.sendPostRequest(StaticConfiguration.getBaseUrl() + "auth/logout", "{}");
 	        return HttpUtil.processResponse(response, "Logout");
 	    } catch (IOException | InterruptedException e) {
 	        System.err.println("Logout failed due to an exception: " + e.getMessage());
