@@ -49,17 +49,35 @@ public class ExternalServerService {
     }
     
     public void saveDataFromApiToDB(List<NewsArticle> apiData) {
-    	for (NewsArticle newsData: apiData) {
-    		newsDaoImpl.saveNews(newsData);
-    		int newsId = newsDaoImpl.getLatestNewsArticleId();
-    		for (NewsArticle data: apiData) {
-    			for (String categoryType: data.getCategories()) {
-    				int categoryId = newsDaoImpl.getOrInsertCategoryId(categoryType);
-    				boolean mappingAdded = newsDaoImpl.insertNewsCategoryMapping(newsId, categoryId);
-    				if (!mappingAdded)
-    					System.out.println("Failed in adding newsID: " + newsId + " with categoryID: " + categoryId);
-    			}
-    		}    		
-    	}
+        for (NewsArticle newsData : apiData) {
+        	int newsId = newsDaoImpl.saveNews(newsData);
+
+            for (String categoryType : newsData.getCategories()) {
+                int categoryId = newsDaoImpl.getOrInsertCategoryId(categoryType);
+
+                boolean mappingAdded = newsDaoImpl.insertNewsCategoryMapping(newsId, categoryId);
+                if (!mappingAdded) {
+                    System.out.println("Failed to add mapping: NewsID " + newsId + " with CategoryID " + categoryId);
+                }
+            }
+        }
     }
+    
+    public void updateServerStatus(String serverName, boolean isActive) {
+        ExternalServer server = serverDao.getServerByName(serverName);
+        if (server == null) {
+            System.out.println("Server not found: " + serverName);
+            return;
+        }
+
+        int statusId = isActive ? 1 : 2; // 1 = active, 2 = inactive
+        boolean updated = serverDao.updateServerStatusAndLastAccess(server.getId(), statusId);
+
+        if (updated) {
+            System.out.println("Server [" + serverName + "] updated successfully.");
+        } else {
+            System.out.println("Failed to update server [" + serverName + "].");
+        }
+    }
+
 }

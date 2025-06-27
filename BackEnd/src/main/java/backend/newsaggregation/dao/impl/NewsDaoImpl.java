@@ -54,13 +54,13 @@ public class NewsDaoImpl implements NewsDao {
     }
     
     @Override
-    public boolean saveNews(NewsArticle item) {
+    public int saveNews(NewsArticle item) {
         String insertQuery = "INSERT INTO news_article " +
                 "(title, description, snippet, published_at, url, image_url, source) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
-        	PreparedStatement stmt = conn.prepareStatement(insertQuery);
+        	PreparedStatement stmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
                 stmt.setString(1, item.getTitle());
                 stmt.setString(2, item.getDescription());
                 stmt.setString(3, item.getSnippet());
@@ -76,13 +76,16 @@ public class NewsDaoImpl implements NewsDao {
                 stmt.setString(7, item.getSource());
 
                 stmt.executeUpdate();
-
-            return true;
+                
+                ResultSet rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);  
+                }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return -1;
     }
     
     @Override

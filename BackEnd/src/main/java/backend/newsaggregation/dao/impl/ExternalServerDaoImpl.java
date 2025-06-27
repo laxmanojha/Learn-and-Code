@@ -11,6 +11,7 @@ import backend.newsaggregation.util.DatabaseConfig;
 public class ExternalServerDaoImpl implements ExternalServerDao {
 
     private static ExternalServerDaoImpl instance;
+    Connection conn = DatabaseConfig.getConnection();
 
     private ExternalServerDaoImpl() {}
 
@@ -28,7 +29,6 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
         		+ " server_status s ON e.server_status_id = s.id";
 
         try {
-        	Connection conn = DatabaseConfig.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -52,7 +52,6 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
         String sql = "SELECT id, server_name, api_key FROM external_server";
 
         try {
-        	 Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -75,7 +74,6 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
         String sql = "SELECT * FROM external_server e INNER JOIN server_status s ON e.server_status_id = s.id WHERE e.id = ?";
 
         try {
-        	Connection conn = DatabaseConfig.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -100,7 +98,6 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
     public boolean updateApiKey(int id, String newApiKey) {
         String sql = "UPDATE external_server SET api_key = ? WHERE id = ?";
         try {
-        	Connection conn = DatabaseConfig.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, newApiKey);
             stmt.setInt(2, id);
@@ -113,5 +110,47 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
         }
 
         return false;
+    }
+    
+    @Override
+    public boolean updateServerStatusAndLastAccess(int serverId, int statusId) {
+        String sql = """
+            UPDATE external_server
+            SET server_status_id = ?, last_accessed = NOW()
+            WHERE id = ?
+        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, statusId);
+            stmt.setInt(2, serverId);
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public ExternalServer getServerByName(String serverName) {
+        String sql = "SELECT * FROM external_server WHERE server_name = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, serverName);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                ExternalServer server = new ExternalServer();
+                server.setId(rs.getInt("id"));
+                server.setServerName(rs.getString("server_name"));
+                server.setApiUrl(rs.getString("api_url"));
+                server.setApiKey(rs.getString("api_key"));
+                server.setServerStatusId(rs.getInt("server_status_id"));
+                server.setLastAccessed(rs.getTimestamp("last_accessed"));
+                return server;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

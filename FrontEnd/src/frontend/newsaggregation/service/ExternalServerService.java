@@ -29,7 +29,7 @@ public class ExternalServerService {
     	String url = "http://localhost:8080/backend/api/servers/";
         try {
             HttpResponse<String> response = HttpUtil.sendGetRequest(url);
-
+            
             if (response.statusCode() == 200) {
                 String json = response.body();
                 Gson gson = new Gson();

@@ -19,7 +19,7 @@ public interface NewsDao {
     List<NewsArticle> getNewsByDateRange(Date startDate, Date endDate);
     List<NewsArticle> getNewsByDateRangeAndCategory(Date startDate, Date endDate, String category);
     NewsArticle getNewsById(int id);
-    boolean saveNews(NewsArticle item);
+    int saveNews(NewsArticle item);
     int getLatestNewsArticleId();
     int getOrInsertCategoryId(String categoryType);
     boolean insertNewsCategoryMapping(int newsId, int categoryId);

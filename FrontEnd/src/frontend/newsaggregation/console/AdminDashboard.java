@@ -5,6 +5,7 @@ import java.util.List;
 import frontend.newsaggregation.model.ExternalServer;
 import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.AuthService;
+import frontend.newsaggregation.service.CategoryService;
 import frontend.newsaggregation.service.ExternalServerService;
 import frontend.newsaggregation.util.InputUtil;
 
@@ -77,8 +78,21 @@ public class AdminDashboard {
                     break;
 
                 case "4":
-                    System.out.println("Adding new News Category...");
+                    CategoryService categoryService = new CategoryService();
+                    String categoryName = InputUtil.readLine("Enter new news category name: ");
+
+                    if (categoryName.trim().isEmpty()) {
+                        System.out.println("Category name cannot be empty.");
+                    } else {
+                        boolean added = categoryService.addCategory(categoryName.trim());
+                        if (added) {
+                            System.out.println("Category added successfully.");
+                        } else {
+                            System.out.println("Failed to add category.");
+                        }
+                    }
                     break;
+
                 case "5":
                 	handleLogout();
                     return;

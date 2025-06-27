@@ -7,6 +7,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -17,22 +18,41 @@ import frontend.newsaggregation.model.User;
 public class HttpUtil {
     private static final HttpClient client = HttpClient.newHttpClient();
     private static String sessionCookie = null;
-
-    public static HttpResponse<String> sendPostRequest(String url, String formData) throws IOException, InterruptedException {
+    
+    public static HttpResponse<String> loginAndSetSessionCookie(String loginUrl, String payloadJson) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
+                .uri(URI.create(loginUrl))
+                .POST(HttpRequest.BodyPublishers.ofString(payloadJson))
                 .header("Content-Type", "application/json")
-                .POST(BodyPublishers.ofString(formData, StandardCharsets.UTF_8))
                 .build();
-        
+
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Capture JSESSIONID from login
-        if (response.headers().firstValue("Set-Cookie").isPresent()) {
-            sessionCookie = response.headers().firstValue("Set-Cookie").get().split(";")[0]; // JSESSIONID=xxxxx
-        }
+        Optional<String> cookie = response.headers().firstValue("Set-Cookie");
 
+        cookie.ifPresentOrElse(
+                value -> System.out.println("Session Cookie: " + value),
+                () -> System.out.println("No session cookie received.")
+        );
+
+        sessionCookie = cookie.orElse(null);
+        
         return response;
+    }
+
+
+    public static HttpResponse<String> sendPostRequest(String url, String formData) throws IOException, InterruptedException {
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .POST(BodyPublishers.ofString(formData, StandardCharsets.UTF_8))
+                .header("Content-Type", "application/json");
+        
+        if (sessionCookie != null) {
+        	builder.header("Cookie", sessionCookie);
+        }
+        
+        HttpRequest request = builder.build();
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     public static HttpResponse<String> sendGetRequest(String url) throws IOException, InterruptedException {
@@ -81,6 +101,7 @@ public class HttpUtil {
         String responseBody = response.body();
 
         try {
+        	System.out.println(responseBody);
             JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
             boolean success = jsonResponse.get("success").getAsBoolean();
             String message = jsonResponse.get("message").getAsString();

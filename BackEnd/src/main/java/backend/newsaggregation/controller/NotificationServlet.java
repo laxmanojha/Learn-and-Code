@@ -6,7 +6,9 @@ import java.util.*;
 
 import com.google.gson.Gson;
 
+import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.model.NotificationPref;
+import backend.newsaggregation.model.NotificationPreference;
 import backend.newsaggregation.service.NotificationService;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,43 +31,55 @@ public class NotificationServlet extends HttpServlet {
         	return;
         }
         resp.setContentType("application/json");
-
         if (path == null || path.equals("/")) {
-            // GET /api/notifications → get all preferences
-            List<NotificationPref> prefs = notificationService.getAllPreferences(userId);
+        	List<NewsArticle> newsArticles = notificationService.getConsoleNotifications(userId);
+        	resp.getWriter().write(gson.toJson(newsArticles));
+        } else if (path.equals("/preferences")) {
+            List<NotificationPreference> prefs = notificationService.getAllPreferences(userId);
             resp.getWriter().write(gson.toJson(prefs));
-        } else if (path.equals("/keywords")) {
-            // GET /api/notifications/keywords → filter only keyword prefs
-            List<NotificationPref> keywords = notificationService.getKeywordPreferences(userId);
+        } else if (path.equals("/preferences/category")) {
+            // GET /api/notifications/category → filter only catgory prefs
+            List<NotificationPreference> keywords = notificationService.getCategoryPreferences(userId);
             resp.getWriter().write(gson.toJson(keywords));
+        } else if (path.equals("/preferences/keywords")) {
+        	// GET /api/notifications/keywords → filter only keyword prefs
+        	List<NotificationPreference> keywords = notificationService.getKeywordPreferences(userId);
+        	resp.getWriter().write(gson.toJson(keywords));
         } else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().write(errorJson("Endpoint not found"));
         }
     }
 
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String path = req.getPathInfo();
-        int userId = getUserIdFromSession(req);
-        if (userId == -1) {
-        	resp.getWriter().write(errorJson("User not found"));
-        	return;
-        }
-        resp.setContentType("application/json");
-
-        if ("/config".equals(path)) {
-            Map<String, Object> body = parseJsonBody(req);
-            int categoryId = Integer.parseInt((String) body.get("categoryId"));
-            boolean enabled = Boolean.parseBoolean(body.get("enabled").toString());
-
-            boolean updated = notificationService.updateCategoryConfig(userId, categoryId, enabled);
-            writeSuccess(resp, updated, "Preference updated");
-        } else {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            resp.getWriter().write(errorJson("PUT endpoint not found"));
-        }
-    }
+//    @Override
+//    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+//        String path = req.getPathInfo();
+//        int userId = getUserIdFromSession(req);
+//        if (userId == -1) {
+//        	resp.getWriter().write(errorJson("User not found"));
+//        	return;
+//        }
+//        resp.setContentType("application/json");
+//
+//        if ("/config/category".equals(path)) {
+//            Map<String, Object> body = parseJsonBody(req);
+//            int categoryId = Integer.parseInt((String) body.get("categoryId"));
+//            boolean enabled = Boolean.parseBoolean(body.get("enabled").toString());
+//
+//            boolean updated = notificationService.updateCategoryConfig(userId, categoryId, enabled);
+//            writeSuccess(resp, updated, "Preference updated");
+//        } else if ("/config/keywords".equals(path)) {
+//    		Map<String, Object> body = parseJsonBody(req);
+//    		List<String> keywords = (List<String>) body.get("keywords");
+//    		boolean enabled = Boolean.parseBoolean(body.get("enabled").toString());
+//    		
+//    		boolean updated = notificationService.updateCategoryConfig(userId, categoryId, enabled);
+//    		writeSuccess(resp, updated, "Preference updated");
+//    	} else {
+//	        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+//	        resp.getWriter().write(errorJson("PUT endpoint not found"));
+//        }
+//    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -77,12 +91,22 @@ public class NotificationServlet extends HttpServlet {
         }
         resp.setContentType("application/json");
 
-        if ("/keywords".equals(path)) {
+        if ("/config/category".equals(path)) {
             Map<String, Object> body = parseJsonBody(req);
-            String keyword = (String) body.get("keyword");
+            int categoryId = Integer.parseInt((String) body.get("categoryId"));
+            @SuppressWarnings("unchecked")
+			List<String> keywords = (List<String>) body.get("keywords");
 
-            boolean success = notificationService.addKeyword(userId, keyword);
-            writeSuccess(resp, success, "Keyword added");
+            boolean updated = notificationService.updateCategoryConfig(userId, categoryId, keywords);
+            writeSuccess(resp, updated, "Preference updated");
+        } else if ("config/keywords".equals(path)) {
+            Map<String, Object> body = parseJsonBody(req);
+
+            @SuppressWarnings("unchecked")
+			List<String> keywords = (List<String>) body.get("keywords");
+
+            boolean success = notificationService.addKeywords(userId, keywords);
+            writeSuccess(resp, success, "Keyword(s) added");
         } else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().write(errorJson("POST endpoint not found"));
@@ -91,16 +115,24 @@ public class NotificationServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String path = req.getPathInfo();
+    	String path = req.getPathInfo();
         int userId = getUserIdFromSession(req);
+        if (userId == -1) {
+        	resp.getWriter().write(errorJson("User not found"));
+        	return;
+        }
         resp.setContentType("application/json");
 
-        if ("/keywords".equals(path)) {
+        if ("/config/category".equals(path)) {
             Map<String, Object> body = parseJsonBody(req);
-            String keyword = (String) body.get("keyword");
+            int categoryId = Integer.parseInt((String) body.get("categoryId"));
 
-            boolean removed = notificationService.removeKeyword(userId, keyword);
-            writeSuccess(resp, removed, "Keyword removed");
+            boolean updated = notificationService.updateCategoryConfig(userId, categoryId);
+            writeSuccess(resp, updated, "Preference updated");
+        } else if ("config/keywords".equals(path)) {
+
+            boolean success = notificationService.removeKeywords(userId);
+            writeSuccess(resp, success, "Keyword(s) removed");
         } else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().write(errorJson("DELETE endpoint not found"));
@@ -134,7 +166,7 @@ public class NotificationServlet extends HttpServlet {
     	Object userObj = req.getSession().getAttribute("user");
     	int userId = -1;
         if (userObj instanceof backend.newsaggregation.model.User user) {
-            userId = user.getRoleId();
+            userId = user.getId();
             System.out.println("User id: " + userId);
         }
         return userId;

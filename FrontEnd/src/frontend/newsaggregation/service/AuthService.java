@@ -27,7 +27,7 @@ public class AuthService {
         requestJson.addProperty("password", password);
 
         try {
-            HttpResponse<String> response = HttpUtil.sendPostRequest(StaticConfiguration.getBaseUrl() + "/login", requestJson.toString());
+            HttpResponse<String> response = HttpUtil.loginAndSetSessionCookie(StaticConfiguration.getBaseUrl() + "/login", requestJson.toString());
             String body = response.body();
 
             JsonObject jsonResponse = JsonParser.parseString(body).getAsJsonObject();

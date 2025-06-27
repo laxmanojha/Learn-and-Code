@@ -1,6 +1,6 @@
 package backend.newsaggregation.dao.interfaces;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import backend.newsaggregation.dao.impl.UserDaoImpl;
 import backend.newsaggregation.model.User;
@@ -14,5 +14,6 @@ public interface UserDao {
     User getUserByUsername(String username);
     User getUserByEmail(String email);
     boolean saveUser(User user);
-    boolean saveNotificationViewedTime(User user, Date time);
+    boolean saveNotificationViewedTime(int userId, Timestamp time);
+    Timestamp getNotificationViewedTime(int userId);
 }

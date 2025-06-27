@@ -7,11 +7,13 @@ import java.util.List;
 import backend.newsaggregation.dao.interfaces.NotificationCategoryPrefDao;
 import backend.newsaggregation.dao.interfaces.NotificationKeywordPrefDao;
 import backend.newsaggregation.model.NotificationPref;
+import backend.newsaggregation.model.NotificationPreference;
 import backend.newsaggregation.util.DatabaseConfig;
 
 public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDao {
 
     private static NotificationKeywordPrefDaoImpl instance;
+    Connection conn = DatabaseConfig.getConnection();
 
     private NotificationKeywordPrefDaoImpl() {}
 
@@ -23,23 +25,23 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
     }
 
     @Override
-    public List<NotificationPref> getPreferencesByUser(int userId) {
-        List<NotificationPref> prefs = new ArrayList<>();
+    public List<NotificationPreference> getPreferencesByUser(int userId) {
+        List<NotificationPreference> prefs = new ArrayList<>();
 
         String sql = "SELECT * FROM notification_keyword_pref WHERE user_id = ?";
 
-        try (Connection conn = DatabaseConfig.getConnection();
+        try (
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                NotificationPref pref = new NotificationPref();
+            	NotificationPreference pref = new NotificationPreference();
                 pref.setUserId(rs.getInt("user_id"));
-                pref.setKeywords(rs.getString("keyword"));
+                pref.setKeyword(rs.getString("keyword"));;
                 pref.setEnabled(rs.getBoolean("is_enabled"));
-                pref.setCreated_at(rs.getDate("created_at"));
+                pref.setCreatedAt(rs.getDate("created_at"));;
                 prefs.add(pref);
             }
 
@@ -104,8 +106,8 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
             WHERE user_id = ?
         """;
     	
-    	try (Connection conn = DatabaseConfig.getConnection();
-    			PreparedStatement stmt = conn.prepareStatement(sql)) {
+    	try {
+    		PreparedStatement stmt = conn.prepareStatement(sql);
     		
     		stmt.setBoolean(1, enabled);
     		stmt.setInt(2, userId);
@@ -122,12 +124,12 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
     @Override
     public boolean addKeywordPreference(int userId, List<String> keywords) {
         String sql = """
-            INSERT INTO notification_pref (user_id, keyword, is_enabled)
+            INSERT INTO notification_keyword_pref (user_id, keyword, is_enabled)
             VALUES (?, ?, true)
         """;
 
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+    		PreparedStatement stmt = conn.prepareStatement(sql);
 
             conn.setAutoCommit(false);
 
@@ -165,24 +167,49 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
     }
 
     @Override
-    public boolean removeKeywordPreference(int userId, String keyword) {
+    public boolean removeKeywordPreference(int userId, List<String> keywords) {
         String sql = """
-            DELETE FROM notification_keyword_pref WHERE user_id = ? AND keyword = ?
+            DELETE FROM notification_keyword_pref
+            WHERE user_id = ? AND keyword = ?
         """;
 
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn.setAutoCommit(false);
+            PreparedStatement stmt = conn.prepareStatement(sql);
 
-            stmt.setInt(1, userId);
-            stmt.setString(2, keyword);
-            return stmt.executeUpdate() > 0;
+            for (String keyword : keywords) {
+                stmt.setInt(1, userId);
+                stmt.setString(2, keyword);
+                stmt.addBatch();
+            }
+
+            int[] results = stmt.executeBatch();
+
+            for (int result : results) {
+                if (result == Statement.EXECUTE_FAILED) {
+                    conn.rollback();
+                    return false;
+                }
+            }
+
+            conn.commit();
+            conn.setAutoCommit(true);
+            return true;
 
         } catch (SQLException e) {
             e.printStackTrace();
+            try {
+                if (conn != null && !conn.getAutoCommit()) {
+                    conn.rollback();
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
         }
 
         return false;
     }
+
     
     @Override
     public boolean removeAllKeywordPreference(int userId) {
@@ -190,8 +217,8 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
             DELETE FROM notification_keyword_pref WHERE user_id = ?
         """;
     	
-    	try (Connection conn = DatabaseConfig.getConnection();
-    			PreparedStatement stmt = conn.prepareStatement(sql)) {
+    	try {
+    		PreparedStatement stmt = conn.prepareStatement(sql);
     		
     		stmt.setInt(1, userId);
     		return stmt.executeUpdate() > 0;

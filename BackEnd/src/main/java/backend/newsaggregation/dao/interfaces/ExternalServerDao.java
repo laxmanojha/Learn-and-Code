@@ -14,4 +14,6 @@ public interface ExternalServerDao {
     List<ExternalServer> getAllServersWithApiKeys();
     ExternalServer getServerById(int id);
     boolean updateApiKey(int id, String newApiKey);
+    boolean updateServerStatusAndLastAccess(int serverId, int statusId);
+    ExternalServer getServerByName(String serverName);
 }

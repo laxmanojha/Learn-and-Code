@@ -5,6 +5,7 @@ import java.util.Date;
 public class ExternalServer {
     private int id;
     private String serverName;
+    private int serverStatusId;
     private String serverStatus;
     private Date lastAccessed;
     private String apiKey;
@@ -18,6 +19,15 @@ public class ExternalServer {
         this.serverStatus = serverStatus;
         this.lastAccessed = lastAccessed;
         this.apiKey = apiKey;
+    }
+    
+    public ExternalServer(int id, String serverName, String apiUrl, String apiKey, int serverStatusId, Date lastAccessed) {
+        this.id = id;
+        this.serverName = serverName;
+        this.apiUrl = apiUrl;
+        this.apiKey = apiKey;
+        this.serverStatusId = serverStatusId;
+        this.lastAccessed = lastAccessed;
     }
 
 	public int getId() {
@@ -42,6 +52,14 @@ public class ExternalServer {
 
 	public String getApiUrl() {
 		return apiUrl;
+	}
+
+	public int getServerStatusId() {
+		return serverStatusId;
+	}
+
+	public void setServerStatusId(int serverStatusId) {
+		this.serverStatusId = serverStatusId;
 	}
 
 	public void setId(int id) {

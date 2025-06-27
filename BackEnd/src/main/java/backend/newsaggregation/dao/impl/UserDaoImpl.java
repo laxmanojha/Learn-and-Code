@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Date;
 
 import backend.newsaggregation.dao.interfaces.UserDao;
@@ -13,6 +14,7 @@ import backend.newsaggregation.util.DatabaseConfig;
 public class UserDaoImpl implements UserDao {
 
     private static UserDaoImpl instance;
+    private static Connection conn = DatabaseConfig.getConnection();
 
     private UserDaoImpl() {}
 
@@ -101,20 +103,41 @@ public class UserDaoImpl implements UserDao {
     }
     
     @Override
-    public boolean saveNotificationViewedTime(User user, Date time) {
-    	String sql = "UPDATE user SET notification_viewed_at = ? WHERE username = ?";
+    public Timestamp getNotificationViewedTime(int userId) {
+        String sql = "SELECT notification_viewed_at FROM user WHERE id = ?";
+        
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getTimestamp("notification_viewed_at");
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    
+    @Override
+    public boolean saveNotificationViewedTime(int userId, Timestamp time) {
+        String sql = "UPDATE user SET notification_viewed_at = ? WHERE id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        	stmt.setDate(1, user.getNotificationViewedAt());
-            stmt.setString(2, user.getUsername());
+            stmt.setTimestamp(1, new java.sql.Timestamp(time.getTime()));
+            stmt.setInt(2, userId);
 
-            int rowsInserted = stmt.executeUpdate();
-            return rowsInserted > 0;
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
 }
