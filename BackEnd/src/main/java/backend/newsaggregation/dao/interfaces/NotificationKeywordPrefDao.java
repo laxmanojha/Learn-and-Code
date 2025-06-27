@@ -12,7 +12,7 @@ public interface NotificationKeywordPrefDao {
         return NotificationKeywordPrefDaoImpl.getInstance();
     }
 	
-    List<NotificationPreference> getPreferencesByUser(int userId);
+    NotificationPreference getPreferencesByUser(int userId);
     boolean updateKeywordPreference(int userId, List<String> keywords, boolean enabled);
     boolean updateAllKeywordPreference(int userId, boolean enabled);
     boolean addKeywordPreference(int userId, List<String> keywords);

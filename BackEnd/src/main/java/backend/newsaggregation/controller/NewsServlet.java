@@ -89,6 +89,10 @@ public class NewsServlet extends HttpServlet {
                 List<NewsArticle> results = searchNewsService.searchArticles(query, start, end, sort);
                 out.write(gson.toJson(results));
 
+            } else if (path.equals("/category")) {
+            	List<Category> results = categoryService.getAllCategory();
+            	out.write(gson.toJson(results));
+            	
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 out.write(errorJson("Invalid endpoint"));

@@ -2,7 +2,9 @@ package backend.newsaggregation.dao.impl;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import backend.newsaggregation.dao.interfaces.NotificationCategoryPrefDao;
 import backend.newsaggregation.model.NotificationPreference;
@@ -24,33 +26,44 @@ public class NotificationCategoryPrefDaoImpl implements NotificationCategoryPref
 
     @Override
     public List<NotificationPreference> getCategoryPreferencesByUser(int userId) {
-        List<NotificationPreference> prefs = new ArrayList<>();
+        Map<Integer, NotificationPreference> prefMap = new HashMap<>();
 
-        String sql = "SELECT * FROM notification_category_pref ncp INNER JOIN news_category nc ON "
-        		+ "ncp.category_id = nc.id WHERE user_id = ?";
+        String sql = "SELECT * FROM notification_category_pref ncp " +
+                     "INNER JOIN news_category nc ON ncp.category_id = nc.id " +
+                     "WHERE user_id = ?";
 
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
-
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                NotificationPreference pref = new NotificationPreference();
-                pref.setUserId(rs.getInt("user_id"));
-                pref.setCategoryId(rs.getInt("category_id"));
-                pref.setEnabled(rs.getBoolean("is_enabled"));
-                pref.setCreatedAt(rs.getDate("created_at"));
-                pref.setCategoryType(rs.getString("category_type"));
-                pref.setKeyword(rs.getString("keyword"));
-                prefs.add(pref);
+                int categoryId = rs.getInt("category_id");
+
+                NotificationPreference pref = prefMap.get(categoryId);
+                if (pref == null) {
+                    pref = new NotificationPreference();
+                    pref.setUserId(rs.getInt("user_id"));
+                    pref.setCategoryId(categoryId);
+                    pref.setEnabled(rs.getBoolean("is_enabled"));
+                    pref.setCreatedAt(rs.getDate("created_at"));
+                    pref.setCategoryType(rs.getString("category_type"));
+                    pref.setKeywords(new ArrayList<>());
+
+                    prefMap.put(categoryId, pref);
+                }
+
+                String keyword = rs.getString("keyword");
+                if (keyword != null && !keyword.trim().isEmpty()) {
+                    pref.getKeywords().add(keyword.trim());
+                }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return prefs;
+        return new ArrayList<>(prefMap.values());
     }
     
     @Override

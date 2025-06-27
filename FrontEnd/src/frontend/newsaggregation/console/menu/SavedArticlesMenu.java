@@ -1,4 +1,4 @@
-package frontend.newsaggregation.console;
+package frontend.newsaggregation.console.menu;
 
 import frontend.newsaggregation.model.NewsArticle;
 import frontend.newsaggregation.model.User;

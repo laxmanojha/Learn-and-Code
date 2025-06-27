@@ -83,6 +83,20 @@ public class HttpUtil {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
+    public static HttpResponse<String> sendDeleteRequest(String url, String requestBody) throws IOException, InterruptedException {
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .method("DELETE", HttpRequest.BodyPublishers.ofString(requestBody))
+                .header("Content-Type", "application/json");
+
+        if (sessionCookie != null) {
+            builder.header("Cookie", sessionCookie);
+        }
+
+        HttpRequest request = builder.build();
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+    
     public static HttpResponse<String> sendPutRequest(String url, String requestBody) throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(url))

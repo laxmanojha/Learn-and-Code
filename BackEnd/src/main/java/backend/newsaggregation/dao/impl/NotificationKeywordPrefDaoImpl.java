@@ -25,9 +25,10 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
     }
 
     @Override
-    public List<NotificationPreference> getPreferencesByUser(int userId) {
-        List<NotificationPreference> prefs = new ArrayList<>();
+    public NotificationPreference getPreferencesByUser(int userId) {
 
+    	NotificationPreference pref = new NotificationPreference();
+    	List<String> keywords = new ArrayList<String>();
         String sql = "SELECT * FROM notification_keyword_pref WHERE user_id = ?";
 
         try (
@@ -37,19 +38,17 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-            	NotificationPreference pref = new NotificationPreference();
-                pref.setUserId(rs.getInt("user_id"));
-                pref.setKeyword(rs.getString("keyword"));;
+                keywords.add(rs.getString("keyword"));
                 pref.setEnabled(rs.getBoolean("is_enabled"));
-                pref.setCreatedAt(rs.getDate("created_at"));;
-                prefs.add(pref);
+                pref.setCreatedAt(rs.getDate("created_at"));
             }
+            pref.setKeywords(keywords);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return prefs;
+        return pref;
     }
 
     @Override

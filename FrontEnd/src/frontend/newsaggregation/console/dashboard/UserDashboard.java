@@ -1,12 +1,19 @@
-package frontend.newsaggregation.console;
+package frontend.newsaggregation.console.dashboard;
 
+import frontend.newsaggregation.console.menu.HeadlineMenu;
+import frontend.newsaggregation.console.menu.NotificationMenu;
+import frontend.newsaggregation.console.menu.SavedArticlesMenu;
+import frontend.newsaggregation.console.menu.SearchMenu;
 import frontend.newsaggregation.model.User;
+import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.util.InputUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class UserDashboard {
+
+	private static final AuthService authService = AuthService.getInstance();
 
     public static void startUserMenu(User user) {
         showWelcomeMessage(user);
@@ -32,11 +39,10 @@ public class UserDashboard {
                     SearchMenu.show(user);
                     break;
                 case "4":
-                    // TODO: Implement Notifications
-                    System.out.println("Managing notification preferences...");
+                    NotificationMenu.startNotificationMenu(user);
                     break;
                 case "5":
-                    System.out.println("Logging out...");
+                    handleLogout();
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -54,5 +60,16 @@ public class UserDashboard {
 
         System.out.println("\nWelcome to the News Application, " + user.getUsername() + "! Date: " + date);
         System.out.println("Time: " + time);
+    }
+    
+
+    private static void handleLogout() {
+    	boolean loggedOut = authService.logout();
+    	if (loggedOut) {
+    	    System.out.println("Logged out successfully.");
+    	} else {
+    	    System.out.println("Logout failed.");
+    	}
+    	return;
     }
 }

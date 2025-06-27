@@ -56,8 +56,8 @@ public class NotificationService {
         	List<Category> categories = categoryDao.getAllCategory();
         	categoryPreference = createListOfCategoryPreference(categories, categoryPreference);
         }
-        List<NotificationPreference> keywordPreference = notificationKeywordPrefDao.getPreferencesByUser(userId);
-        categoryPreference.addAll(keywordPreference);
+        NotificationPreference keywordPreference = notificationKeywordPrefDao.getPreferencesByUser(userId);
+        categoryPreference.add(keywordPreference);
         return categoryPreference;
     }
     
@@ -98,7 +98,7 @@ public class NotificationService {
     	return notificationCategoryPrefDao.getCategoryPreferencesByUser(userId);
     }
 
-    public List<NotificationPreference> getKeywordPreferences(int userId) {
+    public NotificationPreference getKeywordPreferences(int userId) {
         return notificationKeywordPrefDao.getPreferencesByUser(userId);
     }
 

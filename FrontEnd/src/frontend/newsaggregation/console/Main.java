@@ -1,5 +1,7 @@
 package frontend.newsaggregation.console;
 
+import frontend.newsaggregation.console.dashboard.AdminDashboard;
+import frontend.newsaggregation.console.dashboard.UserDashboard;
 import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.util.InputUtil;

@@ -43,7 +43,7 @@ public class NotificationServlet extends HttpServlet {
             resp.getWriter().write(gson.toJson(keywords));
         } else if (path.equals("/preferences/keywords")) {
         	// GET /api/notifications/keywords → filter only keyword prefs
-        	List<NotificationPreference> keywords = notificationService.getKeywordPreferences(userId);
+        	NotificationPreference keywords = notificationService.getKeywordPreferences(userId);
         	resp.getWriter().write(gson.toJson(keywords));
         } else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);

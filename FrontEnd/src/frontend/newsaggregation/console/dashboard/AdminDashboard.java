@@ -1,4 +1,4 @@
-package frontend.newsaggregation.console;
+package frontend.newsaggregation.console.dashboard;
 
 import java.util.List;
 

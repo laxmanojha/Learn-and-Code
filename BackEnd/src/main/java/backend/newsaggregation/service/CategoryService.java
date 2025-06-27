@@ -1,6 +1,9 @@
 package backend.newsaggregation.service;
 
+import java.util.List;
+
 import backend.newsaggregation.dao.interfaces.CategoryDao;
+import backend.newsaggregation.model.Category;
 
 public class CategoryService {
 	
@@ -24,5 +27,9 @@ public class CategoryService {
 
     public boolean addCategory(String name) throws Exception {
         return categoryDao.addCategory(name);
+    }
+    
+    public List<Category> getAllCategory() {
+    	return categoryDao.getAllCategory();
     }
 }
