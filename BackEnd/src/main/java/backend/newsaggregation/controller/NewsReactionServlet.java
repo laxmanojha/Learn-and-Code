@@ -2,6 +2,7 @@ package backend.newsaggregation.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
 
 import backend.newsaggregation.service.NewsReactionService;
 import jakarta.servlet.ServletException;
@@ -9,6 +10,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.*;
 import java.util.Map;
 
@@ -19,7 +22,7 @@ public class NewsReactionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Parse articleId from URL
+    	PrintWriter out = response.getWriter();
         String pathInfo = request.getPathInfo(); // format: /{articleId}/reaction
         if (pathInfo == null || pathInfo.equals("/")) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Article ID is missing in URL");
@@ -41,6 +44,18 @@ public class NewsReactionServlet extends HttpServlet {
         }
 
 //        int userId = (int) request.getSession().getAttribute("userId");
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write(errorJson("Login required"));
+            return;
+        }
+
+        Object userObj = request.getSession().getAttribute("user");
+        int userId = -1;
+        if (userObj instanceof backend.newsaggregation.model.User user) {
+            userId = ((backend.newsaggregation.model.User) userObj).getId();
+        }
         if (userId == 0) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
             return;
@@ -64,7 +79,6 @@ public class NewsReactionServlet extends HttpServlet {
             boolean success = service.reactToArticle(userId, articleId, reaction);
 
             response.setContentType("application/json");
-            PrintWriter out = response.getWriter();
             if (success) {
                 out.write("{\"status\": \"success\", \"message\": \"Reaction recorded.\"}");
             } else {
@@ -76,5 +90,12 @@ public class NewsReactionServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("{\"status\": \"error\", \"message\": \"Server error.\"}");
         }
+    }
+    
+    private String errorJson(String msg) {
+        JsonObject json = new JsonObject();
+        json.addProperty("success", false);
+        json.addProperty("message", msg);
+        return json.toString();
     }
 }
