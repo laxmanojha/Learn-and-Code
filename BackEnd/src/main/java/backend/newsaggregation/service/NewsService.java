@@ -6,7 +6,10 @@ import backend.newsaggregation.model.NewsArticleCategoryInfo;
 
 import java.time.LocalDate;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NewsService {
 
@@ -30,11 +33,12 @@ public class NewsService {
 
     public List<NewsArticle> getTodayHeadlines() {
         Date today = Date.valueOf(LocalDate.now());
-        List<NewsArticle> newsArticles = newsDao.getNewsByDate(today);
+        List<NewsArticle> newsArticles = null;
+        newsArticles = newsDao.getNewsByDate(today);
         for (NewsArticle newsArticle: newsArticles) {
         	newsArticle = mapCategoriesToNews(newsArticle);
         }
-        return newsArticles;
+        return filterUniqueById(newsArticles);
     }
     
 //    private List<NewsArticle> mapCategoriesToNews(List<NewsArticle> newsArticles) {
@@ -51,7 +55,7 @@ public class NewsService {
 //    }
     
     private NewsArticle mapCategoriesToNews(NewsArticle newsArticle) {
-    	List<NewsArticleCategoryInfo> articleCategoryInfos = newsDao.getAllCategory();
+    	List<NewsArticleCategoryInfo> articleCategoryInfos = newsDao.getAllCategory(newsArticle.getId());
 		for (NewsArticleCategoryInfo articleCategoryInfo: articleCategoryInfos) {
 			if (newsArticle.getId() == articleCategoryInfo.getNewsId()) {
 				newsArticle.getCategories().add(articleCategoryInfo.getCategoryType());
@@ -60,13 +64,21 @@ public class NewsService {
     	
     	return newsArticle;
     }
+    
+    private static List<NewsArticle> filterUniqueById(List<NewsArticle> articles) {
+        Map<Integer, NewsArticle> uniqueMap = new LinkedHashMap<>();
+        for (NewsArticle article : articles) {
+            uniqueMap.putIfAbsent(article.getId(), article);
+        }
+        return new ArrayList<>(uniqueMap.values());
+    }
 
     public List<NewsArticle> getHeadlinesByDateRange(Date start, Date end) {
     	List<NewsArticle> newsArticles = newsDao.getNewsByDateRange(start, end);
     	for (NewsArticle newsArticle: newsArticles) {
         	newsArticle = mapCategoriesToNews(newsArticle);
         }
-        return newsArticles;
+        return filterUniqueById(newsArticles);
     }
     
     public List<NewsArticle> getHeadlinesByDateRangeAndCategory(Date start, Date end, String category) {

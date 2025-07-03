@@ -234,17 +234,19 @@ public class NewsDaoImpl implements NewsDao {
     }
     
     @Override
-    public List<NewsArticleCategoryInfo> getAllCategory() {
+    public List<NewsArticleCategoryInfo> getAllCategory(int newsId) {
     	List<NewsArticleCategoryInfo> result = new ArrayList<>();
         
         String sql = """
             SELECT nc.id AS category_id, nc.category_type, nac.news_id, nac.created_at
             FROM news_article_category nac
             JOIN news_category nc ON nac.category_id = nc.id
+            WHERE nac.news_id = ?
         """;
 
         try {
         	PreparedStatement ps = conn.prepareStatement(sql);
+        	ps.setInt(1, newsId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 NewsArticleCategoryInfo info = new NewsArticleCategoryInfo(

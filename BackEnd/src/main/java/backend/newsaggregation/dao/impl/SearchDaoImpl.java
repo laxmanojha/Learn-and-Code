@@ -36,6 +36,7 @@ public class SearchDaoImpl implements SearchDao {
     	article.setSource(rs.getString("source"));
     	article.setUrl(rs.getString("url"));
     	article.setPublishedAt(rs.getDate("published_at"));
+    	article.setCategories(new ArrayList<>());
     	return article;
     }
 

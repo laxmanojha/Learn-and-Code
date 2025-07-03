@@ -23,5 +23,5 @@ public interface NewsDao {
     int getLatestNewsArticleId();
     int getOrInsertCategoryId(String categoryType);
     boolean insertNewsCategoryMapping(int newsId, int categoryId);
-    List<NewsArticleCategoryInfo> getAllCategory();
+    List<NewsArticleCategoryInfo> getAllCategory(int newsId);
 }
