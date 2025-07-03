@@ -3,6 +3,8 @@ package frontend.newsaggregation.service;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+
+import frontend.newsaggregation.constant.StaticConfiguration;
 import frontend.newsaggregation.model.ExternalServer;
 import frontend.newsaggregation.util.HttpUtil;
 
@@ -17,6 +19,7 @@ import java.util.List;
 public class ExternalServerService {
 
     private static ExternalServerService instance; 
+    private final static String BASE_URL = StaticConfiguration.getBaseUrl();
 
     public static ExternalServerService getInstance() {
         if (instance == null) {
@@ -26,7 +29,7 @@ public class ExternalServerService {
     }
 
     public List<ExternalServer> getAllServers() {
-    	String url = "http://localhost:8080/backend/api/servers/";
+    	String url = BASE_URL + "servers/";
         try {
             HttpResponse<String> response = HttpUtil.sendGetRequest(url);
             
@@ -47,7 +50,7 @@ public class ExternalServerService {
     }
     
     public List<ExternalServer> getServerDetails() {
-        String url = "http://localhost:8080/backend/api/servers/details";
+        String url = BASE_URL + "servers/details";
 
         try {
             HttpResponse<String> response = HttpUtil.sendGetRequest(url);
@@ -68,7 +71,7 @@ public class ExternalServerService {
     }
     
     public boolean updateApiKey(int serverId, String newApiKey) {
-        String url = "http://localhost:8080/backend/api/servers/" + serverId;
+        String url = BASE_URL + "servers/" + serverId;
 
         try {
             JsonObject requestBody = new JsonObject();

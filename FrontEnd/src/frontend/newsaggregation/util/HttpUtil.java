@@ -22,12 +22,13 @@ public class HttpUtil {
     public static HttpResponse<String> loginAndSetSessionCookie(String loginUrl, String payloadJson) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(loginUrl))
-                .POST(HttpRequest.BodyPublishers.ofString(payloadJson))
+                .POST(BodyPublishers.ofString(payloadJson))
                 .header("Content-Type", "application/json")
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
+        System.out.println(response.headers());
+        System.out.println(response.headers().firstValue("Set-Cookie"));
         Optional<String> cookie = response.headers().firstValue("Set-Cookie");
 
         cookie.ifPresentOrElse(
