@@ -20,6 +20,6 @@ public class AppStartUpListener implements ServletContextListener {
         if (scheduler != null) {
             scheduler.stop();
         }
-        System.out.println("[AppStartupListener] 🛑 Scheduler stopped.");
+        System.out.println("[AppStartupListener] Scheduler stopped.");
     }
 }
