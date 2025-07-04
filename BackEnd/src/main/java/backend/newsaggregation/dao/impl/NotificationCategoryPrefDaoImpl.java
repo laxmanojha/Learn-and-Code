@@ -13,7 +13,7 @@ import backend.newsaggregation.util.DatabaseConfig;
 public class NotificationCategoryPrefDaoImpl implements NotificationCategoryPrefDao {
 
     private static NotificationCategoryPrefDaoImpl instance;
-    Connection conn = DatabaseConfig.getConnection();
+    private static Connection conn = DatabaseConfig.getConnection();
 
     private NotificationCategoryPrefDaoImpl() {}
 
@@ -100,7 +100,7 @@ public class NotificationCategoryPrefDaoImpl implements NotificationCategoryPref
 
         } catch (SQLException e) {
             e.printStackTrace();
-            try (Connection conn = DatabaseConfig.getConnection()) {
+            try {
                 if (conn != null && !conn.getAutoCommit()) {
                     conn.rollback();
                 }

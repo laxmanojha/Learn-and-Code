@@ -99,7 +99,7 @@ public class NotificationServlet extends HttpServlet {
 
             boolean updated = notificationService.updateCategoryConfig(userId, categoryId, keywords);
             writeSuccess(resp, updated, "Preference updated");
-        } else if ("config/keywords".equals(path)) {
+        } else if ("/config/keywords".equals(path)) {
             Map<String, Object> body = parseJsonBody(req);
 
             @SuppressWarnings("unchecked")
@@ -129,7 +129,7 @@ public class NotificationServlet extends HttpServlet {
 
             boolean updated = notificationService.updateCategoryConfig(userId, categoryId);
             writeSuccess(resp, updated, "Preference updated");
-        } else if ("config/keywords".equals(path)) {
+        } else if ("/config/keywords".equals(path)) {
 
             boolean success = notificationService.removeKeywords(userId);
             writeSuccess(resp, success, "Keyword(s) removed");
