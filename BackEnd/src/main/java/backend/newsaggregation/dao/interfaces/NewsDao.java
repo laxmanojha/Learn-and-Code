@@ -6,7 +6,6 @@ import java.util.List;
 import backend.newsaggregation.dao.impl.NewsDaoImpl;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.model.NewsArticleCategoryInfo;
-import backend.newsaggregation.model.NewsArticle;
 
 public interface NewsDao {
 	

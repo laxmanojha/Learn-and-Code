@@ -21,7 +21,7 @@ public class NewsScheduler {
 
     public void start() {
         Runnable fetchTask = () -> {
-            System.out.println("Fetching news at: " + new java.util.Date());
+        	System.out.println("Scheduler is running at: " + new java.util.Date());
             ExternalServerService serverService = ExternalServerService.getInstance();
             List<NewsArticle> allNews = new ArrayList<>();
 

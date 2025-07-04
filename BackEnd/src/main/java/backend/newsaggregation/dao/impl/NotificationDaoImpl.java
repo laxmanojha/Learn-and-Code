@@ -8,10 +8,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import backend.newsaggregation.dao.interfaces.NotificationDao;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.util.DatabaseConfig;
 
-public class NotificationDaoImpl {
+public class NotificationDaoImpl implements NotificationDao{
 	
 	private static NotificationDaoImpl instance;
     private static Connection connection = DatabaseConfig.getConnection();
@@ -25,6 +26,7 @@ public class NotificationDaoImpl {
         return instance;
     }
 
+    @Override
 	public List<NewsArticle> getNewsForConsoleNotification(int userId, Timestamp from, Timestamp to){
 		List<NewsArticle> result = new ArrayList<>();
 		try {
@@ -64,7 +66,7 @@ public class NotificationDaoImpl {
 
     private List<NewsArticle> getAllNewsBetween(Timestamp from, Timestamp to) throws SQLException {
         List<NewsArticle> list = new ArrayList<>();
-        String sql = "SELECT * FROM news_article WHERE created_at > ? AND created_at <= ? ORDER BY created_at DESC";
+        String sql = "SELECT * FROM news_article WHERE created_at >= ? AND created_at <= ? ORDER BY created_at DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setTimestamp(1, from);
@@ -78,6 +80,7 @@ public class NotificationDaoImpl {
             	article.setUrl(rs.getString("url"));
             	article.setSource(rs.getString("source"));
             	article.setPublishedAt(rs.getTimestamp("created_at"));
+            	article.setCategories(new ArrayList<>());
                 list.add(article);
             }
         }
@@ -90,12 +93,13 @@ public class NotificationDaoImpl {
             SELECT DISTINCT n.*
             FROM news_article n
             JOIN news_article_category nc ON n.id = nc.news_id
-            JOIN notification_category_pref uck ON nc.category_id = uck.category_id
-            WHERE uck.user_id = ?
-              AND n.created_at > ? AND n.created_at <= ?
+            JOIN notification_category_pref ncp ON nc.category_id = ncp.category_id
+            WHERE ncp.user_id = ?
+              AND n.created_at >= ? AND n.created_at <= ?
               AND (
-                n.title LIKE CONCAT('%', uck.keyword, '%')
-                OR n.description LIKE CONCAT('%', uck.keyword, '%')
+                n.title LIKE CONCAT('%', ncp.keyword, '%')
+                OR n.description LIKE CONCAT('%', ncp.keyword, '%')
+                OR n.snippet LIKE CONCAT('%', ncp.keyword, '%')
               )
             ORDER BY n.created_at DESC
         """;
@@ -113,6 +117,7 @@ public class NotificationDaoImpl {
             	article.setUrl(rs.getString("url"));
             	article.setSource(rs.getString("source"));
             	article.setPublishedAt(rs.getTimestamp("created_at"));
+            	article.setCategories(new ArrayList<>());
                 result.add(article);
             }
         }
@@ -136,10 +141,10 @@ public class NotificationDaoImpl {
 
         if (keywords.isEmpty()) return matchedNews;
 
-        StringBuilder sql = new StringBuilder("SELECT * FROM news_article WHERE created_at > ? AND created_at <= ? AND (");
-        for (int i = 0; i < keywords.size(); i++) {
-            if (i > 0) sql.append(" OR ");
-            sql.append("LOWER(title) LIKE ? OR LOWER(description) LIKE ?");
+        StringBuilder sql = new StringBuilder("SELECT * FROM news_article WHERE created_at >= ? AND created_at <= ? AND (");
+        for (int index = 0; index < keywords.size(); index++) {
+            if (index > 0) sql.append(" OR ");
+            sql.append("LOWER(title) LIKE ? OR LOWER(description) LIKE ? OR LOWER(snippet) LIKE ?");
         }
         sql.append(") ORDER BY created_at DESC");
 
@@ -149,6 +154,7 @@ public class NotificationDaoImpl {
             int index = 3;
             for (String keyword : keywords) {
                 String pattern = "%" + keyword.toLowerCase() + "%";
+                stmt.setString(index++, pattern);
                 stmt.setString(index++, pattern);
                 stmt.setString(index++, pattern);
             }
@@ -162,6 +168,7 @@ public class NotificationDaoImpl {
                 	article.setUrl(rs.getString("url"));
                 	article.setSource(rs.getString("source"));
                 	article.setPublishedAt(rs.getTimestamp("created_at"));
+                	article.setCategories(new ArrayList<>());
                     matchedNews.add(article);
                 }
             }

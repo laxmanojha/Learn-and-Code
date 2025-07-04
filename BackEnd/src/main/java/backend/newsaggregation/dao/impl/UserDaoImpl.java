@@ -30,7 +30,6 @@ public class UserDaoImpl implements UserDao {
         User user = null;
         String sql = "SELECT * FROM user INNER JOIN user_role ON user.role_id = user_role.id WHERE username = ? ";
         try {
-        	Connection conn = DatabaseConfig.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -58,7 +57,6 @@ public class UserDaoImpl implements UserDao {
     	User user = null;
     	String sql = "SELECT * FROM user INNER JOIN user_role ON user.role_id = user_role.id WHERE email = ? ";
     	try {
-    		Connection conn = DatabaseConfig.getConnection();
     		PreparedStatement stmt = conn.prepareStatement(sql);
     		stmt.setString(1, email);
     		ResultSet rs = stmt.executeQuery();
@@ -85,7 +83,6 @@ public class UserDaoImpl implements UserDao {
     public boolean saveUser(User user) {
         String sql = "INSERT INTO user (username, password, email, role_id) VALUES (?, ?, ?, ?)";
         try {
-        	Connection conn = DatabaseConfig.getConnection();
         	PreparedStatement stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, user.getUsername());
@@ -125,9 +122,8 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean saveNotificationViewedTime(int userId, Timestamp time) {
         String sql = "UPDATE user SET notification_viewed_at = ? WHERE id = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        try {
+        	PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setTimestamp(1, new java.sql.Timestamp(time.getTime()));
             stmt.setInt(2, userId);
 
