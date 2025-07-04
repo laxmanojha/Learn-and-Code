@@ -1,6 +1,7 @@
 package frontend.newsaggregation.console.menu;
 
 import frontend.newsaggregation.model.Category;
+import frontend.newsaggregation.model.NewsArticle;
 import frontend.newsaggregation.model.NotificationPreference;
 import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.NotificationService;
@@ -16,6 +17,9 @@ public class NotificationMenu {
 
     public static void startNotificationMenu(User user) {
         while (true) {
+        	if (AppState.shouldExitToHome()) {
+                return;
+            }
             System.out.println("\nN O T I F I C A T I O N S");
             System.out.println("1. View Notifications");
             System.out.println("2. Configure Notifications");
@@ -44,7 +48,7 @@ public class NotificationMenu {
     }
 
     private static void viewNotifications() {
-        List<String> notifications = notificationService.fetchNotifications();
+        List<NewsArticle> notifications = notificationService.fetchNotifications();
         if (notifications.isEmpty()) {
             System.out.println("No notifications found.");
             return;
@@ -53,18 +57,25 @@ public class NotificationMenu {
         int page = 0;
         int pageSize = 5;
         while (true) {
-        	if (AppState.shouldExitToHome()) {
+            if (AppState.shouldExitToHome()) {
                 return;
             }
+
             int start = page * pageSize;
             int end = Math.min(start + pageSize, notifications.size());
 
-            System.out.println("\nNotifications (Page " + (page + 1) + "):");
+            System.out.println("\nN O T I F I C A T I O N S  (Page " + (page + 1) + "):");
             for (int i = start; i < end; i++) {
-                System.out.println((i + 1) + ". " + notifications.get(i));
+                NewsArticle article = notifications.get(i);
+                System.out.println((i + 1) + ". " + article.getTitle());
+                System.out.println("   ➤ Source: " + article.getSource());
+                System.out.println("   ➤ Categories: " + article.getCategories());
+                System.out.println("   ➤ Published At: " + article.getPublishedAt());
+                System.out.println("   ➤ URL: " + article.getUrl());
+                System.out.println("-------------------------------------------------");
             }
 
-            System.out.println("\nOptions: n (Next), p (Previous), b (Back), l (Logout)");
+            System.out.println("Options: n (Next), p (Previous), b (Back), l (Logout)");
             String option = InputUtil.readLine("Choose: ");
 
             switch (option.toLowerCase()) {
@@ -94,25 +105,40 @@ public class NotificationMenu {
     }
 
     private static void configureNotifications() {
-        List<Category> categories = notificationService.fetchCategories();
-        List<NotificationPreference> preferences = notificationService.fetchPreferences();
-
         while (true) {
-        	if (AppState.shouldExitToHome()) {
+            if (AppState.shouldExitToHome()) {
                 return;
             }
+
+            List<Category> categories = notificationService.fetchCategories();
+            List<NotificationPreference> categoryPreferences = notificationService.fetchCategoryPreferences();
+            NotificationPreference keywordPreferences = notificationService.fetchKeywordsPreferences();
+
             System.out.println("\nC O N F I G U R E - N O T I F I C A T I O N S");
+
             int index = 1;
             for (Category cat : categories) {
-                boolean isEnabled = preferences.stream()
-                        .anyMatch(p -> p.getCategoryId() != null && p.getCategoryId() == cat.getId() && p.isEnabled());
-                System.out.println(index++ + ". " + cat.getName() + " - " + (isEnabled ? "Enabled" : "Disabled"));
+                List<String> catKeywords = categoryPreferences.stream()
+                        .filter(p -> p.getCategoryId() != null && p.getCategoryId() == cat.getId() && p.isEnabled())
+                        .flatMap(p -> p.getKeywords() != null ? p.getKeywords().stream() : java.util.stream.Stream.empty())
+                        .toList();
+
+                boolean isEnabled = !catKeywords.isEmpty();
+
+                String keywordDisplay = isEnabled ? " [" + String.join(", ", catKeywords) + "]" : "";
+                System.out.println(index++ + ". " + cat.getName() + keywordDisplay + " - " + (isEnabled ? "Enabled" : "Disabled"));
             }
 
-            boolean isKeywordEnabled = preferences.stream()
-                    .anyMatch(p -> p.getKeyword() != null && p.isEnabled());
+            // Handle keyword (non-category) preferences
+            boolean isKeywordEnabled = keywordPreferences != null && keywordPreferences.isEnabled();
+            List<String> keywordOnlyPrefs = keywordPreferences != null && keywordPreferences.getKeywords() != null
+                    ? keywordPreferences.getKeywords()
+                    : List.of();
+            String keywordDisplay = isKeywordEnabled && !keywordOnlyPrefs.isEmpty()
+                    ? " [" + String.join(", ", keywordOnlyPrefs) + "]"
+                    : "";
 
-            System.out.println(index + ". Keywords - " + (isKeywordEnabled ? "Enabled" : "Disabled"));
+            System.out.println(index + ". Keywords" + keywordDisplay + " - " + (isKeywordEnabled ? "Enabled" : "Disabled"));
             int keywordOption = index;
             index++;
             System.out.println(index + ". Back");
@@ -133,7 +159,7 @@ public class NotificationMenu {
                     if (option == keywordOption) {
                         handleKeywordOption(isKeywordEnabled);
                     } else if (option > 0 && option <= categories.size()) {
-                        handleCategoryOption(categories.get(option - 1), preferences);
+                        handleCategoryOption(categories.get(option - 1), categoryPreferences);
                     } else {
                         System.out.println("Invalid option.");
                     }
