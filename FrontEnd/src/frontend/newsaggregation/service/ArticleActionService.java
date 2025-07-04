@@ -22,7 +22,7 @@ public class ArticleActionService {
     public boolean reactToArticle(int articleId, String reaction) {
         try {
             String json = "{ \"reaction\": \"" + reaction + "\" }";
-            HttpResponse<String> response = HttpUtil.sendPostRequest(BASE_URL + "/news/" + articleId + "/reaction", json);
+            HttpResponse<String> response = HttpUtil.sendPostRequest(BASE_URL + "/news-reaction/" + articleId, json);
             return HttpUtil.processResponse(response, "React to Article");
         } catch (IOException | InterruptedException e) {
             System.err.println("Failed to react to article: " + e.getMessage());

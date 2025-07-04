@@ -133,7 +133,7 @@ public class NewsServlet extends HttpServlet {
 
                 JsonObject result = new JsonObject();
                 result.addProperty("success", saved);
-                result.addProperty("message", saved ? "Article saved." : "Could not save article.");
+                result.addProperty("message", saved ? "Article saved." : "Could not save article or Article is already saved.");
                 out.write(result.toString());
             } else if (parts.length == 2 && parts[1].equals("category")) {
             	if (!isAdmin(request)) {

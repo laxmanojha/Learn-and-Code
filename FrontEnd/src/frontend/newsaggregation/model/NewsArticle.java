@@ -14,6 +14,8 @@ public class NewsArticle {
     private String imageUrl;
     private String source;
     private List<String> categories;
+    private int likeCount;
+    private int dislikeCount;
 	
 	public NewsArticle() {}
 	
@@ -90,6 +92,22 @@ public class NewsArticle {
 		return categories;
 	}
 
+	public int getLikeCount() {
+		return likeCount;
+	}
+
+	public int getDislikeCount() {
+		return dislikeCount;
+	}
+
+	public void setLikeCount(int likeCount) {
+		this.likeCount = likeCount;
+	}
+
+	public void setDislikeCount(int dislikeCount) {
+		this.dislikeCount = dislikeCount;
+	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -135,5 +153,17 @@ public class NewsArticle {
 	            + "URL: " + url + "\n"
 	            + "Categories: " + (categories != null && !categories.isEmpty() ? String.join(", ", categories) : "General") + "\n"
 	            + "Published At: " + publishedAt;
+	}
+	
+	public String displayWithReaction() {
+		return "Article ID: " + id + "\n"
+				+ title + "\n"
+				+ (snippet != null ? snippet : description) + "\n"
+				+ "Source: " + source + "\n"
+				+ "URL: " + url + "\n"
+				+ "Categories: " + (categories != null && !categories.isEmpty() ? String.join(", ", categories) : "General") + "\n"
+				+ "Published At: " + publishedAt + "\n"
+				+ "Likes: " + likeCount + "\n"
+				+ "Dislikes: " + dislikeCount;
 	}
 }

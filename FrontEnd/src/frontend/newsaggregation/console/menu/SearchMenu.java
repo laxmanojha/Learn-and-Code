@@ -51,6 +51,12 @@ public class SearchMenu {
 
         // Fetch results
         List<NewsArticle> articles = searchService.searchArticles(query, startDate, endDate, sort);
+        
+        if ("likes".equalsIgnoreCase(sort)) {
+            articles.sort((a, b) -> Integer.compare(b.getLikeCount(), a.getLikeCount())); // Descending by likes
+        } else if ("dislikes".equalsIgnoreCase(sort)) {
+            articles.sort((a, b) -> Integer.compare(b.getDislikeCount(), a.getDislikeCount())); // Descending by dislikes
+        }
 
         System.out.println("\nWelcome to the News Application, " + user.getUsername() + "!");
         System.out.println("Date: " + DateUtil.getCurrentDate() + " Time: " + DateUtil.getCurrentTime());
@@ -59,9 +65,10 @@ public class SearchMenu {
 
         if (articles.isEmpty()) {
             System.out.println("No articles found for your query.");
+            return;
         } else {
             articles.forEach(article -> {
-                System.out.println(article);
+                System.out.println(article.displayWithReaction());
                 System.out.println("-------------------------------------------------");
             });
         }

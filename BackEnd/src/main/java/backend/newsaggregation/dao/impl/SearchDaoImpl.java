@@ -28,17 +28,17 @@ public class SearchDaoImpl implements SearchDao {
         return instance;
     }
     
-    private NewsArticle extractArticle(ResultSet rs) throws SQLException {
-    	NewsArticle article = new NewsArticle();
-    	article.setId(rs.getInt("id"));
-    	article.setTitle(rs.getString("title"));
-    	article.setSnippet(rs.getString("description"));
-    	article.setSource(rs.getString("source"));
-    	article.setUrl(rs.getString("url"));
-    	article.setPublishedAt(rs.getDate("published_at"));
-    	article.setCategories(new ArrayList<>());
-    	return article;
-    }
+//    private NewsArticle extractArticle(ResultSet rs) throws SQLException {
+//    	NewsArticle article = new NewsArticle();
+//    	article.setId(rs.getInt("id"));
+//    	article.setTitle(rs.getString("title"));
+//    	article.setSnippet(rs.getString("description"));
+//    	article.setSource(rs.getString("source"));
+//    	article.setUrl(rs.getString("url"));
+//    	article.setPublishedAt(rs.getDate("published_at"));
+//    	article.setCategories(new ArrayList<>());
+//    	return article;
+//    }
 
     private NewsArticle extractArticleWithReactionCount(ResultSet rs) throws SQLException {
         NewsArticle article = new NewsArticle();
@@ -48,22 +48,38 @@ public class SearchDaoImpl implements SearchDao {
         article.setSource(rs.getString("source"));
         article.setUrl(rs.getString("url"));
         article.setPublishedAt(rs.getDate("published_at"));
+        article.setCategories(new ArrayList<>());
+        article.setLikeCount(rs.getInt("like_count"));
+        article.setDislikeCount(rs.getInt("dislike_count"));
         return article;
     }
 
     @Override
     public List<NewsArticle> searchArticles(String keyword) {
-        String sql = "SELECT * FROM news_article WHERE title LIKE ? OR description LIKE ?";
+    	String sql = """
+                SELECT na.*, 
+                       COUNT(CASE WHEN nar.reaction_type = 'like' THEN 1 END) AS like_count,
+                       COUNT(CASE WHEN nar.reaction_type = 'dislike' THEN 1 END) AS dislike_count
+                FROM news_article na
+                LEFT JOIN news_article_reaction nar ON na.id = nar.news_id
+                WHERE na.title LIKE ? OR na.description LIKE ?
+                GROUP BY na.id
+                """;
         return search(sql, keyword, null, null, null);
     }
 
     @Override
     public List<NewsArticle> searchArticles(String keyword, LocalDate startDate, LocalDate endDate) {
-        String sql = """
-            SELECT * FROM news_article 
-            WHERE (title LIKE ? OR description LIKE ?)
-              AND published_at BETWEEN ? AND ?
-        """;
+    	String sql = """
+                SELECT na.*, 
+                       COUNT(CASE WHEN nar.reaction_type = 'like' THEN 1 END) AS like_count,
+                       COUNT(CASE WHEN nar.reaction_type = 'dislike' THEN 1 END) AS dislike_count
+                FROM news_article na
+                LEFT JOIN news_article_reaction nar ON na.id = nar.news_id
+                WHERE na.title LIKE ? OR na.description LIKE ?
+        		AND na.published_at BETWEEN ? AND ?
+                GROUP BY na.id
+                """;
         return search(sql, keyword, startDate, endDate, null);
     }
 
@@ -95,16 +111,15 @@ public class SearchDaoImpl implements SearchDao {
         }
 
         String sql = """
-            SELECT na.*, nac.category_id AS category,
-                   COUNT(CASE WHEN nar.reaction_type = 'like' THEN 1 END) AS like_count,
-                   COUNT(CASE WHEN nar.reaction_type = 'dislike' THEN 1 END) AS dislike_count
-            FROM news_article na
-            LEFT JOIN news_article_reaction nar ON na.id = nar.news_id
-            JOIN news_article_category nac ON na.id = nac.news_id
-            WHERE (na.title LIKE ? OR na.description LIKE ?)
-              AND na.published_at BETWEEN ? AND ?
-            GROUP BY na.id, nac.category_id
-            ORDER BY ? DESC""";
+                SELECT na.*, 
+                       COUNT(CASE WHEN nar.reaction_type = 'like' THEN 1 END) AS like_count,
+                       COUNT(CASE WHEN nar.reaction_type = 'dislike' THEN 1 END) AS dislike_count
+                FROM news_article na
+                LEFT JOIN news_article_reaction nar ON na.id = nar.news_id
+                WHERE na.title LIKE ? OR na.description LIKE ?
+        		AND na.published_at BETWEEN ? AND ?
+                GROUP BY na.id
+                ORDER BY ? DESC""";
 
         return search(sql, keyword, startDate, endDate, sortColumn);
     }
@@ -129,10 +144,7 @@ public class SearchDaoImpl implements SearchDao {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-            	if (sortColumn == null)
-            		articles.add(extractArticle(rs));
-            	else
-            		articles.add(extractArticleWithReactionCount(rs));
+            	articles.add(extractArticleWithReactionCount(rs));
             }
 
         } catch (SQLException e) {
