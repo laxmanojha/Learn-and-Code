@@ -34,7 +34,12 @@ public class HeadlineService {
 
     public List<NewsArticle> fetchHeadlinesByDateRange(String startDate, String endDate, String category) {
         try {
-            String url = BASE_URL + "/news/date-range?start=" + startDate + "&end=" + endDate + "&type=" + category;
+        	String url = null;
+        	if (category.equalsIgnoreCase("all")) {
+        		url = BASE_URL + "/news/date-range?start=" + startDate + "&end=" + endDate;
+        	} else {
+        		url = BASE_URL + "/news/date-range?start=" + startDate + "&end=" + endDate + "&type=" + category;
+        	}
             HttpResponse<String> response = HttpUtil.sendGetRequest(url);
 
             if (response.statusCode() == 200) {

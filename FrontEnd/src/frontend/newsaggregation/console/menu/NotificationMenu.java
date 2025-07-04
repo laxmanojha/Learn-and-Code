@@ -4,6 +4,7 @@ import frontend.newsaggregation.model.Category;
 import frontend.newsaggregation.model.NotificationPreference;
 import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.NotificationService;
+import frontend.newsaggregation.util.AppState;
 import frontend.newsaggregation.util.InputUtil;
 
 import java.util.Arrays;
@@ -34,6 +35,7 @@ public class NotificationMenu {
                     return;
                 case "4":
                     System.out.println("Logging out...");
+                    AppState.setExitToHome(true);
                     return;
                 default:
                     System.out.println("Invalid choice.");
@@ -51,6 +53,9 @@ public class NotificationMenu {
         int page = 0;
         int pageSize = 5;
         while (true) {
+        	if (AppState.shouldExitToHome()) {
+                return;
+            }
             int start = page * pageSize;
             int end = Math.min(start + pageSize, notifications.size());
 
@@ -80,8 +85,8 @@ public class NotificationMenu {
                 case "b":
                     return;
                 case "l":
-                    System.out.println("Logging out...");
-                    System.exit(0);
+                    AppState.setExitToHome(true);
+                    return;
                 default:
                     System.out.println("Invalid option.");
             }
@@ -93,6 +98,9 @@ public class NotificationMenu {
         List<NotificationPreference> preferences = notificationService.fetchPreferences();
 
         while (true) {
+        	if (AppState.shouldExitToHome()) {
+                return;
+            }
             System.out.println("\nC O N F I G U R E - N O T I F I C A T I O N S");
             int index = 1;
             for (Category cat : categories) {
@@ -117,7 +125,8 @@ public class NotificationMenu {
                 return;
             } else if (choice.equals(String.valueOf(index))) {
                 System.out.println("Logging out...");
-                System.exit(0);
+                AppState.setExitToHome(true);
+                return;
             } else {
                 try {
                     int option = Integer.parseInt(choice);

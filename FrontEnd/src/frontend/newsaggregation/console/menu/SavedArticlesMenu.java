@@ -4,6 +4,7 @@ import frontend.newsaggregation.model.NewsArticle;
 import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.service.SavedArticlesService;
+import frontend.newsaggregation.util.AppState;
 import frontend.newsaggregation.util.DateUtil;
 import frontend.newsaggregation.util.InputUtil;
 
@@ -15,6 +16,9 @@ public class SavedArticlesMenu {
 
     public static void show(User user) {
         while (true) {
+        	if (AppState.shouldExitToHome()) {
+                return;
+            }
             List<NewsArticle> savedArticles = savedService.fetchSavedArticles();
 
             System.out.println("\nWelcome to the News Application, " + user.getUsername() + "!");
@@ -41,12 +45,13 @@ public class SavedArticlesMenu {
                     return;
                 case "2":
                     if (AuthService.getInstance().logout()) {
-                        System.out.println("Logged out successfully.");
-                        System.exit(0);
+                        AppState.setExitToHome(true);
+                        return;
                     }
                     break;
                 case "3":
                     int articleId = InputUtil.readInt("Enter Article ID to delete: ");
+                    System.out.println("ArticleID: " + articleId);
                     boolean deleted = savedService.deleteSavedArticle(articleId);
                     if (deleted) {
                         System.out.println("Article deleted successfully.");

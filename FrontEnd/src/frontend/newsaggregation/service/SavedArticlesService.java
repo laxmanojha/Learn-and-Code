@@ -36,7 +36,7 @@ public class SavedArticlesService {
     }
 
     public boolean deleteSavedArticle(int articleId) {
-        String url = StaticConfiguration.getBaseUrl() + "/news/saved/" + articleId + "/delete";
+        String url = StaticConfiguration.getBaseUrl() + "/news/saved/" + articleId;
 
         try {
             HttpResponse<String> response = HttpUtil.sendDeleteRequest(url);

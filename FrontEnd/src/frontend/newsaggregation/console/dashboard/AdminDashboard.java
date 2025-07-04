@@ -7,6 +7,7 @@ import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.service.CategoryService;
 import frontend.newsaggregation.service.ExternalServerService;
+import frontend.newsaggregation.util.AppState;
 import frontend.newsaggregation.util.InputUtil;
 
 public class AdminDashboard {
@@ -16,6 +17,10 @@ public class AdminDashboard {
 
     public static void startAdminMenu(User user) {
         while (true) {
+        	if (AppState.shouldExitToHome()) {
+                AppState.reset();
+                return;
+            }
             System.out.println("\nWelcome " + user.getUsername() + "! Please choose an option:");
             System.out.println("1. View the list of external servers and status");
             System.out.println("2. View the external server’s details");
@@ -95,6 +100,7 @@ public class AdminDashboard {
 
                 case "5":
                 	handleLogout();
+                    AppState.setExitToHome(true);
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");

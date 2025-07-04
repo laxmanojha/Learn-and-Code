@@ -1,11 +1,21 @@
 package frontend.newsaggregation.console.menu;
 
+import java.lang.reflect.Type;
+import java.net.http.HttpResponse;
 import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import frontend.newsaggregation.constant.StaticConfiguration;
+import frontend.newsaggregation.model.Category;
 import frontend.newsaggregation.model.NewsArticle;
 import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.ArticleActionService;
 import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.service.HeadlineService;
+import frontend.newsaggregation.util.AppState;
+import frontend.newsaggregation.util.HttpUtil;
 import frontend.newsaggregation.util.InputUtil;
 
 public class HeadlineMenu {
@@ -16,6 +26,9 @@ public class HeadlineMenu {
 
     public static void startHeadlineMenu(User user) {
         while (true) {
+        	if (AppState.shouldExitToHome()) {
+                return;
+            }
             System.out.println("\nHeadlines Menu:");
             System.out.println("1. Today");
             System.out.println("2. Date Range");
@@ -33,6 +46,7 @@ public class HeadlineMenu {
                 case "3":
                     if (authService.logout()) {
                         System.out.println("Logged out successfully.");
+                        AppState.setExitToHome(true);
                         return;
                     } else {
                         System.out.println("Logout failed.");
@@ -67,33 +81,59 @@ public class HeadlineMenu {
     }
 
     private static String selectCategory() {
-        System.out.println("\nSelect Category:");
-        System.out.println("1. All");
-        System.out.println("2. Business");
-        System.out.println("3. Entertainment");
-        System.out.println("4. Sports");
-        System.out.println("5. Technology");
+        String url = StaticConfiguration.getBaseUrl() + "/news/category";
 
-        String choice = InputUtil.readLine("Enter your choice: ");
-        switch (choice) {
-            case "1":
+        try {
+            HttpResponse<String> response = HttpUtil.sendGetRequest(url);
+            if (response.statusCode() != 200) {
+                System.out.println("Failed to fetch categories. Using default 'general'.");
                 return "general";
-            case "2":
-                return "business";
-            case "3":
-                return "entertainment";
-            case "4":
-                return "sports";
-            case "5":
-                return "technology";
-            default:
-                System.out.println("Invalid choice, defaulting to 'general'.");
+            }
+
+            // Parse JSON array to List<Category>
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<Category>>() {}.getType();
+            List<Category> categories = gson.fromJson(response.body(), listType);
+
+            // Show menu
+            System.out.println("\nSelect Category:");
+            System.out.println("0. All");
+
+            for (int i = 0; i < categories.size(); i++) {
+                System.out.printf("%d. %s%n", i + 1, capitalize(categories.get(i).getName()));
+            }
+
+            String choice = InputUtil.readLine("Enter your choice: ");
+            int index = Integer.parseInt(choice);
+
+            if (index == 0) {
                 return "general";
+            }
+
+            if (index > 0 && index <= categories.size()) {
+                return categories.get(index - 1).getName();
+            } else {
+                System.out.println("Invalid choice. Using default 'general'.");
+                return "general";
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error fetching categories: " + e.getMessage());
+            return "general";
         }
+    }
+
+    private static String capitalize(String word) {
+        if (word == null || word.isEmpty()) return word;
+        return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
     }
 
     private static void handleArticleActions(List<NewsArticle> articles, User user) {
         while (true) {
+        	if (AppState.shouldExitToHome()) {
+                AppState.reset();
+                return;
+            }
             System.out.println("\n----- HEADLINES -----");
             for (NewsArticle article : articles) {
                 System.out.println(article);
@@ -115,7 +155,8 @@ public class HeadlineMenu {
                 case "2":
                     if (authService.logout()) {
                         System.out.println("Logged out successfully.");
-                        System.exit(0);
+                        AppState.setExitToHome(true);
+                        return;
                     } else {
                         System.out.println("Logout failed.");
                     }

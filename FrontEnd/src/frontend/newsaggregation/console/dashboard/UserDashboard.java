@@ -6,6 +6,7 @@ import frontend.newsaggregation.console.menu.SavedArticlesMenu;
 import frontend.newsaggregation.console.menu.SearchMenu;
 import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.AuthService;
+import frontend.newsaggregation.util.AppState;
 import frontend.newsaggregation.util.InputUtil;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,10 @@ public class UserDashboard {
         showWelcomeMessage(user);
         
         while (true) {
+        	if (AppState.shouldExitToHome()) {
+                AppState.reset();
+                return;
+            }
             System.out.println("\nPlease choose the options below:");
             System.out.println("1. Headlines");
             System.out.println("2. Saved Articles");
@@ -43,6 +48,7 @@ public class UserDashboard {
                     break;
                 case "5":
                     handleLogout();
+                    AppState.setExitToHome(true);
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");

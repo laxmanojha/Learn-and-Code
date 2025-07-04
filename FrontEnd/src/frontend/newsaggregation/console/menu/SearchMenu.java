@@ -5,6 +5,7 @@ import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.service.SearchService;
 import frontend.newsaggregation.service.SavedArticlesService;
+import frontend.newsaggregation.util.AppState;
 import frontend.newsaggregation.util.DateUtil;
 import frontend.newsaggregation.util.InputUtil;
 
@@ -33,7 +34,7 @@ public class SearchMenu {
 
         // Sorting
         String sort = null;
-        String sortChoice = InputUtil.readLine("Sort by 1. Likes 2. Dislikes 3. No Sorting: ");
+        String sortChoice = InputUtil.readLine("Sort by \n1. Likes \n2. Dislikes \n3. No Sorting\nEnter choice: ");
         switch (sortChoice) {
             case "1":
                 sort = "likes";
@@ -66,6 +67,9 @@ public class SearchMenu {
         }
 
         while (true) {
+        	if (AppState.shouldExitToHome()) {
+                return;
+            }
             System.out.println("\n1. Back");
             System.out.println("2. Logout");
             System.out.println("3. Save Article");
@@ -77,17 +81,17 @@ public class SearchMenu {
                     return;
                 case "2":
                     if (AuthService.getInstance().logout()) {
-                        System.out.println("Logged out successfully.");
-                        System.exit(0);
+                        AppState.setExitToHome(true);
+                        return;
                     }
                     break;
                 case "3":
                     int articleId = InputUtil.readInt("Enter Article ID to save: ");
                     boolean saved = savedService.saveArticle(articleId);
                     if (saved) {
-                        System.out.println("✔️ Article saved successfully.");
+                        System.out.println("Article saved successfully.");
                     } else {
-                        System.out.println("❌ Failed to save the article.");
+                        System.out.println("Failed to save the article.");
                     }
                     break;
                 default:
