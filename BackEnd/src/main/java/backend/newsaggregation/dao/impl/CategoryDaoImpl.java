@@ -56,4 +56,28 @@ public class CategoryDaoImpl implements CategoryDao{
     	}
     	return categories;
     }
+    
+    @Override
+    public boolean hideCategory(int categoryId) {
+        String sql = "UPDATE news_category SET is_hidden = TRUE WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, categoryId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean unhideCategory(int categoryId) {
+        String sql = "UPDATE news_category SET is_hidden = FALSE WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, categoryId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

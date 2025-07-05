@@ -32,4 +32,12 @@ public class CategoryService {
     public List<Category> getAllCategory() {
     	return categoryDao.getAllCategory();
     }
+    
+    public boolean hideCategory(int categoryId) {
+        return categoryDao.hideCategory(categoryId);
+    }
+
+    public boolean unhideCategory(int categoryId) {
+        return categoryDao.unhideCategory(categoryId);
+    }
 }

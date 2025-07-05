@@ -12,4 +12,6 @@ public interface CategoryDao {
 	
 	boolean addCategory(String name);
 	List<Category> getAllCategory();
+    boolean hideCategory(int categoryId);
+    boolean unhideCategory(int categoryId);
 }
