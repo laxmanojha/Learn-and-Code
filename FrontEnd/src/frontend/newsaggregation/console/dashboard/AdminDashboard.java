@@ -4,9 +4,11 @@ import java.util.List;
 
 import frontend.newsaggregation.model.Category;
 import frontend.newsaggregation.model.ExternalServer;
+import frontend.newsaggregation.model.HiddenKeyword;
 import frontend.newsaggregation.model.NewsArticleReport;
 import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.AdminCategoryService;
+import frontend.newsaggregation.service.AdminKeywordService;
 import frontend.newsaggregation.service.AdminNewsService;
 import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.service.CategoryService;
@@ -20,6 +22,7 @@ public class AdminDashboard {
 	private static final ExternalServerService serverService = ExternalServerService.getInstance();
 	private static final AdminCategoryService adminCategoryService = AdminCategoryService.getInstance();
 	private static final AdminNewsService adminNewsService = AdminNewsService.getInstance();
+	private static final AdminKeywordService adminKeywordService = AdminKeywordService.getInstance();
 
     public static void startAdminMenu(User user) {
         while (true) {
@@ -33,8 +36,9 @@ public class AdminDashboard {
             System.out.println("3. Update/Edit the external server’s details");
             System.out.println("4. Add new News Category");
             System.out.println("5. Manage Category Visibility (Hide/Unhide)");
-            System.out.println("6. Manage Reported Articles");  // Add this after option 5 (Logout)
-            System.out.println("7. Logout");
+            System.out.println("6. Manage Reported Articles");
+            System.out.println("7. Manage Keyword Filters");
+            System.out.println("8. Logout");
 
             String choice = InputUtil.readLine("Enter your choice: ");
 
@@ -61,8 +65,12 @@ public class AdminDashboard {
                 case "6":
                     manageReportedArticles();
                     break;
-
+                    
                 case "7":
+                    manageKeywordFilters();
+                    break;
+
+                case "8":
                 	handleLogout();
                     AppState.setExitToHome(true);
                     return;
@@ -224,6 +232,46 @@ public class AdminDashboard {
                     return;
                 default:
                     System.out.println("Invalid option. Try again.");
+            }
+        }
+    }
+    
+    private static void manageKeywordFilters() {
+        while (true) {
+            List<HiddenKeyword> keywords = adminKeywordService.getHiddenKeywords();
+
+            System.out.println("\n--- Hidden Keywords ---");
+            if (keywords.isEmpty()) {
+                System.out.println("No hidden keywords.");
+            } else {
+                for (HiddenKeyword k : keywords) {
+                    System.out.println(k);
+                }
+            }
+
+            System.out.println("\nOptions:");
+            System.out.println("1. Add Keyword");
+            System.out.println("2. Delete Keyword by ID");
+            System.out.println("3. Back");
+
+            String choice = InputUtil.readLine("Enter your choice: ");
+            switch (choice) {
+                case "1":
+                    String keyword = InputUtil.readLine("Enter keyword to add: ").trim();
+                    if (!keyword.isEmpty()) {
+                    	adminKeywordService.addKeyword(keyword);
+                    } else {
+                        System.out.println("Keyword cannot be empty.");
+                    }
+                    break;
+                case "2":
+                    int id = InputUtil.readInt("Enter Keyword ID to delete: ");
+                    adminKeywordService.deleteKeyword(id);
+                    break;
+                case "3":
+                    return;
+                default:
+                    System.out.println("Invalid option.");
             }
         }
     }
