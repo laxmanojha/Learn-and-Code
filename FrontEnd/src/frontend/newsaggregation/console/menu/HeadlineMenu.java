@@ -131,7 +131,6 @@ public class HeadlineMenu {
     private static void handleArticleActions(List<NewsArticle> articles, User user) {
         while (true) {
         	if (AppState.shouldExitToHome()) {
-                AppState.reset();
                 return;
             }
             System.out.println("\n----- HEADLINES -----");
@@ -176,7 +175,8 @@ public class HeadlineMenu {
                     break;
                 case "5":
                     int reportId = InputUtil.readInt("Enter Article ID to report: ");
-                    articleService.reportArticle(reportId);
+                    String comment = InputUtil.readLine("Comment(press enter to skip):");
+                    articleService.reportArticle(reportId, comment);
                     break;
                 default:
                     System.out.println("Invalid choice. Try again.");

@@ -9,7 +9,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.*;
+import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 
 @WebServlet("/news/*/report")
@@ -59,10 +62,22 @@ public class NewsReportServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
             return;
         }
+        
+        // Parse JSON Body
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> body;
+        try {
+            body = mapper.readValue(request.getReader(), new TypeReference<>() {});
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON body");
+            return;
+        }
+
+        String comment = body.get("comment");
 
         try {
 
-            boolean success = service.reportArticle(userId, articleId);
+            boolean success = service.reportArticle(userId, articleId, comment);
 
             response.setContentType("application/json");
             if (success) {

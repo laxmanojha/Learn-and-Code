@@ -2,6 +2,7 @@ package frontend.newsaggregation.console.menu;
 
 import frontend.newsaggregation.model.NewsArticle;
 import frontend.newsaggregation.model.User;
+import frontend.newsaggregation.service.ArticleActionService;
 import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.service.SearchService;
 import frontend.newsaggregation.service.SavedArticlesService;
@@ -14,7 +15,8 @@ import java.util.List;
 public class SearchMenu {
 
     private static final SearchService searchService = new SearchService();
-    private static final SavedArticlesService savedService = new SavedArticlesService();
+    private static final ArticleActionService articleService = new ArticleActionService();
+    private static final AuthService authService = new AuthService();
 
     public static void show(User user) {
         String query = InputUtil.readLine("Enter search keyword: ");
@@ -58,48 +60,67 @@ public class SearchMenu {
             articles.sort((a, b) -> Integer.compare(b.getDislikeCount(), a.getDislikeCount())); // Descending by dislikes
         }
 
-        System.out.println("\nWelcome to the News Application, " + user.getUsername() + "!");
-        System.out.println("Date: " + DateUtil.getCurrentDate() + " Time: " + DateUtil.getCurrentTime());
-        System.out.println("S E A R C H");
-        System.out.println("Results for \"" + query + "\"");
-
-        if (articles.isEmpty()) {
-            System.out.println("No articles found for your query.");
-            return;
-        } else {
-            articles.forEach(article -> {
-                System.out.println(article.displayWithReaction());
-                System.out.println("-------------------------------------------------");
-            });
-        }
-
+        handleArticleActions(articles, user, query);
+    }
+    
+    private static void handleArticleActions(List<NewsArticle> articles, User user, String query) {
         while (true) {
         	if (AppState.shouldExitToHome()) {
                 return;
             }
-            System.out.println("\n1. Back");
+        	System.out.println("\nWelcome to the News Application, " + user.getUsername() + "!");
+            System.out.println("Date: " + DateUtil.getCurrentDate() + " Time: " + DateUtil.getCurrentTime());
+            System.out.println("S E A R C H");
+            System.out.println("Results for \"" + query + "\"");
+            
+            if (articles.isEmpty()) {
+                System.out.println("No articles found for your query.");
+                return;
+            } else {
+                articles.forEach(article -> {
+                    System.out.println(article.displayWithReaction());
+                    System.out.println("-------------------------------------------------");
+                });
+            }
+
+            System.out.println("\nActions:");
+            System.out.println("1. Back");
             System.out.println("2. Logout");
             System.out.println("3. Save Article");
+            System.out.println("4. Like/Dislike Article");
+            System.out.println("5. Report Article");
 
-            String choice = InputUtil.readLine("Enter your choice: ");
+            String action = InputUtil.readLine("Enter your choice: ");
 
-            switch (choice) {
+            switch (action) {
                 case "1":
                     return;
                 case "2":
-                    if (AuthService.getInstance().logout()) {
+                    if (authService.logout()) {
+                        System.out.println("Logged out successfully.");
                         AppState.setExitToHome(true);
                         return;
+                    } else {
+                        System.out.println("Logout failed.");
                     }
                     break;
                 case "3":
-                    int articleId = InputUtil.readInt("Enter Article ID to save: ");
-                    boolean saved = savedService.saveArticle(articleId);
-                    if (saved) {
-                        System.out.println("Article saved successfully.");
+                    int saveId = InputUtil.readInt("Enter Article ID to save: ");
+                    articleService.saveArticle(saveId);
+                    break;
+                case "4":
+                    int reactId = InputUtil.readInt("Enter Article ID to react: ");
+                    String reaction = InputUtil.readLine("Enter reaction (like/dislike): ").toLowerCase();
+                    if (reaction.equals("like") || reaction.equals("dislike")) {
+                        articleService.reactToArticle(reactId, reaction);
                     } else {
-                        System.out.println("Failed to save the article.");
+                        System.out.println("Invalid reaction. Use 'like' or 'dislike'.");
                     }
+                    break;
+                case "5":
+                    int reportId = InputUtil.readInt("Enter Article ID to report: ");
+                    String comment = InputUtil.readLine("Comment(press enter to skip):");
+                    articleService.reportArticle(reportId, comment);
                     break;
                 default:
                     System.out.println("Invalid choice. Try again.");

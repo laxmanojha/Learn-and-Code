@@ -14,7 +14,7 @@ import backend.newsaggregation.constants.StaticConfigurations;
 public class DatabaseConfig {
     private static Connection connection = null;
     private static final int MAKING_CONNECTION_LIMIT = 5;
-    private static StaticConfigurations staticConfigurations = new StaticConfigurations();
+    private static StaticConfigurations staticConfigurations = StaticConfigurations.getInstance();
 
     private DatabaseConfig() {
         try {

@@ -17,6 +17,7 @@ import java.util.Map;
 
 @WebServlet("/api/news-reaction/*")
 public class NewsReactionServlet extends HttpServlet {
+	NewsReactionService service = NewsReactionService.getInstance();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -80,7 +81,6 @@ public class NewsReactionServlet extends HttpServlet {
         }
 
         try {
-            NewsReactionService service = NewsReactionService.getInstance();
             boolean success = service.reactToArticle(userId, articleId, reaction.trim());
 
             if (success) {
@@ -94,7 +94,7 @@ public class NewsReactionServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.write(errorJson("Server error."));
         } finally {
-            out.close(); // Always close your writer
+            out.close();
         }
     }
 

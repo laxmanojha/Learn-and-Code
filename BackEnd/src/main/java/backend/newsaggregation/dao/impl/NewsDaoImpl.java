@@ -264,6 +264,45 @@ public class NewsDaoImpl implements NewsDao {
 
         return result;
     }
+    
+    @Override
+    public boolean hideArticle(int newsId) {
+        String sql = "UPDATE news_article SET is_hidden = TRUE WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, newsId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean unhideArticle(int newsId) {
+        String sql = "UPDATE news_article SET is_hidden = FALSE WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, newsId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public int getReportCount(int newsId) {
+        String sql = "SELECT COUNT(*) AS report_count FROM news_article_report WHERE news_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, newsId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("report_count");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
     @FunctionalInterface
     interface PreparedStatementSetter {

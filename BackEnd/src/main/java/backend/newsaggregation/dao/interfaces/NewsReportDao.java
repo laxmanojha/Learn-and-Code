@@ -8,5 +8,5 @@ public interface NewsReportDao {
         return NewsReportDaoImpl.getInstance();
     }
 
-	public boolean reportArticle(int userId, int newsId);
+	public boolean reportArticle(int userId, int newsId, String comment);
 }

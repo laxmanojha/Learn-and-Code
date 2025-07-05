@@ -22,12 +22,13 @@ public class NewsReportDaoImpl implements NewsReportDao{
     }
 
     @Override
-    public boolean reportArticle(int userId, int newsId) {
-        String sql = "INSERT INTO news_article_report (user_id, news_id) VALUES (?, ?)";
+    public boolean reportArticle(int userId, int newsId, String comment) {
+        String sql = "INSERT INTO news_article_report (user_id, news_id, reason) VALUES (?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             stmt.setInt(2, newsId);
+            stmt.setString(3, comment);
 
             int rows = stmt.executeUpdate();
             return rows > 0;
