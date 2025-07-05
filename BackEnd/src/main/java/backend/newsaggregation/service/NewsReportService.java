@@ -42,4 +42,8 @@ public class NewsReportService {
     public boolean hideArticle(int newsId) {
     	return newsDao.hideArticle(newsId);
     }
+    
+    public boolean unHideArticle(int newsId) {
+    	return newsDao.unhideArticle(newsId);
+    }
 }
