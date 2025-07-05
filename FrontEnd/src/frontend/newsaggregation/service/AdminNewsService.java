@@ -16,6 +16,14 @@ public class AdminNewsService {
 
     private static final Gson gson = new Gson();
     private static final String BASE_URL = "http://localhost:8080/News-Aggregation/api";
+    private static AdminNewsService instance; 
+
+    public static AdminNewsService getInstance() {
+        if (instance == null) {
+            instance = new AdminNewsService();
+        }
+        return instance;
+    }
 
     public List<NewsArticleReport> getReportedArticles() {
         try {

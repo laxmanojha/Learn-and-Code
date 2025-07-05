@@ -4,8 +4,10 @@ import java.util.List;
 
 import frontend.newsaggregation.model.Category;
 import frontend.newsaggregation.model.ExternalServer;
+import frontend.newsaggregation.model.NewsArticleReport;
 import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.AdminCategoryService;
+import frontend.newsaggregation.service.AdminNewsService;
 import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.service.CategoryService;
 import frontend.newsaggregation.service.ExternalServerService;
@@ -17,6 +19,7 @@ public class AdminDashboard {
 	private static final AuthService authService = AuthService.getInstance();
 	private static final ExternalServerService serverService = ExternalServerService.getInstance();
 	private static final AdminCategoryService adminCategoryService = AdminCategoryService.getInstance();
+	private static final AdminNewsService adminNewsService = AdminNewsService.getInstance();
 
     public static void startAdminMenu(User user) {
         while (true) {
@@ -30,7 +33,8 @@ public class AdminDashboard {
             System.out.println("3. Update/Edit the external server’s details");
             System.out.println("4. Add new News Category");
             System.out.println("5. Manage Category Visibility (Hide/Unhide)");
-            System.out.println("6. Logout");
+            System.out.println("6. Manage Reported Articles");  // Add this after option 5 (Logout)
+            System.out.println("7. Logout");
 
             String choice = InputUtil.readLine("Enter your choice: ");
 
@@ -55,6 +59,10 @@ public class AdminDashboard {
                     break;
 
                 case "6":
+                    manageReportedArticles();
+                    break;
+
+                case "7":
                 	handleLogout();
                     AppState.setExitToHome(true);
                     return;
@@ -179,6 +187,44 @@ public class AdminDashboard {
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid input.");
+        }
+    }
+    
+    private static void manageReportedArticles() {
+        List<NewsArticleReport> reports = adminNewsService.getReportedArticles();
+
+        if (reports.isEmpty()) {
+            System.out.println("No reported articles found.");
+            return;
+        }
+
+        System.out.println("\nReported Articles:");
+        for (NewsArticleReport report : reports) {
+            System.out.println(report);
+            System.out.println("------------------------------------");
+        }
+
+        while (true) {
+            System.out.println("Options:");
+            System.out.println("1. Hide Article by ID");
+            System.out.println("2. Unhide Article by ID");
+            System.out.println("3. Back");
+
+            String choice = InputUtil.readLine("Enter your choice: ");
+            switch (choice) {
+                case "1":
+                    int hideId = InputUtil.readInt("Enter News Article ID to hide: ");
+                    adminNewsService.hideNews(hideId);
+                    break;
+                case "2":
+                    int unhideId = InputUtil.readInt("Enter News Article ID to unhide: ");
+                    adminNewsService.unhideNews(unhideId);
+                    break;
+                case "3":
+                    return;
+                default:
+                    System.out.println("Invalid option. Try again.");
+            }
         }
     }
     
