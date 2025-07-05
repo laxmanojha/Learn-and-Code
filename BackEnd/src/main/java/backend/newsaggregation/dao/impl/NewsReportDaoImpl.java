@@ -2,8 +2,12 @@ package backend.newsaggregation.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import backend.newsaggregation.dao.interfaces.NewsReportDao;
+import backend.newsaggregation.model.NewsArticleReport;
 import backend.newsaggregation.util.DatabaseConfig;
 
 public class NewsReportDaoImpl implements NewsReportDao{
@@ -37,6 +41,33 @@ public class NewsReportDaoImpl implements NewsReportDao{
             e.printStackTrace();
             return false;
         }
+    }
+    
+    @Override
+    public List<NewsArticleReport> getReportedArticles() {
+        List<NewsArticleReport> reports = new ArrayList<>();
+        String sql = "SELECT * FROM news_article_report";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    NewsArticleReport report = new NewsArticleReport(
+                        rs.getInt("id"),
+                        rs.getInt("user_id"),
+                        rs.getInt("news_id"),
+                        rs.getString("reason"),
+                        rs.getTimestamp("reported_at")
+                    );
+                    reports.add(report);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return reports;
     }
 }
 

@@ -106,7 +106,12 @@ public class SearchMenu {
                     break;
                 case "3":
                     int saveId = InputUtil.readInt("Enter Article ID to save: ");
-                    articleService.saveArticle(saveId);
+                    boolean saved = articleService.saveArticle(saveId);
+                    if (saved) {
+                        System.out.println("Article saved successfully.");
+                    } else {
+                        System.out.println("Failed to save the article.");
+                    }
                     break;
                 case "4":
                     int reactId = InputUtil.readInt("Enter Article ID to react: ");

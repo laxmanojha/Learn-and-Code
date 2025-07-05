@@ -2,6 +2,7 @@ package frontend.newsaggregation.console.menu;
 
 import frontend.newsaggregation.model.NewsArticle;
 import frontend.newsaggregation.model.User;
+import frontend.newsaggregation.service.ArticleActionService;
 import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.service.SavedArticlesService;
 import frontend.newsaggregation.util.AppState;
@@ -13,6 +14,7 @@ import java.util.List;
 public class SavedArticlesMenu {
 
     private static final SavedArticlesService savedService = new SavedArticlesService();
+    private static final ArticleActionService articleService = new ArticleActionService();
 
     public static void show(User user) {
         while (true) {
@@ -34,13 +36,16 @@ public class SavedArticlesMenu {
                 });
             }
 
-            System.out.println("\n1. Back");
+            System.out.println("\nActions:");
+            System.out.println("1. Back");
             System.out.println("2. Logout");
-            System.out.println("3. Delete Article");
+            System.out.println("3. Save Article");
+            System.out.println("4. Like/Dislike Article");
+            System.out.println("5. Report Article");
 
-            String choice = InputUtil.readLine("Enter your choice: ");
+            String action = InputUtil.readLine("Enter your choice: ");
 
-            switch (choice) {
+            switch (action) {
                 case "1":
                     return;
                 case "2":
@@ -58,6 +63,20 @@ public class SavedArticlesMenu {
                     } else {
                         System.out.println("Failed to delete the article.");
                     }
+                    break;
+                case "4":
+                    int reactId = InputUtil.readInt("Enter Article ID to react: ");
+                    String reaction = InputUtil.readLine("Enter reaction (like/dislike): ").toLowerCase();
+                    if (reaction.equals("like") || reaction.equals("dislike")) {
+                        articleService.reactToArticle(reactId, reaction);
+                    } else {
+                        System.out.println("Invalid reaction. Use 'like' or 'dislike'.");
+                    }
+                    break;
+                case "5":
+                    int reportId = InputUtil.readInt("Enter Article ID to report: ");
+                    String comment = InputUtil.readLine("Comment(press enter to skip):");
+                    articleService.reportArticle(reportId, comment);
                     break;
                 default:
                     System.out.println("Invalid choice. Try again.");

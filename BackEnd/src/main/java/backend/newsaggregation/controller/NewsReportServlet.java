@@ -1,5 +1,6 @@
 package backend.newsaggregation.controller;
 
+import backend.newsaggregation.model.NewsArticleReport;
 import backend.newsaggregation.service.NewsReportService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -9,14 +10,26 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.*;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-@WebServlet("/news/*/report")
+@WebServlet("/api/news-report/*")
 public class NewsReportServlet extends HttpServlet {
+	
+	private final NewsReportService newsReportService = NewsReportService.getInstance();
+    private final Gson gson = new Gson();
+	
+	@Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/json");
+        List<NewsArticleReport> newsArticleReports = newsReportService.getNewsArticleReport();
+        resp.getWriter().write(gson.toJson(newsArticleReports));
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -24,7 +37,7 @@ public class NewsReportServlet extends HttpServlet {
 
         // Parse articleId from URL
     	PrintWriter out = response.getWriter();
-        String pathInfo = request.getPathInfo(); // format: /{articleId}/report
+        String pathInfo = request.getPathInfo(); // format: /{articleId}
         NewsReportService service = NewsReportService.getInstance();
         if (pathInfo == null || pathInfo.equals("/")) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Article ID is missing in URL");
@@ -108,4 +121,3 @@ public class NewsReportServlet extends HttpServlet {
         return json.toString();
     }
 }
-

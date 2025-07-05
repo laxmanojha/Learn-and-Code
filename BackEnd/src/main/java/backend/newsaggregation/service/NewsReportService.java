@@ -1,8 +1,11 @@
 package backend.newsaggregation.service;
 
+import java.util.List;
+
 import backend.newsaggregation.constants.StaticConfigurations;
 import backend.newsaggregation.dao.interfaces.NewsDao;
 import backend.newsaggregation.dao.interfaces.NewsReportDao;
+import backend.newsaggregation.model.NewsArticleReport;
 
 public class NewsReportService {
 	private NewsReportDao newsReportDao;
@@ -45,5 +48,9 @@ public class NewsReportService {
     
     public boolean unHideArticle(int newsId) {
     	return newsDao.unhideArticle(newsId);
+    }
+    
+    public List<NewsArticleReport> getNewsArticleReport() {
+    	return newsReportDao.getReportedArticles();
     }
 }
