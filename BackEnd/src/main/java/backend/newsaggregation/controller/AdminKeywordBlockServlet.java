@@ -16,7 +16,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/admin/keyword/*")
+@WebServlet("/api/admin/keyword/*")
 public class AdminKeywordBlockServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static AdminKeywordService adminKeywordService = AdminKeywordService.getInstance();

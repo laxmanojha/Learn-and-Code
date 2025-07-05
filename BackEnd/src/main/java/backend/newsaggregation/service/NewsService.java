@@ -1,6 +1,8 @@
 package backend.newsaggregation.service;
 
+import backend.newsaggregation.dao.interfaces.HiddenKeywordDao;
 import backend.newsaggregation.dao.interfaces.NewsDao;
+import backend.newsaggregation.model.HiddenKeyword;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.model.NewsArticleCategoryInfo;
 
@@ -15,13 +17,15 @@ public class NewsService {
 
     private static NewsService instance;
     private final NewsDao newsDao;
+    private final HiddenKeywordDao hiddenKeywordDao;
 
     private NewsService() {
-		this(NewsDao.getInstance());
+		this(NewsDao.getInstance(), HiddenKeywordDao.getInstance());
 	}
 	
-	private NewsService(NewsDao newsDao) {
+	private NewsService(NewsDao newsDao, HiddenKeywordDao hiddenKeywordDao) {
         this.newsDao = newsDao;
+        this.hiddenKeywordDao = hiddenKeywordDao;
     }
 
     public static NewsService getInstance() {
@@ -38,21 +42,9 @@ public class NewsService {
         for (NewsArticle newsArticle: newsArticles) {
         	newsArticle = mapCategoriesToNews(newsArticle);
         }
-        return filterUniqueById(newsArticles);
+        newsArticles = filterUniqueById(newsArticles);
+        return validNewsArticles(newsArticles);
     }
-    
-//    private List<NewsArticle> mapCategoriesToNews(List<NewsArticle> newsArticles) {
-//    	List<NewsArticleCategoryInfo> articleCategoryInfos = newsDao.getAllCategory();
-//    	for (NewsArticle newsArticle: newsArticles) {
-//    		for (NewsArticleCategoryInfo articleCategoryInfo: articleCategoryInfos) {
-//    			if (newsArticle.getId() == articleCategoryInfo.getNewsId()) {
-//    				newsArticle.getCategories().add(articleCategoryInfo.getCategoryType());
-//    			}
-//    		}
-//    	}
-//    	
-//    	return newsArticles;
-//    }
     
     private NewsArticle mapCategoriesToNews(NewsArticle newsArticle) {
     	List<NewsArticleCategoryInfo> articleCategoryInfos = newsDao.getAllCategory(newsArticle.getId());
@@ -65,12 +57,29 @@ public class NewsService {
     	return newsArticle;
     }
     
-    private static List<NewsArticle> filterUniqueById(List<NewsArticle> articles) {
+    private List<NewsArticle> filterUniqueById(List<NewsArticle> articles) {
         Map<Integer, NewsArticle> uniqueMap = new LinkedHashMap<>();
         for (NewsArticle article : articles) {
             uniqueMap.putIfAbsent(article.getId(), article);
         }
         return new ArrayList<>(uniqueMap.values());
+    }
+    
+    private List<NewsArticle> validNewsArticles(List<NewsArticle> articles) {
+    	List<HiddenKeyword> blockedKeywords = hiddenKeywordDao.getAllKeywords();
+    	List<NewsArticle> filteredList = articles.stream()
+    	    .filter(article -> !containsBlockedKeyword(article, blockedKeywords))
+    	    .toList();
+    	
+    	return filteredList;
+    }
+    
+    private boolean containsBlockedKeyword(NewsArticle article, List<HiddenKeyword> blockedKeywords) {
+    	String title = article.getTitle();
+    	String description = article.getDescription() == null ? "" : article.getDescription();
+    	String snippet = article.getSnippet() == null ? "" : article.getSnippet();
+        String content = (title + " " + description + " " + snippet).toLowerCase();
+        return blockedKeywords.stream().anyMatch(kw -> content.contains(kw.getKeyword().toLowerCase()));
     }
 
     public List<NewsArticle> getHeadlinesByDateRange(Date start, Date end) {
@@ -78,7 +87,8 @@ public class NewsService {
     	for (NewsArticle newsArticle: newsArticles) {
         	newsArticle = mapCategoriesToNews(newsArticle);
         }
-        return filterUniqueById(newsArticles);
+    	newsArticles = filterUniqueById(newsArticles);
+        return validNewsArticles(newsArticles);
     }
     
     public List<NewsArticle> getHeadlinesByDateRangeAndCategory(Date start, Date end, String category) {
@@ -86,21 +96,11 @@ public class NewsService {
     	for (NewsArticle newsArticle: newsArticles) {
         	newsArticle = mapCategoriesToNews(newsArticle);
         }
-        return newsArticles;
+        return validNewsArticles(newsArticles);
     }
 
     public NewsArticle getArticleById(int id) {
         NewsArticle newsArticles = newsDao.getNewsById(id);
     	return mapCategoriesToNews(newsArticles);
     }
-
-//    private Date truncateToDate(Date dateTime) {
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTime(dateTime);
-//        calendar.set(Calendar.HOUR_OF_DAY, 0);
-//        calendar.set(Calendar.MINUTE,      0);
-//        calendar.set(Calendar.SECOND,      0);
-//        calendar.set(Calendar.MILLISECOND, 0);
-//        return calendar.getTime();
-//    }
 }

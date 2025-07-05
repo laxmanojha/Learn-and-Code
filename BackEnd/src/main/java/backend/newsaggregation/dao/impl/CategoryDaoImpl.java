@@ -48,7 +48,7 @@ public class CategoryDaoImpl implements CategoryDao{
     		PreparedStatement ps = conn.prepareStatement(sql);
     		ResultSet rs = ps.executeQuery();
     		while (rs.next()) {
-    			categories.add(new Category(rs.getInt("id"), rs.getString("category_type")));
+    			categories.add(new Category(rs.getInt("id"), rs.getString("category_type"), rs.getBoolean("is_hidden")));
     		}
     		
     	} catch (SQLException e) {

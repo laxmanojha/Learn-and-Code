@@ -1,10 +1,6 @@
 package backend.newsaggregation.dao.impl;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,22 +19,10 @@ public class SearchDaoImpl implements SearchDao {
     public static SearchDaoImpl getInstance() {
         if (instance == null) {
             instance = new SearchDaoImpl();
-            conn  = DatabaseConfig.getConnection();
+            conn = DatabaseConfig.getConnection();
         }
         return instance;
     }
-    
-//    private NewsArticle extractArticle(ResultSet rs) throws SQLException {
-//    	NewsArticle article = new NewsArticle();
-//    	article.setId(rs.getInt("id"));
-//    	article.setTitle(rs.getString("title"));
-//    	article.setSnippet(rs.getString("description"));
-//    	article.setSource(rs.getString("source"));
-//    	article.setUrl(rs.getString("url"));
-//    	article.setPublishedAt(rs.getDate("published_at"));
-//    	article.setCategories(new ArrayList<>());
-//    	return article;
-//    }
 
     private NewsArticle extractArticleWithReactionCount(ResultSet rs) throws SQLException {
         NewsArticle article = new NewsArticle();
@@ -54,33 +38,33 @@ public class SearchDaoImpl implements SearchDao {
         return article;
     }
 
+    private static final String BASE_SELECT = """
+        SELECT na.*, 
+               COUNT(CASE WHEN nar.reaction_type = 'like' THEN 1 END) AS like_count,
+               COUNT(CASE WHEN nar.reaction_type = 'dislike' THEN 1 END) AS dislike_count
+        FROM news_article na
+        LEFT JOIN news_article_reaction nar ON na.id = nar.news_id
+        WHERE na.is_hidden = FALSE
+          AND NOT EXISTS (
+              SELECT 1
+              FROM news_article_category nac
+              JOIN news_category nc ON nac.category_id = nc.id
+              WHERE nac.news_id = na.id
+                AND nc.is_hidden = TRUE
+          )
+          AND (na.title LIKE ? OR na.description LIKE ?)
+        """;
+
     @Override
     public List<NewsArticle> searchArticles(String keyword) {
-    	String sql = """
-                SELECT na.*, 
-                       COUNT(CASE WHEN nar.reaction_type = 'like' THEN 1 END) AS like_count,
-                       COUNT(CASE WHEN nar.reaction_type = 'dislike' THEN 1 END) AS dislike_count
-                FROM news_article na
-                LEFT JOIN news_article_reaction nar ON na.id = nar.news_id
-                WHERE na.title LIKE ? OR na.description LIKE ?
-                GROUP BY na.id
-                """;
-        return search(sql, keyword, null, null, null);
+        String sql = BASE_SELECT + " GROUP BY na.id";
+        return search(sql, keyword, null, null);
     }
 
     @Override
     public List<NewsArticle> searchArticles(String keyword, LocalDate startDate, LocalDate endDate) {
-    	String sql = """
-                SELECT na.*, 
-                       COUNT(CASE WHEN nar.reaction_type = 'like' THEN 1 END) AS like_count,
-                       COUNT(CASE WHEN nar.reaction_type = 'dislike' THEN 1 END) AS dislike_count
-                FROM news_article na
-                LEFT JOIN news_article_reaction nar ON na.id = nar.news_id
-                WHERE na.title LIKE ? OR na.description LIKE ?
-        		AND na.published_at BETWEEN ? AND ?
-                GROUP BY na.id
-                """;
-        return search(sql, keyword, startDate, endDate, null);
+        String sql = BASE_SELECT + " AND na.created_at >= ? AND na.created_at <= ? GROUP BY na.id";
+        return search(sql, keyword, startDate, endDate);
     }
 
     @Override
@@ -90,61 +74,39 @@ public class SearchDaoImpl implements SearchDao {
             sortColumn = "dislike_count";
         }
 
-        String sql = """
-            SELECT na.*, 
-                   COUNT(CASE WHEN nar.reaction_type = 'like' THEN 1 END) AS like_count,
-                   COUNT(CASE WHEN nar.reaction_type = 'dislike' THEN 1 END) AS dislike_count
-            FROM news_article na
-            LEFT JOIN news_article_reaction nar ON na.id = nar.news_id
-            WHERE na.title LIKE ? OR na.description LIKE ?
-            GROUP BY na.id
-            ORDER BY ? DESC""";
-
-        return search(sql, keyword, null, null, sortColumn);
+        String sql = BASE_SELECT + " GROUP BY na.id ORDER BY " + sortColumn + " DESC";
+        return search(sql, keyword, null, null);
     }
 
     @Override
     public List<NewsArticle> searchArticles(String keyword, LocalDate startDate, LocalDate endDate, String sortBy) {
-        String sortColumn = "like_count"; // default
+        String sortColumn = "like_count";
         if ("dislikes".equalsIgnoreCase(sortBy)) {
             sortColumn = "dislike_count";
         }
 
-        String sql = """
-                SELECT na.*, 
-                       COUNT(CASE WHEN nar.reaction_type = 'like' THEN 1 END) AS like_count,
-                       COUNT(CASE WHEN nar.reaction_type = 'dislike' THEN 1 END) AS dislike_count
-                FROM news_article na
-                LEFT JOIN news_article_reaction nar ON na.id = nar.news_id
-                WHERE na.title LIKE ? OR na.description LIKE ?
-        		AND na.published_at BETWEEN ? AND ?
-                GROUP BY na.id
-                ORDER BY ? DESC""";
-
-        return search(sql, keyword, startDate, endDate, sortColumn);
+        String sql = BASE_SELECT + " AND na.created_at >= ? AND na.created_at <= ? GROUP BY na.id ORDER BY " + sortColumn + " DESC";
+        return search(sql, keyword, startDate, endDate);
     }
 
-
-    private List<NewsArticle> search(String sql, String keyword, LocalDate start, LocalDate end, String sortColumn) {
+    private List<NewsArticle> search(String sql, String keyword, LocalDate start, LocalDate end) {
         List<NewsArticle> articles = new ArrayList<>();
 
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, "%" + keyword + "%");
-            stmt.setString(2, "%" + keyword + "%");
+
+            int idx = 1;
+            stmt.setString(idx++, "%" + keyword + "%");
+            stmt.setString(idx++, "%" + keyword + "%");
 
             if (start != null && end != null) {
-                stmt.setDate(3, Date.valueOf(start));
-                stmt.setDate(4, Date.valueOf(end));
-            }
-            
-            if (sortColumn != null) {
-            	stmt.setString(3, sortColumn);
+                stmt.setDate(idx++, Date.valueOf(start));
+                stmt.setDate(idx++, Date.valueOf(end));
             }
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-            	articles.add(extractArticleWithReactionCount(rs));
+                articles.add(extractArticleWithReactionCount(rs));
             }
 
         } catch (SQLException e) {

@@ -52,7 +52,7 @@ public class HiddenKeywordDaoImpl implements HiddenKeywordDao {
 
     @Override
     public List<HiddenKeyword> getAllKeywords() {
-        String sql = "SELECT keyword FROM hidden_keywords";
+        String sql = "SELECT * FROM hidden_keywords";
         List<HiddenKeyword> keywords = new ArrayList<>();
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {

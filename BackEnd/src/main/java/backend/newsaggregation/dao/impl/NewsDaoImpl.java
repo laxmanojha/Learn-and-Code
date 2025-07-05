@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,14 +44,22 @@ public class NewsDaoImpl implements NewsDao {
             rs.getTimestamp("published_at")
         );
     }
-
+    
     private String baseQuery(String condition) {
         return """
             SELECT na.*, nac.category_id AS category_id
             FROM news_article na
             LEFT JOIN news_article_category nac ON na.id = nac.news_id
             LEFT JOIN news_category nc ON nac.category_id = nc.id
-            """ + condition;
+            WHERE na.is_hidden = FALSE
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM news_article_category nac2
+                  JOIN news_category nc2 ON nac2.category_id = nc2.id
+                  WHERE nac2.news_id = na.id
+                    AND nc2.is_hidden = TRUE
+              )
+            """ + (condition == null || condition.isBlank() ? "" : " AND " + condition);
     }
     
     @Override
@@ -60,28 +69,46 @@ public class NewsDaoImpl implements NewsDao {
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
-        	PreparedStatement stmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
-                stmt.setString(1, item.getTitle());
-                stmt.setString(2, item.getDescription());
-                stmt.setString(3, item.getSnippet());
+            PreparedStatement stmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, item.getTitle());
+            stmt.setString(2, item.getDescription());
+            stmt.setString(3, item.getSnippet());
 
-                if (item.getPublishedAt() != null) {
-                    stmt.setTimestamp(4, new java.sql.Timestamp(item.getPublishedAt().getTime()));
-                } else {
-                    stmt.setNull(4, java.sql.Types.TIMESTAMP);
-                }
+            if (item.getPublishedAt() != null) {
+                stmt.setTimestamp(4, new java.sql.Timestamp(item.getPublishedAt().getTime()));
+            } else {
+                stmt.setNull(4, java.sql.Types.TIMESTAMP);
+            }
 
-                stmt.setString(5, item.getUrl());
-                stmt.setString(6, item.getImageUrl());
-                stmt.setString(7, item.getSource());
+            stmt.setString(5, item.getUrl());
+            stmt.setString(6, item.getImageUrl());
+            stmt.setString(7, item.getSource());
 
-                stmt.executeUpdate();
-                
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);  
-                }
+            stmt.executeUpdate();
 
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLIntegrityConstraintViolationException e) {
+            // Duplicate URL detected — fetch existing article ID
+            System.out.println("Duplicate article, fetching existing ID...");
+            return getNewsIdByUrl(item.getUrl());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    private int getNewsIdByUrl(String url) {
+        String query = "SELECT id FROM news_article WHERE url = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, url);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -168,13 +195,13 @@ public class NewsDaoImpl implements NewsDao {
 
     @Override
     public List<NewsArticle> getNewsByDate(Date date) {
-        String sql = baseQuery("WHERE DATE(na.published_at) = ?");
+        String sql = baseQuery("DATE(na.published_at) = ?");
         return getNewsList(sql, ps -> ps.setDate(1, new Date(date.getTime())));
     }
 
     @Override
     public List<NewsArticle> getNewsByDateAndCategory(Date date, String category) {
-        String sql = baseQuery("WHERE DATE(na.published_at) = ? AND nc.category_type = ?");
+        String sql = baseQuery("DATE(na.published_at) = ? AND nc.category_type = ?");
         return getNewsList(sql, ps -> {
             ps.setDate(1, new Date(date.getTime()));
             ps.setString(2, category);
@@ -183,7 +210,7 @@ public class NewsDaoImpl implements NewsDao {
 
     @Override
     public List<NewsArticle> getNewsByDateRange(Date startDate, Date endDate) {
-        String sql = baseQuery("WHERE na.published_at BETWEEN ? AND ?");
+        String sql = baseQuery("na.created_at >= ? AND na.created_at <= ?");
         return getNewsList(sql, ps -> {
             ps.setDate(1, new Date(startDate.getTime()));
             ps.setDate(2, new Date(endDate.getTime()));
@@ -192,7 +219,7 @@ public class NewsDaoImpl implements NewsDao {
 
     @Override
     public List<NewsArticle> getNewsByDateRangeAndCategory(Date startDate, Date endDate, String category) {
-        String sql = baseQuery("WHERE na.published_at BETWEEN ? AND ? AND nc.category_type = ?");
+        String sql = baseQuery("na.created_at >= ? AND na.created_at <= ? AND nc.category_type = ?");
         return getNewsList(sql, ps -> {
             ps.setDate(1, new Date(startDate.getTime()));
             ps.setDate(2, new Date(endDate.getTime()));
@@ -202,7 +229,7 @@ public class NewsDaoImpl implements NewsDao {
 
     @Override
     public NewsArticle getNewsById(int id) {
-        String sql = baseQuery("WHERE na.id = ?");
+        String sql = baseQuery("na.id = ?");
         try {
              PreparedStatement ps = conn.prepareStatement(sql);
 

@@ -10,7 +10,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/admin/category/*")
+@WebServlet("/api/admin/category/*")
 public class AdminCategoryVisibilityServlet extends HttpServlet {
 	
 	private static CategoryService categoryService = CategoryService.getInstance();

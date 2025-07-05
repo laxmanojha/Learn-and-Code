@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import backend.newsaggregation.service.NewsReportService;
 
-@WebServlet("/admin/news/*")
+@WebServlet("/api/admin/news/*")
 public class AdminNewsVisibilityServlet extends HttpServlet {
 	
 	private static NewsReportService newsReportService = NewsReportService.getInstance();
