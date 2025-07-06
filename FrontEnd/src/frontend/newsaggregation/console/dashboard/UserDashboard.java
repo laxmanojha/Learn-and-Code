@@ -48,7 +48,6 @@ public class UserDashboard {
                     break;
                 case "5":
                     handleLogout();
-                    AppState.setExitToHome(true);
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");

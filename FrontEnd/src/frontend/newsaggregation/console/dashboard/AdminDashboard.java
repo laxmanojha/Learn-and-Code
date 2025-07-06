@@ -72,7 +72,6 @@ public class AdminDashboard {
 
                 case "8":
                 	handleLogout();
-                    AppState.setExitToHome(true);
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
