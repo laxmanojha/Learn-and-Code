@@ -92,7 +92,8 @@ public class UserService {
 	    return true;
 	}
 
-	private boolean isValidEmail(String email) {
+	public boolean isValidEmail(String email) {
+	    if (email == null) return false; // null-safe check
 	    String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
 	    boolean result = Pattern.matches(emailRegex, email);
 	    System.out.println("Validating email: " + email + " → " + result);
