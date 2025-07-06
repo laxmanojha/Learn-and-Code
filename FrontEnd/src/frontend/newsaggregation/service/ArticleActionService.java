@@ -33,7 +33,7 @@ public class ArticleActionService {
     public boolean reportArticle(int articleId, String comment) {
         try {
         	String json = "{ \"comment\": \"" + comment + "\" }";
-            HttpResponse<String> response = HttpUtil.sendPostRequest(BASE_URL + "/news/" + articleId + "/report", json);
+            HttpResponse<String> response = HttpUtil.sendPostRequest(BASE_URL + "/news-report/" + articleId, json);
             return HttpUtil.processResponse(response, "Report Article");
         } catch (IOException | InterruptedException e) {
             System.err.println("Failed to report article: " + e.getMessage());

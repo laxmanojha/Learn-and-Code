@@ -75,17 +75,19 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
         List<NewsArticle> savedArticles = new ArrayList<>();
 
         String sql = """
-        	    SELECT na.*
+        	    SELECT na.*, nc.id AS category_id
         	    FROM saved_news sn
         	    INNER JOIN news_article na ON sn.news_id = na.id
+        	    LEFT JOIN news_article_category nac ON na.id = nac.news_id
+                LEFT JOIN news_category nc ON nac.category_id = nc.id
         	    WHERE sn.user_id = ?
         	      AND na.is_hidden = FALSE
         	      AND NOT EXISTS (
         	          SELECT 1
-        	          FROM news_article_category nac
-        	          JOIN news_category nc ON nac.category_id = nc.id
-        	          WHERE nac.news_id = na.id
-        	            AND nc.is_hidden = TRUE
+        	          FROM news_article_category nac2
+        	          JOIN news_category nc2 ON nac2.category_id = nc2.id
+        	          WHERE nac2.news_id = na.id
+        	            AND nc2.is_hidden = TRUE
         	      )
         	""";
 
