@@ -2,14 +2,29 @@ package backend.newsaggregation.util;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import backend.newsaggregation.model.EmailConfig;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.service.EmailConfigService;
 
 public class EmailUtil {
+	
+	private static final Logger logger = LoggerFactory.getLogger(EmailUtil.class);
+	
+	public static void main(String[] args) {
+		logger.info("Demo logs generated");
+		NewsArticle article = new NewsArticle(0, null, null, null, null, 0, null);
+		List<NewsArticle> articles = new ArrayList<>();
+		articles.add(article);
+		sendNewsDigestEmail("gunnirathod56@gmail.com", articles);
+	}
 
     public static void sendNewsDigestEmail(String toEmail, List<NewsArticle> articles) {
     	EmailConfig config = EmailConfigService.getInstance().getEmailConfig();
@@ -63,6 +78,7 @@ public class EmailUtil {
             Transport.send(message);
 
             System.out.println("Email sent successfully to " + toEmail);
+            logger.info("Email sent successfully to " + toEmail);
 
         } catch (Exception e) {
             e.printStackTrace();

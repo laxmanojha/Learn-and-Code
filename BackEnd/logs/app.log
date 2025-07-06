@@ -1,0 +1,2 @@
+2025-07-07 01:51:52 [main] INFO  b.newsaggregation.util.EmailUtil - Demo logs generated
+2025-07-07 01:51:58 [main] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com

@@ -1,0 +1,4 @@
+2025-07-07 01:55:32 [main] INFO  b.newsaggregation.util.EmailUtil - Demo logs generated
+2025-07-07 01:55:39 [main] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
+2025-07-07 01:56:21 [main] INFO  b.newsaggregation.util.EmailUtil - Demo logs generated
+2025-07-07 01:56:27 [main] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to gunnirathod56@gmail.com
