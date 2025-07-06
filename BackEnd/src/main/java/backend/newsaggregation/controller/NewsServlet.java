@@ -2,7 +2,11 @@ package backend.newsaggregation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
+import backend.newsaggregation.model.Category;
+import backend.newsaggregation.model.NewsArticle;
+import backend.newsaggregation.model.User;
 import backend.newsaggregation.service.CategoryService;
 import backend.newsaggregation.service.NewsService;
 import backend.newsaggregation.service.PersonalizedNewsService;
@@ -11,20 +15,14 @@ import backend.newsaggregation.service.SearchNewsService;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
 import java.util.List;
-
-import com.google.gson.JsonObject;
-
-import backend.newsaggregation.model.Category;
-import backend.newsaggregation.model.NewsArticle;
-import backend.newsaggregation.model.User;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/api/news/*")
 public class NewsServlet extends HttpServlet {
@@ -39,23 +37,23 @@ public class NewsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
-        String path = request.getPathInfo();
         PrintWriter out = response.getWriter();
+        String path = request.getPathInfo();
 
-        boolean isPersonalized = Boolean.parseBoolean(request.getParameter("personalized"));
+        boolean isPersonalized = isPersonalizedRequest(request);
         HttpSession session = request.getSession(false);
         User user = null;
         int userId = -1;
 
-        if (isPersonalized) {
-            if (session == null || session.getAttribute("user") == null) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                out.write(errorJson("Login required for personalized results."));
-                return;
-            }
+        if (session != null && session.getAttribute("user") != null) {
             user = (User) session.getAttribute("user");
             userId = user.getId();
+        }
+
+        if (isPersonalized && user == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.write(errorJson("Login required for personalized results."));
+            return;
         }
 
         try {
@@ -66,7 +64,7 @@ public class NewsServlet extends HttpServlet {
                 }
                 out.write(gson.toJson(articles));
 
-            } else if (path.equals("/date-range")) {
+            } else if (path.startsWith("/date-range")) {
                 String start = request.getParameter("start");
                 String end = request.getParameter("end");
                 String type = request.getParameter("type");
@@ -74,7 +72,7 @@ public class NewsServlet extends HttpServlet {
                 Date startDate = Date.valueOf(start);
                 Date endDate = Date.valueOf(end);
 
-                List<NewsArticle> articles = (type == null || type.equals("all")) ?
+                List<NewsArticle> articles = (type == null || type.equalsIgnoreCase("all")) ?
                         newsService.getHeadlinesByDateRange(startDate, endDate) :
                         newsService.getHeadlinesByDateRangeAndCategory(startDate, endDate, type);
 
@@ -84,7 +82,7 @@ public class NewsServlet extends HttpServlet {
 
                 out.write(gson.toJson(articles));
 
-            } else if (path.equals("/search")) {
+            } else if (path.startsWith("/search")) {
                 String query = request.getParameter("query");
                 String start = request.getParameter("start");
                 String end = request.getParameter("end");
@@ -95,33 +93,31 @@ public class NewsServlet extends HttpServlet {
                     out.write(errorJson("Query parameter is required"));
                     return;
                 }
-                
-                if (session == null || session.getAttribute("user") == null) {
+
+                if (user == null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     out.write(errorJson("Login required"));
                     return;
                 }
-                user = (User) session.getAttribute("user");
-                userId = user.getId();
 
                 List<NewsArticle> results = searchNewsService.searchArticles(userId, query, start, end, sort);
                 if (isPersonalized) {
                     results = personalizedNewsService.getPersonalizedArticles(userId, results);
                 }
+
                 out.write(gson.toJson(results));
 
-            } else if (path.equals("/saved")) {
-                if (session == null || session.getAttribute("user") == null) {
+            } else if (path.startsWith("/saved")) {
+                if (user == null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     out.write(errorJson("Login required"));
                     return;
                 }
 
-                user = (User) session.getAttribute("user");
-                List<NewsArticle> articles = savedArticleService.getSavedArticlesByUser(user.getId());
+                List<NewsArticle> articles = savedArticleService.getSavedArticlesByUser(userId);
                 out.write(gson.toJson(articles));
 
-            } else if (path.equals("/category")) {
+            } else if (path.startsWith("/category")) {
                 List<Category> results = categoryService.getAllCategory();
                 out.write(gson.toJson(results));
 
@@ -131,6 +127,7 @@ public class NewsServlet extends HttpServlet {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.write(errorJson("Error: " + e.getMessage()));
         }
@@ -140,7 +137,6 @@ public class NewsServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
         PrintWriter out = response.getWriter();
         String path = request.getPathInfo(); // e.g. /{id}/save
 
@@ -148,7 +144,6 @@ public class NewsServlet extends HttpServlet {
             String[] parts = path.split("/");
             if (parts.length == 3 && parts[2].equals("save")) {
                 int articleId = Integer.parseInt(parts[1]);
-
                 HttpSession session = request.getSession(false);
                 if (session == null || session.getAttribute("user") == null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -156,37 +151,33 @@ public class NewsServlet extends HttpServlet {
                     return;
                 }
 
-                Object userObj = request.getSession().getAttribute("user");
-                int userId = -1;
-                if (userObj instanceof backend.newsaggregation.model.User user) {
-                    userId = ((backend.newsaggregation.model.User) userObj).getId();
-                }
+                int userId = ((User) session.getAttribute("user")).getId();
                 boolean saved = savedArticleService.saveArticle(userId, articleId);
 
                 JsonObject result = new JsonObject();
                 result.addProperty("success", saved);
                 result.addProperty("message", saved ? "Article saved." : "Could not save article or Article is already saved.");
                 out.write(result.toString());
+
             } else if (parts.length == 2 && parts[1].equals("category")) {
-            	if (!isAdmin(request)) {
+                if (!isAdmin(request)) {
                     respondForbidden(response);
                     return;
                 }
-            	StringBuilder jsonBuffer = new StringBuilder();
-            	String categoryName = null;
-            	String line;
-            	
-            	try (BufferedReader reader = request.getReader()) {
-            		while ((line = reader.readLine()) != null) {
-            			jsonBuffer.append(line);
-            		}
-            	}
-            	
-            	ObjectMapper objectMapper = new ObjectMapper();
-            	if (!jsonBuffer.isEmpty()) {
-            		Category category = objectMapper.readValue(jsonBuffer.toString(), Category.class);
-            		categoryName = category.getName();
-            	}
+
+                BufferedReader reader = request.getReader();
+                StringBuilder jsonBuffer = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    jsonBuffer.append(line);
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                String categoryName = null;
+                if (!jsonBuffer.isEmpty()) {
+                    Category category = objectMapper.readValue(jsonBuffer.toString(), Category.class);
+                    categoryName = category.getName();
+                }
 
                 HttpSession session = request.getSession(false);
                 User user = (User) session.getAttribute("user");
@@ -202,12 +193,14 @@ public class NewsServlet extends HttpServlet {
                 result.addProperty("success", saved);
                 result.addProperty("message", saved ? "Category saved." : "Could not save category.");
                 out.write(result.toString());
+
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 out.write(errorJson("Invalid save request"));
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.write(errorJson("Error: " + e.getMessage()));
         }
@@ -217,7 +210,6 @@ public class NewsServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
         PrintWriter out = response.getWriter();
         String path = request.getPathInfo(); // expected: /saved/{id}
 
@@ -230,11 +222,7 @@ public class NewsServlet extends HttpServlet {
                     return;
                 }
 
-                int userId = -1;
-                Object userObj = request.getSession().getAttribute("user");
-                if (userObj instanceof backend.newsaggregation.model.User user) {
-                    userId = ((backend.newsaggregation.model.User) userObj).getId();
-                }
+                int userId = ((User) session.getAttribute("user")).getId();
                 int articleId = Integer.parseInt(path.substring("/saved/".length()));
 
                 boolean deleted = savedArticleService.deleteSavedArticle(userId, articleId);
@@ -242,27 +230,22 @@ public class NewsServlet extends HttpServlet {
                 result.addProperty("success", deleted);
                 result.addProperty("message", deleted ? "Article deleted." : "Delete failed.");
                 out.write(result.toString());
+
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 out.write(errorJson("Invalid delete request"));
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.write(errorJson("Error: " + e.getMessage()));
         }
     }
 
-    private String errorJson(String msg) {
-        JsonObject json = new JsonObject();
-        json.addProperty("success", false);
-        json.addProperty("message", msg);
-        return json.toString();
-    }
-    
     private boolean isAdmin(HttpServletRequest request) {
         Object userObj = request.getSession().getAttribute("user");
-        if (userObj instanceof backend.newsaggregation.model.User user) {
+        if (userObj instanceof User user) {
             return user.getRoleId() == 1;
         }
         return false;
@@ -275,5 +258,17 @@ public class NewsServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             out.write(errorJson("Access denied: Admins only"));
         }
+    }
+
+    private String errorJson(String msg) {
+        JsonObject json = new JsonObject();
+        json.addProperty("success", false);
+        json.addProperty("message", msg);
+        return json.toString();
+    }
+
+    private boolean isPersonalizedRequest(HttpServletRequest request) {
+        String personalized = request.getParameter("personalized");
+        return personalized != null && personalized.trim().equalsIgnoreCase("true");
     }
 }
