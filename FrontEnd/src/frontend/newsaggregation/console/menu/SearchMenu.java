@@ -69,26 +69,26 @@ public class SearchMenu {
     }
     
     private static void handleArticleActions(List<NewsArticle> articles, User user, String query) {
+    	int page = 0;
+        int pageSize = 5;
         while (true) {
-        	if (AppState.shouldExitToHome()) {
+            if (AppState.shouldExitToHome()) {
                 return;
-            }
-        	System.out.println("\nWelcome to the News Application, " + user.getUsername() + "!");
-            System.out.println("Date: " + DateUtil.getCurrentDate() + " Time: " + DateUtil.getCurrentTime());
-            System.out.println("S E A R C H");
-            System.out.println("Results for \"" + query + "\"");
-            
-            if (articles.isEmpty()) {
-                System.out.println("No articles found for your query.");
-                return;
-            } else {
-                articles.forEach(article -> {
-                    System.out.println(article.displayWithReaction());
-                    System.out.println("-------------------------------------------------");
-                });
             }
 
-            System.out.println("\nActions:");
+            int start = page * pageSize;
+            int end = Math.min(start + pageSize, articles.size());
+            System.out.println("\nWelcome to the News Application, " + user.getUsername() + "!");
+            System.out.println("Date: " + DateUtil.getCurrentDate() + " Time: " + DateUtil.getCurrentTime());
+            System.out.println("\n----- SEARCH -----  (Page " + (page + 1) + "):");
+            System.out.println("Results for \"" + query + "\"");
+            for (int index = start; index < end; index++) {
+                NewsArticle article = articles.get(index);
+                System.out.println(article.displayWithReaction());
+                System.out.println("-----------------------------------------");
+            }
+
+            System.out.println("Options: n (Next), p (Previous)");
             System.out.println("1. Back");
             System.out.println("2. Logout");
             System.out.println("3. Save Article");
@@ -96,9 +96,25 @@ public class SearchMenu {
             System.out.println("5. Report Article");
 
             String action = InputUtil.readLine("Enter your choice: ");
-
+            
             switch (action) {
-                case "1":
+	            case "n":
+	            case "N":
+                    if (end >= articles.size()) {
+                        System.out.println("No more pages.");
+                    } else {
+                        page++;
+                    }
+                    break;
+                case "p":
+                case "P":
+                    if (page == 0) {
+                        System.out.println("Already at first page.");
+                    } else {
+                        page--;
+                    }
+                    break;
+            	case "1":
                     return;
                 case "2":
                     if (authService.logout()) {
@@ -111,12 +127,7 @@ public class SearchMenu {
                     break;
                 case "3":
                     int saveId = InputUtil.readInt("Enter Article ID to save: ");
-                    boolean saved = articleService.saveArticle(saveId);
-                    if (saved) {
-                        System.out.println("Article saved successfully.");
-                    } else {
-                        System.out.println("Failed to save the article.");
-                    }
+                    articleService.saveArticle(saveId);
                     break;
                 case "4":
                     int reactId = InputUtil.readInt("Enter Article ID to react: ");
