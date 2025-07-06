@@ -17,7 +17,7 @@ import java.util.List;
 public class SearchService {
     private final Gson gson = new Gson();
 
-    public List<NewsArticle> searchArticles(String query, String startDate, String endDate, String sort) {
+    public List<NewsArticle> searchArticles(String query, String startDate, String endDate, String sort, boolean personalizedPreference) {
         try {
             StringBuilder urlBuilder = new StringBuilder(StaticConfiguration.getBaseUrl() + "/news/search?query=")
                     .append(URLEncoder.encode(query, StandardCharsets.UTF_8));
@@ -30,6 +30,7 @@ public class SearchService {
             if (sort != null) {
                 urlBuilder.append("&sort=").append(sort);
             }
+            urlBuilder.append("&personalized=").append(personalizedPreference);
 
             HttpResponse<String> response = HttpUtil.sendGetRequest(urlBuilder.toString());
             System.out.println("API Response: " + response.body());

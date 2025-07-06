@@ -62,7 +62,8 @@ public class HeadlineMenu {
     }
 
     private static void showTodayHeadlines(User user) {
-        List<NewsArticle> articles = headlineService.fetchTodayHeadlines();
+        boolean personalizedPreference = InputUtil.readYesNo("Make it personalized");
+        List<NewsArticle> articles = headlineService.fetchTodayHeadlines(personalizedPreference);
         if (articles.isEmpty()) {
             System.out.println("No articles found for today.");
             return;
@@ -74,8 +75,9 @@ public class HeadlineMenu {
         String startDate = InputUtil.readLine("Enter start date (YYYY-MM-DD): ");
         String endDate = InputUtil.readLine("Enter end date (YYYY-MM-DD): ");
         String category = selectCategory();
+        boolean personalizedPreference = InputUtil.readYesNo("Make it personalized");
 
-        List<NewsArticle> articles = headlineService.fetchHeadlinesByDateRange(startDate, endDate, category);
+        List<NewsArticle> articles = headlineService.fetchHeadlinesByDateRange(startDate, endDate, category, personalizedPreference);
         if (articles.isEmpty()) {
             System.out.println("No articles found for the selected date range.");
             return;

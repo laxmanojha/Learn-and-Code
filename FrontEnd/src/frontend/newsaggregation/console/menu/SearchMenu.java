@@ -51,8 +51,10 @@ public class SearchMenu {
                 System.out.println("Invalid sort option. Skipping sort.");
         }
 
+        boolean personalizedPreference = InputUtil.readYesNo("Make it personalized");
+
         // Fetch results
-        List<NewsArticle> articles = searchService.searchArticles(query, startDate, endDate, sort);
+        List<NewsArticle> articles = searchService.searchArticles(query, startDate, endDate, sort, personalizedPreference);
         
         if ("likes".equalsIgnoreCase(sort)) {
             articles.sort((a, b) -> Integer.compare(b.getLikeCount(), a.getLikeCount())); // Descending by likes

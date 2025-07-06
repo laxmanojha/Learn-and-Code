@@ -25,7 +25,12 @@ public class UserSearchHistoryDaoImpl implements UserSearchHistoryDao {
 
     @Override
     public void logSearch(int userId, String keyword) {
-        String sql = "INSERT INTO user_search_history (user_id, keyword) VALUES (?, ?)";
+        String sql = """
+            INSERT INTO user_search_history (user_id, keyword)
+            VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE searched_at = CURRENT_TIMESTAMP
+            """;
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             stmt.setString(2, keyword);

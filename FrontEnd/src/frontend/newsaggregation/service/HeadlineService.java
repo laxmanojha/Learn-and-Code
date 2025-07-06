@@ -16,9 +16,9 @@ public class HeadlineService {
     private static final String BASE_URL = StaticConfiguration.getBaseUrl();
     private static final Gson gson = new Gson();
 
-    public List<NewsArticle> fetchTodayHeadlines() {
+    public List<NewsArticle> fetchTodayHeadlines(boolean personalizedPreference) {
         try {
-            HttpResponse<String> response = HttpUtil.sendGetRequest(BASE_URL + "/news/today");
+            HttpResponse<String> response = HttpUtil.sendGetRequest(BASE_URL + "/news/today" + "?personalized=" + personalizedPreference);
 
             if (response.statusCode() == 200) {
                 NewsArticle[] articles = gson.fromJson(response.body(), NewsArticle[].class);
@@ -32,7 +32,7 @@ public class HeadlineService {
         return new ArrayList<>();
     }
 
-    public List<NewsArticle> fetchHeadlinesByDateRange(String startDate, String endDate, String category) {
+    public List<NewsArticle> fetchHeadlinesByDateRange(String startDate, String endDate, String category, boolean personalizedPreference) {
         try {
         	String url = null;
         	if (category.equalsIgnoreCase("all")) {
@@ -40,6 +40,7 @@ public class HeadlineService {
         	} else {
         		url = BASE_URL + "/news/date-range?start=" + startDate + "&end=" + endDate + "&type=" + category;
         	}
+        	url += "&personalized=" + personalizedPreference;
             HttpResponse<String> response = HttpUtil.sendGetRequest(url);
 
             if (response.statusCode() == 200) {

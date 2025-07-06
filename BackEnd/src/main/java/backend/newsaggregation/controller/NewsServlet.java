@@ -95,6 +95,14 @@ public class NewsServlet extends HttpServlet {
                     out.write(errorJson("Query parameter is required"));
                     return;
                 }
+                
+                if (session == null || session.getAttribute("user") == null) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    out.write(errorJson("Login required"));
+                    return;
+                }
+                user = (User) session.getAttribute("user");
+                userId = user.getId();
 
                 List<NewsArticle> results = searchNewsService.searchArticles(userId, query, start, end, sort);
                 if (isPersonalized) {
