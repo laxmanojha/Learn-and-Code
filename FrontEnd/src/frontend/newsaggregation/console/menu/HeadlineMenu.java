@@ -129,17 +129,23 @@ public class HeadlineMenu {
     }
 
     private static void handleArticleActions(List<NewsArticle> articles, User user) {
+    	int page = 0;
+        int pageSize = 5;
         while (true) {
-        	if (AppState.shouldExitToHome()) {
+            if (AppState.shouldExitToHome()) {
                 return;
             }
-            System.out.println("\n----- HEADLINES -----");
-            for (NewsArticle article : articles) {
+
+            int start = page * pageSize;
+            int end = Math.min(start + pageSize, articles.size());
+            System.out.println("\n----- HEADLINES -----  (Page " + (page + 1) + "):");
+            for (int i = start; i < end; i++) {
+                NewsArticle article = articles.get(i);
                 System.out.println(article);
                 System.out.println("-----------------------------------------");
             }
 
-            System.out.println("\nActions:");
+            System.out.println("Options: n (Next), p (Previous)");
             System.out.println("1. Back");
             System.out.println("2. Logout");
             System.out.println("3. Save Article");
@@ -147,9 +153,25 @@ public class HeadlineMenu {
             System.out.println("5. Report Article");
 
             String action = InputUtil.readLine("Enter your choice: ");
-
+            
             switch (action) {
-                case "1":
+	            case "n":
+	            case "N":
+                    if (end >= articles.size()) {
+                        System.out.println("No more pages.");
+                    } else {
+                        page++;
+                    }
+                    break;
+                case "p":
+                case "P":
+                    if (page == 0) {
+                        System.out.println("Already at first page.");
+                    } else {
+                        page--;
+                    }
+                    break;
+            	case "1":
                     return;
                 case "2":
                     if (authService.logout()) {
