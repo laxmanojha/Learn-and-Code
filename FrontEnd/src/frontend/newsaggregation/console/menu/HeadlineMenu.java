@@ -99,8 +99,8 @@ public class HeadlineMenu {
             System.out.println("\nSelect Category:");
             System.out.println("0. All");
 
-            for (int i = 0; i < categories.size(); i++) {
-                System.out.printf("%d. %s%n", i + 1, capitalize(categories.get(i).getName()));
+            for (int index = 0; index < categories.size(); index++) {
+                System.out.printf("%d. %s%n", index + 1, capitalize(categories.get(index).getName()));
             }
 
             String choice = InputUtil.readLine("Enter your choice: ");
@@ -139,8 +139,8 @@ public class HeadlineMenu {
             int start = page * pageSize;
             int end = Math.min(start + pageSize, articles.size());
             System.out.println("\n----- HEADLINES -----  (Page " + (page + 1) + "):");
-            for (int i = start; i < end; i++) {
-                NewsArticle article = articles.get(i);
+            for (int index = start; index < end; index++) {
+                NewsArticle article = articles.get(index);
                 System.out.println(article);
                 System.out.println("-----------------------------------------");
             }

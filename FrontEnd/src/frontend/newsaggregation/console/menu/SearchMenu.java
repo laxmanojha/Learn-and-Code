@@ -59,6 +59,11 @@ public class SearchMenu {
         } else if ("dislikes".equalsIgnoreCase(sort)) {
             articles.sort((a, b) -> Integer.compare(b.getDislikeCount(), a.getDislikeCount())); // Descending by dislikes
         }
+        
+        if (articles.isEmpty()) {
+            System.out.println("No articles found for your query-> " + query);
+            return;
+        }
 
         handleArticleActions(articles, user, query);
     }

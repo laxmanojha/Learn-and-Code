@@ -65,9 +65,9 @@ public class NotificationMenu {
             int end = Math.min(start + pageSize, notifications.size());
 
             System.out.println("\nN O T I F I C A T I O N S  (Page " + (page + 1) + "):");
-            for (int i = start; i < end; i++) {
-                NewsArticle article = notifications.get(i);
-                System.out.println((i + 1) + ". " + article.getTitle());
+            for (int index = start; index < end; index++) {
+                NewsArticle article = notifications.get(index);
+                System.out.println((index + 1) + ". " + article.getTitle());
                 System.out.println("   ➤ Source: " + article.getSource());
                 System.out.println("   ➤ Categories: " + article.getCategories());
                 System.out.println("   ➤ Published At: " + article.getPublishedAt());
