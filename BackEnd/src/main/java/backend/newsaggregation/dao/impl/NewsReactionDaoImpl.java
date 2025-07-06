@@ -2,7 +2,12 @@ package backend.newsaggregation.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mysql.cj.protocol.Resultset;
 
 import backend.newsaggregation.dao.interfaces.NewsReactionDao;
 import backend.newsaggregation.util.DatabaseConfig;
@@ -41,5 +46,23 @@ public class NewsReactionDaoImpl implements NewsReactionDao{
             e.printStackTrace();
             return false;
         }
+    }
+    
+    @Override
+    public List<Integer> getLikedNewsIds(int userId) {
+    	String sql = "SELECT news_id FROM news_article_reaction WHERE user_id = ? AND reaction_type = 'like'";
+    	List<Integer> newsIds = new ArrayList<>();
+    	
+    	try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+    		stmt.setInt(1, userId);
+    		ResultSet rs = stmt.executeQuery();
+    		while (rs.next()) {
+    			newsIds.add(rs.getInt("news_id"));
+    		}
+    		
+    	} catch (SQLException e) {
+    		e.printStackTrace();
+    	}
+    	return newsIds;
     }
 }

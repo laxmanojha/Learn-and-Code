@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 
 import backend.newsaggregation.service.CategoryService;
 import backend.newsaggregation.service.NewsService;
+import backend.newsaggregation.service.PersonalizedNewsService;
 import backend.newsaggregation.service.SavedArticleService;
 import backend.newsaggregation.service.SearchNewsService;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,6 +32,7 @@ public class NewsServlet extends HttpServlet {
     private final SavedArticleService savedArticleService = SavedArticleService.getInstance();
     private final SearchNewsService searchNewsService = SearchNewsService.getInstance();
     private final CategoryService categoryService = CategoryService.getInstance();
+    private final PersonalizedNewsService personalizedNewsService = PersonalizedNewsService.getInstance();
     private final Gson gson = new Gson();
 
     @Override
@@ -41,9 +43,27 @@ public class NewsServlet extends HttpServlet {
         String path = request.getPathInfo();
         PrintWriter out = response.getWriter();
 
+        boolean isPersonalized = Boolean.parseBoolean(request.getParameter("personalized"));
+        HttpSession session = request.getSession(false);
+        User user = null;
+        int userId = -1;
+
+        if (isPersonalized) {
+            if (session == null || session.getAttribute("user") == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.write(errorJson("Login required for personalized results."));
+                return;
+            }
+            user = (User) session.getAttribute("user");
+            userId = user.getId();
+        }
+
         try {
             if (path == null || path.equals("/today")) {
                 List<NewsArticle> articles = newsService.getTodayHeadlines();
+                if (isPersonalized) {
+                    articles = personalizedNewsService.getPersonalizedArticles(userId, articles);
+                }
                 out.write(gson.toJson(articles));
 
             } else if (path.equals("/date-range")) {
@@ -58,21 +78,11 @@ public class NewsServlet extends HttpServlet {
                         newsService.getHeadlinesByDateRange(startDate, endDate) :
                         newsService.getHeadlinesByDateRangeAndCategory(startDate, endDate, type);
 
+                if (isPersonalized) {
+                    articles = personalizedNewsService.getPersonalizedArticles(userId, articles);
+                }
+
                 out.write(gson.toJson(articles));
-
-            } else if (path.equals("/saved")) {
-                HttpSession session = request.getSession(false);
-                if (session == null || session.getAttribute("user") == null) {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    out.write(errorJson("Login required"));
-                    return;
-                }
-
-                Object userObj = session.getAttribute("user");
-                if (userObj instanceof backend.newsaggregation.model.User user) {
-                	List<NewsArticle> articles = savedArticleService.getSavedArticlesByUser(user.getId());
-                	out.write(gson.toJson(articles));
-                }
 
             } else if (path.equals("/search")) {
                 String query = request.getParameter("query");
@@ -86,13 +96,27 @@ public class NewsServlet extends HttpServlet {
                     return;
                 }
 
-                List<NewsArticle> results = searchNewsService.searchArticles(query, start, end, sort);
+                List<NewsArticle> results = searchNewsService.searchArticles(userId, query, start, end, sort);
+                if (isPersonalized) {
+                    results = personalizedNewsService.getPersonalizedArticles(userId, results);
+                }
                 out.write(gson.toJson(results));
 
+            } else if (path.equals("/saved")) {
+                if (session == null || session.getAttribute("user") == null) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    out.write(errorJson("Login required"));
+                    return;
+                }
+
+                user = (User) session.getAttribute("user");
+                List<NewsArticle> articles = savedArticleService.getSavedArticlesByUser(user.getId());
+                out.write(gson.toJson(articles));
+
             } else if (path.equals("/category")) {
-            	List<Category> results = categoryService.getAllCategory();
-            	out.write(gson.toJson(results));
-            	
+                List<Category> results = categoryService.getAllCategory();
+                out.write(gson.toJson(results));
+
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 out.write(errorJson("Invalid endpoint"));

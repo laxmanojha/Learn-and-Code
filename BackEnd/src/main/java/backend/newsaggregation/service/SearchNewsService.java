@@ -9,6 +9,7 @@ import java.util.Map;
 import backend.newsaggregation.dao.interfaces.HiddenKeywordDao;
 import backend.newsaggregation.dao.interfaces.NewsDao;
 import backend.newsaggregation.dao.interfaces.SearchDao;
+import backend.newsaggregation.dao.interfaces.UserSearchHistoryDao;
 import backend.newsaggregation.model.HiddenKeyword;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.model.NewsArticleCategoryInfo;
@@ -19,15 +20,17 @@ public class SearchNewsService {
     private final SearchDao searchDao;
     private final NewsDao newsDao;
     private final HiddenKeywordDao hiddenKeywordDao;
+    private final UserSearchHistoryDao userSearchHistoryDao;
 
     private SearchNewsService() {
-		this(SearchDao.getInstance(), NewsDao.getInstance(), HiddenKeywordDao.getInstance());
+		this(SearchDao.getInstance(), NewsDao.getInstance(), HiddenKeywordDao.getInstance(), UserSearchHistoryDao.getInstance());
 	}
 	
-	private SearchNewsService(SearchDao searchDao, NewsDao newsDao, HiddenKeywordDao hiddenKeywordDao) {
+	private SearchNewsService(SearchDao searchDao, NewsDao newsDao, HiddenKeywordDao hiddenKeywordDao, UserSearchHistoryDao userSearchHistoryDao) {
         this.searchDao = searchDao;
         this.newsDao = newsDao;
         this.hiddenKeywordDao = hiddenKeywordDao;
+        this.userSearchHistoryDao = userSearchHistoryDao;
     }
 
     public static SearchNewsService getInstance() {
@@ -37,7 +40,7 @@ public class SearchNewsService {
         return instance;
     }
 
-	public List<NewsArticle> searchArticles(String query, String startDateStr, String endDateStr, String sort) {
+	public List<NewsArticle> searchArticles(int userId, String query, String startDateStr, String endDateStr, String sort) {
         LocalDate start = null;
         LocalDate end = null;
         List<NewsArticle> newsArticles = null;
@@ -57,6 +60,8 @@ public class SearchNewsService {
         } else {
         	newsArticles = searchDao.searchArticles(query);
         }
+        
+        userSearchHistoryDao.logSearch(userId, query);
         
         for (NewsArticle newsArticle: newsArticles) {
         	newsArticle = mapCategoriesToNews(newsArticle);

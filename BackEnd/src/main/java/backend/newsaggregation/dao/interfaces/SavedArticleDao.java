@@ -15,4 +15,5 @@ public interface SavedArticleDao {
     boolean deleteSavedArticle(int userId, int newsId);
     List<NewsArticle> getSavedArticlesByUser(int userId);
     boolean isArticleSavedByUser(int userId, int newsId);
+    public List<Integer> getSavedNewsIds(int userId);
 }

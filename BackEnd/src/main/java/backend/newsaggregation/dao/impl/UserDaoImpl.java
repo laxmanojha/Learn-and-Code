@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Date;
 
 import backend.newsaggregation.dao.interfaces.UserDao;
 import backend.newsaggregation.model.User;

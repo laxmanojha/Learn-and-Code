@@ -115,5 +115,28 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
 
         return savedArticles;
     }
+    
+    @Override
+    public List<Integer> getSavedNewsIds(int userId) {
+    	List<Integer> savedNewsIds = new ArrayList<>();
+    	
+    	String sql = "SELECT news_id FROM saved_news WHERE user_id = ?";
+    	
+    	try {
+    		PreparedStatement ps = conn.prepareStatement(sql);
+    		
+    		ps.setInt(1, userId);
+    		ResultSet rs = ps.executeQuery();
+    		
+    		while (rs.next()) {
+    			savedNewsIds.add(rs.getInt("news_id"));
+    		}
+    		
+    	} catch (SQLException e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return savedNewsIds;
+    }
 }
 

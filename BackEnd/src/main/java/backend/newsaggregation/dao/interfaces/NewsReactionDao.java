@@ -1,5 +1,7 @@
 package backend.newsaggregation.dao.interfaces;
 
+import java.util.List;
+
 import backend.newsaggregation.dao.impl.NewsReactionDaoImpl;
 
 public interface NewsReactionDao {
@@ -9,4 +11,5 @@ public interface NewsReactionDao {
     }
 
 	public boolean reactToArticle(int userId, int newsId, String reactionType);
+	public List<Integer> getLikedNewsIds(int userId);
 }
