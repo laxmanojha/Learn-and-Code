@@ -6,8 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import backend.newsaggregation.dao.interfaces.HiddenKeywordDao;
 import backend.newsaggregation.dao.interfaces.NewsDao;
 import backend.newsaggregation.dao.interfaces.SearchDao;
+import backend.newsaggregation.model.HiddenKeyword;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.model.NewsArticleCategoryInfo;
 
@@ -16,14 +18,16 @@ public class SearchNewsService {
 	private static SearchNewsService instance;
     private final SearchDao searchDao;
     private final NewsDao newsDao;
+    private final HiddenKeywordDao hiddenKeywordDao;
 
     private SearchNewsService() {
-		this(SearchDao.getInstance(), NewsDao.getInstance());
+		this(SearchDao.getInstance(), NewsDao.getInstance(), HiddenKeywordDao.getInstance());
 	}
 	
-	private SearchNewsService(SearchDao searchDao, NewsDao newsDao) {
+	private SearchNewsService(SearchDao searchDao, NewsDao newsDao, HiddenKeywordDao hiddenKeywordDao) {
         this.searchDao = searchDao;
         this.newsDao = newsDao;
+        this.hiddenKeywordDao = hiddenKeywordDao;
     }
 
     public static SearchNewsService getInstance() {
@@ -57,8 +61,8 @@ public class SearchNewsService {
         for (NewsArticle newsArticle: newsArticles) {
         	newsArticle = mapCategoriesToNews(newsArticle);
         }
-        return filterUniqueById(newsArticles);
-        
+        newsArticles = filterUniqueById(newsArticles);
+        return validNewsArticles(newsArticles);
     }
 	
 
@@ -79,5 +83,23 @@ public class SearchNewsService {
             uniqueMap.putIfAbsent(article.getId(), article);
         }
         return new ArrayList<>(uniqueMap.values());
+    }
+    
+
+    private List<NewsArticle> validNewsArticles(List<NewsArticle> articles) {
+    	List<HiddenKeyword> blockedKeywords = hiddenKeywordDao.getAllKeywords();
+    	List<NewsArticle> filteredList = articles.stream()
+    	    .filter(article -> !containsBlockedKeyword(article, blockedKeywords))
+    	    .toList();
+    	
+    	return filteredList;
+    }
+    
+    private boolean containsBlockedKeyword(NewsArticle article, List<HiddenKeyword> blockedKeywords) {
+    	String title = article.getTitle();
+    	String description = article.getDescription() == null ? "" : article.getDescription();
+    	String snippet = article.getSnippet() == null ? "" : article.getSnippet();
+        String content = (title + " " + description + " " + snippet).toLowerCase();
+        return blockedKeywords.stream().anyMatch(kw -> content.contains(kw.getKeyword().toLowerCase()));
     }
 }

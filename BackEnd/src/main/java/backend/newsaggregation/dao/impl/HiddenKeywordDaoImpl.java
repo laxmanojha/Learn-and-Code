@@ -56,8 +56,8 @@ public class HiddenKeywordDaoImpl implements HiddenKeywordDao {
         List<HiddenKeyword> keywords = new ArrayList<>();
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-        	HiddenKeyword hiddenKeyword = new HiddenKeyword();
             while (rs.next()) {
+            	HiddenKeyword hiddenKeyword = new HiddenKeyword();
             	hiddenKeyword.setId(rs.getInt("id"));
                 hiddenKeyword.setKeyword(rs.getString("keyword"));
                 hiddenKeyword.setCreatedAt(rs.getDate("created_at"));

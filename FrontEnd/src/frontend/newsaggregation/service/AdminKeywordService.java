@@ -4,19 +4,24 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import frontend.newsaggregation.model.HiddenKeyword;
+import frontend.newsaggregation.util.CustomDateDeserializer;
 import frontend.newsaggregation.util.HttpUtil;
 
 public class AdminKeywordService {
 
     private static final String BASE_URL = "http://localhost:8080/News-Aggregation/api/admin/keyword";
-    private static final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder()
+    	    .registerTypeAdapter(Date.class, new CustomDateDeserializer())
+    	    .create();
     private static AdminKeywordService instance; 
 
     public static AdminKeywordService getInstance() {

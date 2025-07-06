@@ -32,7 +32,8 @@ public class HeadlineMenu {
             System.out.println("\nHeadlines Menu:");
             System.out.println("1. Today");
             System.out.println("2. Date Range");
-            System.out.println("3. Logout");
+            System.out.println("3. Back");
+            System.out.println("4. Logout");
 
             String choice = InputUtil.readLine("Enter your choice: ");
 
@@ -44,6 +45,8 @@ public class HeadlineMenu {
                     showDateRangeHeadlines(user);
                     break;
                 case "3":
+                	return;
+                case "4":
                     if (authService.logout()) {
                         System.out.println("Logged out successfully.");
                         AppState.setExitToHome(true);
