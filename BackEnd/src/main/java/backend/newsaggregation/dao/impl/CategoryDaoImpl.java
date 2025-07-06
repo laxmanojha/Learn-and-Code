@@ -15,6 +15,7 @@ import backend.newsaggregation.model.Category;
 import backend.newsaggregation.util.DatabaseConfig;
 
 public class CategoryDaoImpl implements CategoryDao{
+	
 	private static CategoryDaoImpl instance;
 	Connection conn = DatabaseConfig.getConnection();
 

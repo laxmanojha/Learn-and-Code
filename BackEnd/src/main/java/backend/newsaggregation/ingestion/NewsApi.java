@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backend.newsaggregation.model.NewsArticle;
+import backend.newsaggregation.service.ExternalServerService;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -14,7 +15,7 @@ import java.util.*;
 
 public class NewsApi implements ExternalNewsApi {
 
-    private static final String NEWS_API_KEY = "af3ce09176fb4fd3be6fcfd1e000776c";
+    private static final String NEWS_API_KEY = ExternalServerService.getInstance().getApiKeyByServerName("NewsApi");
     private static final String HEADLINES_URL = "https://newsapi.org/v2/top-headlines?country=us&apiKey=" + NEWS_API_KEY;
     private static final String SOURCES_URL = "https://newsapi.org/v2/top-headlines/sources?apiKey=" + NEWS_API_KEY;
 

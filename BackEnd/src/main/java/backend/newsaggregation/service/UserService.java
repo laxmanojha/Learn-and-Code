@@ -1,6 +1,9 @@
 package backend.newsaggregation.service;
 
 import backend.newsaggregation.dao.interfaces.UserDao;
+
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import backend.newsaggregation.model.User;
 import backend.newsaggregation.util.Util;
@@ -108,5 +111,9 @@ public class UserService {
 		if (userInfo != null)
 			return userInfo;
 		return null;
+	}
+	
+	public Map<Integer, String> getAllUserIdsWithEmail() {
+		return userDao.getAllUserIdsWithEmail();
 	}
 }

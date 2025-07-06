@@ -7,19 +7,18 @@ import java.util.*;
 import com.google.gson.Gson;
 
 import backend.newsaggregation.model.NewsArticle;
-import backend.newsaggregation.model.NotificationPref;
 import backend.newsaggregation.model.NotificationPreference;
 import backend.newsaggregation.service.NotificationService;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/api/notifications/*")
 public class NotificationServlet extends HttpServlet {
 
-    private NotificationService notificationService = NotificationService.getInstance();
+	private static final long serialVersionUID = 1L;
+	private NotificationService notificationService = NotificationService.getInstance();
     private final Gson gson = new Gson();
 
     @Override
@@ -38,11 +37,9 @@ public class NotificationServlet extends HttpServlet {
             List<NotificationPreference> prefs = notificationService.getAllPreferences(userId);
             resp.getWriter().write(gson.toJson(prefs));
         } else if (path.equals("/preferences/category")) {
-            // GET /api/notifications/category → filter only catgory prefs
             List<NotificationPreference> keywords = notificationService.getCategoryPreferences(userId);
             resp.getWriter().write(gson.toJson(keywords));
         } else if (path.equals("/preferences/keywords")) {
-        	// GET /api/notifications/keywords → filter only keyword prefs
         	NotificationPreference keywords = notificationService.getKeywordPreferences(userId);
         	resp.getWriter().write(gson.toJson(keywords));
         } else {
@@ -50,36 +47,6 @@ public class NotificationServlet extends HttpServlet {
             resp.getWriter().write(errorJson("Endpoint not found"));
         }
     }
-
-//    @Override
-//    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-//        String path = req.getPathInfo();
-//        int userId = getUserIdFromSession(req);
-//        if (userId == -1) {
-//        	resp.getWriter().write(errorJson("User not found"));
-//        	return;
-//        }
-//        resp.setContentType("application/json");
-//
-//        if ("/config/category".equals(path)) {
-//            Map<String, Object> body = parseJsonBody(req);
-//            int categoryId = Integer.parseInt((String) body.get("categoryId"));
-//            boolean enabled = Boolean.parseBoolean(body.get("enabled").toString());
-//
-//            boolean updated = notificationService.updateCategoryConfig(userId, categoryId, enabled);
-//            writeSuccess(resp, updated, "Preference updated");
-//        } else if ("/config/keywords".equals(path)) {
-//    		Map<String, Object> body = parseJsonBody(req);
-//    		List<String> keywords = (List<String>) body.get("keywords");
-//    		boolean enabled = Boolean.parseBoolean(body.get("enabled").toString());
-//    		
-//    		boolean updated = notificationService.updateCategoryConfig(userId, categoryId, enabled);
-//    		writeSuccess(resp, updated, "Preference updated");
-//    	} else {
-//	        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-//	        resp.getWriter().write(errorJson("PUT endpoint not found"));
-//        }
-//    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -94,7 +61,7 @@ public class NotificationServlet extends HttpServlet {
         if ("/config/category".equals(path)) {
             Map<String, Object> body = parseJsonBody(req);
             int categoryId = Integer.parseInt((String) body.get("categoryId"));
-            @SuppressWarnings("unchecked")
+			@SuppressWarnings("unchecked")
 			List<String> keywords = (List<String>) body.get("keywords");
 
             boolean updated = notificationService.updateCategoryConfig(userId, categoryId, keywords);
@@ -139,7 +106,8 @@ public class NotificationServlet extends HttpServlet {
         }
     }
 
-    private Map<String, Object> parseJsonBody(HttpServletRequest req) throws IOException {
+    @SuppressWarnings("unchecked")
+	private Map<String, Object> parseJsonBody(HttpServletRequest req) throws IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader reader = req.getReader();
         String line;

@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/api/admin/keyword/*")
 public class AdminKeywordBlockServlet extends HttpServlet {
+	
 	private static final long serialVersionUID = 1L;
 	private static AdminKeywordService adminKeywordService = AdminKeywordService.getInstance();
     private final Gson gson = new Gson();

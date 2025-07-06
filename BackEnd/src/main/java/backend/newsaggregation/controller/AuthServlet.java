@@ -3,7 +3,6 @@ package backend.newsaggregation.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -20,7 +19,8 @@ import backend.newsaggregation.service.UserService;
 @WebServlet("/api/auth/*")
 public class AuthServlet extends HttpServlet {
 
-    private final UserService userService = UserService.getInstance();
+	private static final long serialVersionUID = 1L;
+	private final UserService userService = UserService.getInstance();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

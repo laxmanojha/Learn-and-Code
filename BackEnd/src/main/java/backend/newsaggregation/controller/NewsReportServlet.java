@@ -21,6 +21,7 @@ import com.google.gson.JsonObject;
 @WebServlet("/api/news-report/*")
 public class NewsReportServlet extends HttpServlet {
 	
+	private static final long serialVersionUID = 1L;
 	private final NewsReportService newsReportService = NewsReportService.getInstance();
     private final Gson gson = new Gson();
 	
@@ -35,7 +36,6 @@ public class NewsReportServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Parse articleId from URL
     	PrintWriter out = response.getWriter();
         String pathInfo = request.getPathInfo(); // format: /{articleId}
         NewsReportService service = NewsReportService.getInstance();
@@ -76,7 +76,6 @@ public class NewsReportServlet extends HttpServlet {
             return;
         }
         
-        // Parse JSON Body
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> body;
         try {

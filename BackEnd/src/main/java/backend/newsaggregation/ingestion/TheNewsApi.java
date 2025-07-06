@@ -13,9 +13,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backend.newsaggregation.model.NewsArticle;
+import backend.newsaggregation.service.ExternalServerService;
 
 public class TheNewsApi implements ExternalNewsApi{
-	String apiUrl = "https://api.thenewsapi.com/v1/news/top?api_token=H26dF12qYfehuW1gVF4Pu5qbTljKLUuvSJYWMaeX%20&locale=us";
+	
+	private static final String NEWS_API_KEY = ExternalServerService.getInstance().getApiKeyByServerName("TheNewsApi");
+    private static final String NEWS_URL = "https://api.thenewsapi.com/v1/news/top?api_token=" + NEWS_API_KEY;
 	
 	@Override
 	public List<NewsArticle> parseExternalApiData() {
@@ -73,7 +76,7 @@ public class TheNewsApi implements ExternalNewsApi{
         StringBuilder response = new StringBuilder();
 
         try {
-            URL url = new URL(apiUrl);
+            URL url = new URL(NEWS_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 

@@ -17,6 +17,8 @@ import java.util.Map;
 
 @WebServlet("/api/news-reaction/*")
 public class NewsReactionServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
 	NewsReactionService service = NewsReactionService.getInstance();
 
     @Override
@@ -112,4 +114,3 @@ public class NewsReactionServlet extends HttpServlet {
         return json.toString();
     }
 }
-

@@ -20,7 +20,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet("/api/servers/*")
 public class ExternalServerServlet extends HttpServlet {
 
-    private final ExternalServerService serverService = ExternalServerService.getInstance();
+	private static final long serialVersionUID = 1L;
+	private final ExternalServerService serverService = ExternalServerService.getInstance();
     private final Gson gson = new Gson();
 
     @Override

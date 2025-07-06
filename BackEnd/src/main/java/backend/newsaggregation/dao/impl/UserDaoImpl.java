@@ -5,6 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import backend.newsaggregation.dao.interfaces.UserDao;
 import backend.newsaggregation.model.User;
@@ -116,6 +120,25 @@ public class UserDaoImpl implements UserDao {
         }
 
         return null;
+    }
+    
+    @Override
+    public Map<Integer, String> getAllUserIdsWithEmail() {
+        Map<Integer, String> userIdWithEmail = new HashMap<>();
+        String sql = "SELECT id, email FROM user WHERE id <> 1"; // exclude admin
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                userIdWithEmail.put(rs.getInt("id"), rs.getString("email"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userIdWithEmail;
     }
     
     @Override

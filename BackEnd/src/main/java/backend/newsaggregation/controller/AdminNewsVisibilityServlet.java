@@ -13,6 +13,7 @@ import backend.newsaggregation.service.NewsReportService;
 @WebServlet("/api/admin/news/*")
 public class AdminNewsVisibilityServlet extends HttpServlet {
 	
+	private static final long serialVersionUID = 1L;
 	private static NewsReportService newsReportService = NewsReportService.getInstance();
 
     @Override

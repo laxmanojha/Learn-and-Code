@@ -26,7 +26,9 @@ import java.util.List;
 
 @WebServlet("/api/news/*")
 public class NewsServlet extends HttpServlet {
-    private final NewsService newsService = NewsService.getInstance();
+
+	private static final long serialVersionUID = 1L;
+	private final NewsService newsService = NewsService.getInstance();
     private final SavedArticleService savedArticleService = SavedArticleService.getInstance();
     private final SearchNewsService searchNewsService = SearchNewsService.getInstance();
     private final CategoryService categoryService = CategoryService.getInstance();

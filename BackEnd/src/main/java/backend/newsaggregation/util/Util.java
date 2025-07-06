@@ -2,7 +2,6 @@ package backend.newsaggregation.util;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-
 public class Util {
 	
 	private static Util instance;

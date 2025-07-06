@@ -4,13 +4,21 @@ import jakarta.mail.*;
 import jakarta.mail.internet.*;
 import java.util.List;
 import java.util.Properties;
+
+import backend.newsaggregation.model.EmailConfig;
 import backend.newsaggregation.model.NewsArticle;
+import backend.newsaggregation.service.EmailConfigService;
 
 public class EmailUtil {
 
     public static void sendNewsDigestEmail(String toEmail, List<NewsArticle> articles) {
-        final String fromEmail = "your_email@example.com"; // your email
-        final String password = "your_app_password"; // your app password or real password if allowed
+    	EmailConfig config = EmailConfigService.getInstance().getEmailConfig();
+    	if (config == null) {
+    	    System.err.println("Email config not found in DB!");
+    	    return;
+    	}
+    	final String fromEmail = config.getSenderEmail();
+    	final String password = config.getAppPassword();
 
         // SMTP server config
         Properties props = new Properties();

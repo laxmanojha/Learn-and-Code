@@ -80,4 +80,8 @@ public class ExternalServerService {
         }
     }
 
+    public String getApiKeyByServerName(String serverName) {
+    	ExternalServer externalServer = serverDao.getServerByName(serverName);
+    	return externalServer.getApiKey();
+    }
 }
