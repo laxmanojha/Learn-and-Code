@@ -67,10 +67,10 @@ public class NotificationMenu {
             for (int index = start; index < end; index++) {
                 NewsArticle article = notifications.get(index);
                 System.out.println((index + 1) + ". " + article.getTitle());
-                System.out.println("   ➤ Source: " + article.getSource());
-                System.out.println("   ➤ Categories: " + article.getCategories());
-                System.out.println("   ➤ Published At: " + article.getPublishedAt());
-                System.out.println("   ➤ URL: " + article.getUrl());
+                System.out.println("Source: " + article.getSource());
+                System.out.println("Categories: " + article.getCategories());
+                System.out.println("Published At: " + article.getPublishedAt());
+                System.out.println("URL: " + article.getUrl());
                 System.out.println("-------------------------------------------------");
             }
 
@@ -148,7 +148,6 @@ public class NotificationMenu {
             if (choice.equals(String.valueOf(backOption))) {
                 return;
             } else if (choice.equals(String.valueOf(index))) {
-                System.out.println("Logging out...");
                 AppState.setExitToHome(true);
                 return;
             } else {

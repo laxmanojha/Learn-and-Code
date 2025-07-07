@@ -50,8 +50,6 @@ public class HeadlineMenu {
                     if (authService.logout()) {
                         AppState.setExitToHome(true);
                         return;
-                    } else {
-                        System.out.println("Logout failed.");
                     }
                     break;
                 default:
@@ -179,11 +177,8 @@ public class HeadlineMenu {
                     return;
                 case "2":
                     if (authService.logout()) {
-                        System.out.println("Logged out successfully.");
                         AppState.setExitToHome(true);
                         return;
-                    } else {
-                        System.out.println("Logout failed.");
                     }
                     break;
                 case "3":

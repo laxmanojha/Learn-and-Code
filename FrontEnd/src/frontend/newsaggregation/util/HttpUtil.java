@@ -109,7 +109,6 @@ public class HttpUtil {
         String responseBody = response.body();
 
         try {
-        	System.out.println(responseBody);
             JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
             boolean success = jsonResponse.get("success").getAsBoolean();
             String message = jsonResponse.get("message").getAsString();

@@ -47,7 +47,7 @@ public class UserDashboard {
                     NotificationMenu.startNotificationMenu(user);
                     break;
                 case "5":
-                    handleLogout();
+                	authService.logout();
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -65,16 +65,5 @@ public class UserDashboard {
 
         System.out.println("\nWelcome to the News Application, " + user.getUsername() + "! Date: " + date);
         System.out.println("Time: " + time);
-    }
-    
-
-    private static void handleLogout() {
-    	boolean loggedOut = authService.logout();
-    	if (loggedOut) {
-    	    System.out.println("Logged out successfully.");
-    	} else {
-    	    System.out.println("Logout failed.");
-    	}
-    	return;
     }
 }

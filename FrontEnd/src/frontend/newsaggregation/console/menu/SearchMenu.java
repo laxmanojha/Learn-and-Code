@@ -122,8 +122,6 @@ public class SearchMenu {
                     if (authService.logout()) {
                         AppState.setExitToHome(true);
                         return;
-                    } else {
-                        System.out.println("Logout failed.");
                     }
                     break;
                 case "3":

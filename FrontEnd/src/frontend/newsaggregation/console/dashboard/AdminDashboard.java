@@ -71,7 +71,7 @@ public class AdminDashboard {
                     break;
 
                 case "8":
-                	handleLogout();
+                	authService.logout();
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -123,12 +123,7 @@ public class AdminDashboard {
 
         String updatedKey = InputUtil.readLine("Enter the updated API key: ");
 
-        boolean updated = updateService.updateApiKey(serverId, updatedKey);
-        if (updated) {
-            System.out.println("External server API key updated successfully.");
-        } else {
-            System.out.println("Failed to update the external server.");
-        }
+        updateService.updateApiKey(serverId, updatedKey);
     }
     
     private static void handleAddingNewCategory() {
@@ -138,12 +133,7 @@ public class AdminDashboard {
         if (categoryName.trim().isEmpty()) {
             System.out.println("Category name cannot be empty.");
         } else {
-            boolean added = categoryService.addCategory(categoryName.trim());
-            if (added) {
-                System.out.println("Category added successfully.");
-            } else {
-                System.out.println("Failed to add category.");
-            }
+            categoryService.addCategory(categoryName.trim());
         }
     }
     
@@ -181,15 +171,10 @@ public class AdminDashboard {
                 return;
             }
 
-            boolean success;
             if (selected.getIsHidden()) {
-                success = adminCategoryService.unhideCategory(catId);
+                adminCategoryService.unhideCategory(catId);
             } else {
-                success = adminCategoryService.hideCategory(catId);
-            }
-
-            if (success) {
-                System.out.println("Category visibility updated successfully.");
+                adminCategoryService.hideCategory(catId);
             }
 
         } catch (NumberFormatException e) {
@@ -273,15 +258,5 @@ public class AdminDashboard {
                     System.out.println("Invalid option.");
             }
         }
-    }
-    
-    private static void handleLogout() {
-    	boolean loggedOut = authService.logout();
-    	if (loggedOut) {
-    	    System.out.println("Logged out successfully.");
-    	} else {
-    	    System.out.println("Logout failed.");
-    	}
-    	return;
     }
 }

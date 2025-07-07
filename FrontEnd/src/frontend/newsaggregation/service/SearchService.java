@@ -33,8 +33,6 @@ public class SearchService {
             urlBuilder.append("&personalized=").append(personalizedPreference);
 
             HttpResponse<String> response = HttpUtil.sendGetRequest(urlBuilder.toString());
-            System.out.println("API Response: " + response.body());
-
 
             if (response.statusCode() == 200) {
                 Type listType = new TypeToken<ArrayList<NewsArticle>>() {}.getType();
