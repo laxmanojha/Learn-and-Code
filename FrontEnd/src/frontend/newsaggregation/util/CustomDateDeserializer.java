@@ -9,7 +9,7 @@ public class CustomDateDeserializer implements JsonDeserializer<Date> {
     private static final List<String> formats = List.of(
         "yyyy-MM-dd",
         "MMM d, yyyy",     // "Jul 4, 2025"
-        "MMMM d, yyyy"     // "July 4, 2025" (just in case)
+        "MMMM d, yyyy"     // "July 4, 2025"
     );
 
     @Override

@@ -7,13 +7,14 @@ import java.util.List;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
 
+import frontend.newsaggregation.constant.StaticConfiguration;
 import frontend.newsaggregation.model.Category;
 import frontend.newsaggregation.util.HttpUtil;
 
 public class AdminCategoryService {
 
-    private static final String BASE_URL = "http://localhost:8080/News-Aggregation/api/admin/category";
-    private static final String CATEGORY_LIST_URL = "http://localhost:8080/News-Aggregation/api/news/category";
+    private static final String BASE_URL = StaticConfiguration.getBaseUrl() + "admin/category";
+    private static final String CATEGORY_LIST_URL = StaticConfiguration.getBaseUrl() + "news/category";
     private static final Gson gson = new Gson();
     private static AdminCategoryService instance; 
 

@@ -48,7 +48,6 @@ public class HeadlineMenu {
                 	return;
                 case "4":
                     if (authService.logout()) {
-                        System.out.println("Logged out successfully.");
                         AppState.setExitToHome(true);
                         return;
                     } else {

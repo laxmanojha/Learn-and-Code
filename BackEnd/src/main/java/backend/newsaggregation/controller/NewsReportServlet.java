@@ -1,122 +1,139 @@
 package backend.newsaggregation.controller;
 
 import backend.newsaggregation.model.NewsArticleReport;
+import backend.newsaggregation.model.User;
 import backend.newsaggregation.service.NewsReportService;
-import jakarta.servlet.ServletException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 @WebServlet("/api/news-report/*")
 public class NewsReportServlet extends HttpServlet {
-	
-	private static final long serialVersionUID = 1L;
-	private final NewsReportService newsReportService = NewsReportService.getInstance();
+
+    private static final long serialVersionUID = 1L;
+    private final NewsReportService reportService = NewsReportService.getInstance();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final Gson gson = new Gson();
-	
-	@Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setContentType("application/json");
-        List<NewsArticleReport> newsArticleReports = newsReportService.getNewsArticleReport();
-        resp.getWriter().write(gson.toJson(newsArticleReports));
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        prepareJsonResponse(response);
+        List<NewsArticleReport> reports = reportService.getNewsArticleReport();
+        sendResponse(response, HttpServletResponse.SC_OK, gson.toJson(reports));
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        prepareJsonResponse(response);
 
-    	PrintWriter out = response.getWriter();
-        String pathInfo = request.getPathInfo(); // format: /{articleId}
-        NewsReportService service = NewsReportService.getInstance();
-        if (pathInfo == null || pathInfo.equals("/")) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Article ID is missing in URL");
-            return;
-        }
+        int articleId = extractArticleId(request, response);
+        if (articleId == -1) return;
 
-        String[] splits = pathInfo.split("/");
-        if (splits.length < 2) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid URL format");
-            return;
-        }
+        int userId = extractUserId(request, response);
+        if (userId == -1) return;
 
-        int articleId;
-        try {
-            articleId = Integer.parseInt(splits[1]);
-        } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Article ID");
-            return;
-        }
-
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write(errorJson("Login required"));
-            return;
-        }
-
-        Object userObj = request.getSession().getAttribute("user");
-        int userId = -1;
-        if (userObj instanceof backend.newsaggregation.model.User user) {
-            userId = ((backend.newsaggregation.model.User) userObj).getId();
-        }
-        
-        if (userId == 0) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
-            return;
-        }
-        
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> body;
-        try {
-            body = mapper.readValue(request.getReader(), new TypeReference<>() {});
-        } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON body");
-            return;
-        }
+        Map<String, String> body = parseRequestBody(request, response);
+        if (body == null) return;
 
         String comment = body.get("comment");
 
         try {
+            boolean success = reportService.reportArticle(userId, articleId, comment);
 
-            boolean success = service.reportArticle(userId, articleId, comment);
-
-            response.setContentType("application/json");
             if (success) {
-                out.write(successJson("Article reported successfully."));
+                respondWithMessage(response, HttpServletResponse.SC_OK, "Article reported successfully.");
             } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.write(errorJson("Failed to report article."));
+                respondWithError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to report article.");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.write(errorJson("Server error."));
+            respondWithError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
         }
     }
-    
-    private String successJson(String msg) {
-    	JsonObject json = new JsonObject();
-    	json.addProperty("success", true);
-    	json.addProperty("message", msg);
-    	return json.toString();
+
+    private void prepareJsonResponse(HttpServletResponse response) {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
     }
 
-    private String errorJson(String msg) {
+    private int extractArticleId(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String pathInfo = request.getPathInfo();
+        if (pathInfo == null || pathInfo.equals("/")) {
+            respondWithError(response, HttpServletResponse.SC_BAD_REQUEST, "Article ID is missing in URL");
+            return -1;
+        }
+
+        String[] parts = pathInfo.split("/");
+        if (parts.length < 2) {
+            respondWithError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid URL format");
+            return -1;
+        }
+
+        try {
+            return Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            respondWithError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid Article ID");
+            return -1;
+        }
+    }
+
+    private int extractUserId(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            respondWithError(response, HttpServletResponse.SC_UNAUTHORIZED, "Login required");
+            return -1;
+        }
+
+        Object userObj = session.getAttribute("user");
+        if (userObj instanceof User user && user.getId() > 0) {
+            return user.getId();
+        }
+
+        respondWithError(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid user");
+        return -1;
+    }
+
+    private Map<String, String> parseRequestBody(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            return objectMapper.readValue(request.getReader(), new TypeReference<>() {});
+        } catch (Exception e) {
+            respondWithError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON body");
+            return null;
+        }
+    }
+
+    private void respondWithMessage(HttpServletResponse response, int statusCode, String message) throws IOException {
+        JsonObject json = new JsonObject();
+        json.addProperty("success", true);
+        json.addProperty("message", message);
+        sendResponse(response, statusCode, json.toString());
+    }
+
+    private void respondWithError(HttpServletResponse response, int statusCode, String message) throws IOException {
         JsonObject json = new JsonObject();
         json.addProperty("success", false);
-        json.addProperty("message", msg);
-        return json.toString();
+        json.addProperty("message", message);
+        sendResponse(response, statusCode, json.toString());
+    }
+
+    private void sendResponse(HttpServletResponse response, int statusCode, String json) throws IOException {
+        response.setStatus(statusCode);
+        try (PrintWriter out = response.getWriter()) {
+            out.write(json);
+            out.flush();
+        }
     }
 }

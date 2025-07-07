@@ -12,13 +12,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import frontend.newsaggregation.constant.StaticConfiguration;
 import frontend.newsaggregation.model.HiddenKeyword;
 import frontend.newsaggregation.util.CustomDateDeserializer;
 import frontend.newsaggregation.util.HttpUtil;
 
 public class AdminKeywordService {
 
-    private static final String BASE_URL = "http://localhost:8080/News-Aggregation/api/admin/keyword";
+    private static final String BASE_URL = StaticConfiguration.getBaseUrl() + "admin/keyword";
     private final Gson gson = new GsonBuilder()
     	    .registerTypeAdapter(Date.class, new CustomDateDeserializer())
     	    .create();

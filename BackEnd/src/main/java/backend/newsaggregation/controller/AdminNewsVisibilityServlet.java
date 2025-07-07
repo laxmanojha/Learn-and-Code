@@ -12,45 +12,56 @@ import backend.newsaggregation.service.NewsReportService;
 
 @WebServlet("/api/admin/news/*")
 public class AdminNewsVisibilityServlet extends HttpServlet {
-	
-	private static final long serialVersionUID = 1L;
-	private static NewsReportService newsReportService = NewsReportService.getInstance();
+
+    private static final long serialVersionUID = 1L;
+    private static final NewsReportService newsReportService = NewsReportService.getInstance();
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String pathInfo = request.getPathInfo(); // Expected format: /{newsId}/hide or /{newsId}/unhide
         response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
+        response.setCharacterEncoding("UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            String pathInfo = request.getPathInfo();
+            if (!isValidPath(pathInfo)) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.write(errorJson("Invalid path"));
+                return;
+            }
 
-        if (pathInfo == null || pathInfo.split("/").length < 3) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.write(errorJson("Invalid path"));
-            return;
+            String[] parts = pathInfo.split("/");
+            int newsId = parseNewsId(parts[1], response, out);
+            if (newsId == -1) return;
+
+            String action = parts[2];
+            handleVisibilityUpdate(newsId, action, response, out);
         }
+    }
 
-        String[] parts = pathInfo.split("/");
-        int newsId;
+    private boolean isValidPath(String pathInfo) {
+        return pathInfo != null && pathInfo.split("/").length >= 3;
+    }
+
+    private int parseNewsId(String newsIdStr, HttpServletResponse response, PrintWriter out) throws IOException {
         try {
-            newsId = Integer.parseInt(parts[1]);
+            return Integer.parseInt(newsIdStr);
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.write(errorJson("Invalid news ID"));
-            return;
+            return -1;
         }
+    }
 
-        String action = parts[2]; // "hide" or "unhide"
-        boolean success = false;
-
+    private void handleVisibilityUpdate(int newsId, String action, HttpServletResponse response, PrintWriter out) throws IOException {
+        boolean success;
         try {
-
-            if ("hide".equalsIgnoreCase(action)) {
-                success = newsReportService.hideArticle(newsId);
-            } else if ("unhide".equalsIgnoreCase(action)) {
-            	success = newsReportService.unHideArticle(newsId);
-            } else {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.write(errorJson("Unknown action"));
-                return;
+            switch (action.toLowerCase()) {
+                case "hide" -> success = newsReportService.hideArticle(newsId);
+                case "unhide" -> success = newsReportService.unHideArticle(newsId);
+                default -> {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write(errorJson("Unknown action"));
+                    return;
+                }
             }
 
             if (success) {
@@ -59,7 +70,6 @@ public class AdminNewsVisibilityServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 out.write(errorJson("Failed to update article visibility."));
             }
-
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.write(errorJson("Server error."));

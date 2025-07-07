@@ -63,7 +63,6 @@ public class NotificationService {
                 Type listType = new TypeToken<List<NotificationPreference>>() {}.getType();
                 return gson.fromJson(response.body(), listType);
             }
-            System.out.println("API Response: " + response.body());
 
         } catch (IOException | InterruptedException e) {
             System.err.println("Failed to fetch preferences: " + e.getMessage());
@@ -115,7 +114,6 @@ public class NotificationService {
             if (response.statusCode() == 200) {
                 keywordPreference = gson.fromJson(response.body(), NotificationPreference.class);
             }
-            System.out.println("API Response: " + response.body());
         } catch (IOException | InterruptedException e) {
             System.err.println("Failed to fetch preferences: " + e.getMessage());
         }

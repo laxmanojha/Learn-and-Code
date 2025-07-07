@@ -6,7 +6,6 @@ import frontend.newsaggregation.service.ArticleActionService;
 import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.service.SavedArticlesService;
 import frontend.newsaggregation.util.AppState;
-import frontend.newsaggregation.util.DateUtil;
 import frontend.newsaggregation.util.InputUtil;
 
 import java.util.List;

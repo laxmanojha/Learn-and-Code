@@ -9,13 +9,14 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import frontend.newsaggregation.constant.StaticConfiguration;
 import frontend.newsaggregation.model.NewsArticleReport;
 import frontend.newsaggregation.util.HttpUtil;
 
 public class AdminNewsService {
 
     private static final Gson gson = new Gson();
-    private static final String BASE_URL = "http://localhost:8080/News-Aggregation/api";
+    private static final String BASE_URL = StaticConfiguration.getBaseUrl();
     private static AdminNewsService instance; 
 
     public static AdminNewsService getInstance() {

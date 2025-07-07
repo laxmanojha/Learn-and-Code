@@ -120,7 +120,6 @@ public class SearchMenu {
                     return;
                 case "2":
                     if (authService.logout()) {
-                        System.out.println("Logged out successfully.");
                         AppState.setExitToHome(true);
                         return;
                     } else {

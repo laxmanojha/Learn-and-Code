@@ -3,80 +3,88 @@ package backend.newsaggregation.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import com.google.gson.JsonObject;
-
 import backend.newsaggregation.service.CategoryService;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/api/admin/category/*")
 public class AdminCategoryVisibilityServlet extends HttpServlet {
-	
-	private static final long serialVersionUID = 1L;
-	private static CategoryService categoryService = CategoryService.getInstance();
+
+    private static final long serialVersionUID = 1L;
+    private static final CategoryService categoryService = CategoryService.getInstance();
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String pathInfo = request.getPathInfo(); // Expected format: /{categoryId}/hide or /{categoryId}/unhide
         response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
 
-        if (pathInfo == null || pathInfo.split("/").length < 3) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.write(errorJson("Invalid path"));
-            return;
+        String[] pathParts = getPathParts(request.getPathInfo());
+        try (PrintWriter out = response.getWriter()) {
+            if (!isValidPath(pathParts)) {
+                respondWithError(response, out, HttpServletResponse.SC_BAD_REQUEST, "Invalid path.");
+                return;
+            }
+
+            int categoryId = parseCategoryId(pathParts[1], response, out);
+            if (categoryId == -1) return;
+
+            String action = pathParts[2];
+            handleCategoryVisibilityUpdate(categoryId, action, response, out);
         }
+    }
 
-        String[] parts = pathInfo.split("/");
-        int categoryId;
+    private String[] getPathParts(String pathInfo) {
+        return pathInfo == null ? new String[0] : pathInfo.split("/");
+    }
+
+    private boolean isValidPath(String[] pathParts) {
+        return pathParts.length == 3 && !pathParts[1].isEmpty();
+    }
+
+    private int parseCategoryId(String part, HttpServletResponse response, PrintWriter out) throws IOException {
         try {
-            categoryId = Integer.parseInt(parts[1]);
+            return Integer.parseInt(part);
         } catch (NumberFormatException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.write(errorJson("Invalid category ID"));
-            return;
+            respondWithError(response, out, HttpServletResponse.SC_BAD_REQUEST, "Invalid category ID.");
+            return -1;
         }
+    }
 
-        String action = parts[2]; // "hide" or "unhide"
-        boolean success = false;
-
+    private void handleCategoryVisibilityUpdate(int categoryId, String action, HttpServletResponse response, PrintWriter out) throws IOException {
+        boolean success;
         try {
-
             if ("hide".equalsIgnoreCase(action)) {
                 success = categoryService.hideCategory(categoryId);
             } else if ("unhide".equalsIgnoreCase(action)) {
                 success = categoryService.unhideCategory(categoryId);
             } else {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.write(errorJson("Unknown action"));
+                respondWithError(response, out, HttpServletResponse.SC_BAD_REQUEST, "Unknown action.");
                 return;
             }
 
             if (success) {
-                out.write(successJson("Category visibility updated."));
+                respondWithSuccess(out, "Category visibility updated.");
             } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.write(errorJson("Failed to update category visibility."));
+                respondWithError(response, out, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to update category visibility.");
             }
-
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.write(errorJson("Server error."));
+            respondWithError(response, out, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error.");
         }
     }
 
-    private String successJson(String message) {
+    private void respondWithSuccess(PrintWriter out, String message) {
         JsonObject json = new JsonObject();
         json.addProperty("success", true);
         json.addProperty("message", message);
-        return json.toString();
+        out.write(json.toString());
     }
 
-    private String errorJson(String message) {
+    private void respondWithError(HttpServletResponse response, PrintWriter out, int statusCode, String message) throws IOException {
+        response.setStatus(statusCode);
         JsonObject json = new JsonObject();
         json.addProperty("success", false);
         json.addProperty("message", message);
-        return json.toString();
+        out.write(json.toString());
     }
 }

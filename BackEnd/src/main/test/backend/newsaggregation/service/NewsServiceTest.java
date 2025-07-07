@@ -3,13 +3,10 @@ package backend.newsaggregation.service;
 import backend.newsaggregation.dao.interfaces.*;
 import backend.newsaggregation.model.HiddenKeyword;
 import backend.newsaggregation.model.NewsArticle;
-import backend.newsaggregation.model.NotificationPreference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.sql.Date;
 import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -17,23 +14,13 @@ public class NewsServiceTest {
 
     private NewsDao newsDao;
     private HiddenKeywordDao hiddenKeywordDao;
-    private NotificationCategoryPrefDao categoryPrefDao;
-    private NotificationKeywordPrefDao keywordPrefDao;
-    private NewsReactionDao reactionDao;
-    private SavedArticleDao savedArticleDao;
-    private CategoryDao categoryDao;
     private NewsService newsService;
 
     @BeforeEach
     public void setup() {
         newsDao = mock(NewsDao.class);
         hiddenKeywordDao = mock(HiddenKeywordDao.class);
-        categoryPrefDao = mock(NotificationCategoryPrefDao.class);
-        keywordPrefDao = mock(NotificationKeywordPrefDao.class);
-        reactionDao = mock(NewsReactionDao.class);
-        savedArticleDao = mock(SavedArticleDao.class);
-        categoryDao = mock(CategoryDao.class);
-        newsService = new NewsService(newsDao, hiddenKeywordDao, categoryPrefDao, keywordPrefDao, reactionDao, savedArticleDao, categoryDao);
+        newsService = new NewsService(newsDao, hiddenKeywordDao);
     }
 
     @Test
@@ -81,27 +68,6 @@ public class NewsServiceTest {
 
         NewsArticle result = newsService.getArticleById(1);
         assertEquals(1, result.getId());
-    }
-
-    @Test
-    public void testGetPersonalizedArticles_shouldScoreAndSortArticles() {
-        NewsArticle article = createArticle(1, "AI and ML");
-        article.setCategories(List.of("tech"));
-
-        NotificationPreference catPref = new NotificationPreference();
-        catPref.setKeywords(List.of("AI"));
-        NotificationPreference keyPref = new NotificationPreference();
-        keyPref.setKeywords(List.of("ML"));
-
-        when(categoryPrefDao.getCategoryPreferencesByUser(1)).thenReturn(List.of(catPref));
-        when(keywordPrefDao.getPreferencesByUser(1)).thenReturn(keyPref);
-        when(reactionDao.getLikedNewsIds(1)).thenReturn(List.of(1));
-        when(savedArticleDao.getSavedNewsIds(1)).thenReturn(List.of());
-        when(categoryDao.getCategoryTypesForNews(anySet())).thenReturn(Set.of("tech"));
-
-        List<NewsArticle> result = newsService.getPersonalizedArticles(1, List.of(article));
-        assertEquals(1, result.size());
-        assertEquals(1, result.get(0).getId());
     }
 
     private NewsArticle createArticle(int id, String title) {

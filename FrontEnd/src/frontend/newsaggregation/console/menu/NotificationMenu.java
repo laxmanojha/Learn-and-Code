@@ -38,7 +38,6 @@ public class NotificationMenu {
                 case "3":
                     return;
                 case "4":
-                    System.out.println("Logging out...");
                     AppState.setExitToHome(true);
                     return;
                 default:
@@ -129,7 +128,6 @@ public class NotificationMenu {
                 System.out.println(index++ + ". " + cat.getName() + keywordDisplay + " - " + (isEnabled ? "Enabled" : "Disabled"));
             }
 
-            // Handle keyword (non-category) preferences
             boolean isKeywordEnabled = keywordPreferences != null && keywordPreferences.isEnabled();
             List<String> keywordOnlyPrefs = keywordPreferences != null && keywordPreferences.getKeywords() != null
                     ? keywordPreferences.getKeywords()

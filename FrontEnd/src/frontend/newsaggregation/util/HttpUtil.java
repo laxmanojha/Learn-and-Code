@@ -27,14 +27,7 @@ public class HttpUtil {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response.headers());
-        System.out.println(response.headers().firstValue("Set-Cookie"));
         Optional<String> cookie = response.headers().firstValue("Set-Cookie");
-
-        cookie.ifPresentOrElse(
-                value -> System.out.println("Session Cookie: " + value),
-                () -> System.out.println("No session cookie received.")
-        );
 
         sessionCookie = cookie.orElse(null);
         

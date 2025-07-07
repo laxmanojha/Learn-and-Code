@@ -17,8 +17,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet("/api/notifications/*")
 public class NotificationServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
-	private NotificationService notificationService = NotificationService.getInstance();
+    private static final long serialVersionUID = 1L;
+    private final NotificationService notificationService = NotificationService.getInstance();
     private final Gson gson = new Gson();
 
     @Override
@@ -26,25 +26,27 @@ public class NotificationServlet extends HttpServlet {
         String path = req.getPathInfo();
         int userId = getUserIdFromSession(req);
         if (userId == -1) {
-        	resp.getWriter().write(errorJson("User not found"));
-        	return;
+            respondError(resp, "User not found");
+            return;
         }
         resp.setContentType("application/json");
-        if (path == null || path.equals("/")) {
-        	List<NewsArticle> newsArticles = notificationService.getConsoleNotifications(userId);
-        	resp.getWriter().write(gson.toJson(newsArticles));
-        } else if (path.equals("/preferences")) {
-            List<NotificationPreference> prefs = notificationService.getAllPreferences(userId);
-            resp.getWriter().write(gson.toJson(prefs));
-        } else if (path.equals("/preferences/category")) {
-            List<NotificationPreference> keywords = notificationService.getCategoryPreferences(userId);
-            resp.getWriter().write(gson.toJson(keywords));
-        } else if (path.equals("/preferences/keywords")) {
-        	NotificationPreference keywords = notificationService.getKeywordPreferences(userId);
-        	resp.getWriter().write(gson.toJson(keywords));
-        } else {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            resp.getWriter().write(errorJson("Endpoint not found"));
+
+        switch (path == null ? "/" : path) {
+            case "/":
+                handleConsoleNotifications(resp, userId);
+                break;
+            case "/preferences":
+                handleAllPreferences(resp, userId);
+                break;
+            case "/preferences/category":
+                handleCategoryPreferences(resp, userId);
+                break;
+            case "/preferences/keywords":
+                handleKeywordPreferences(resp, userId);
+                break;
+            default:
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                respondError(resp, "Endpoint not found");
         }
     }
 
@@ -53,61 +55,101 @@ public class NotificationServlet extends HttpServlet {
         String path = req.getPathInfo();
         int userId = getUserIdFromSession(req);
         if (userId == -1) {
-        	resp.getWriter().write(errorJson("User not found"));
-        	return;
+            respondError(resp, "User not found");
+            return;
         }
         resp.setContentType("application/json");
 
-        if ("/config/category".equals(path)) {
-            Map<String, Object> body = parseJsonBody(req);
-            int categoryId = Integer.parseInt((String) body.get("categoryId"));
-			@SuppressWarnings("unchecked")
-			List<String> keywords = (List<String>) body.get("keywords");
-
-            boolean updated = notificationService.updateCategoryConfig(userId, categoryId, keywords);
-            writeSuccess(resp, updated, "Preference updated");
-        } else if ("/config/keywords".equals(path)) {
-            Map<String, Object> body = parseJsonBody(req);
-
-            @SuppressWarnings("unchecked")
-			List<String> keywords = (List<String>) body.get("keywords");
-
-            boolean success = notificationService.addKeywords(userId, keywords);
-            writeSuccess(resp, success, "Keyword(s) added");
-        } else {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            resp.getWriter().write(errorJson("POST endpoint not found"));
+        switch (path) {
+            case "/config/category":
+                handleCategoryConfigUpdate(req, resp, userId);
+                break;
+            case "/config/keywords":
+                handleAddKeywords(req, resp, userId);
+                break;
+            default:
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                respondError(resp, "POST endpoint not found");
         }
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    	String path = req.getPathInfo();
+        String path = req.getPathInfo();
         int userId = getUserIdFromSession(req);
         if (userId == -1) {
-        	resp.getWriter().write(errorJson("User not found"));
-        	return;
+            respondError(resp, "User not found");
+            return;
         }
         resp.setContentType("application/json");
 
-        if ("/config/category".equals(path)) {
-            Map<String, Object> body = parseJsonBody(req);
-            int categoryId = Integer.parseInt((String) body.get("categoryId"));
-
-            boolean updated = notificationService.updateCategoryConfig(userId, categoryId);
-            writeSuccess(resp, updated, "Preference updated");
-        } else if ("/config/keywords".equals(path)) {
-
-            boolean success = notificationService.removeKeywords(userId);
-            writeSuccess(resp, success, "Keyword(s) removed");
-        } else {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            resp.getWriter().write(errorJson("DELETE endpoint not found"));
+        switch (path) {
+            case "/config/category":
+                handleCategoryConfigDelete(req, resp, userId);
+                break;
+            case "/config/keywords":
+                handleRemoveKeywords(resp, userId);
+                break;
+            default:
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                respondError(resp, "DELETE endpoint not found");
         }
     }
 
+    private void handleConsoleNotifications(HttpServletResponse resp, int userId) throws IOException {
+        List<NewsArticle> newsArticles = notificationService.getConsoleNotifications(userId);
+        resp.getWriter().write(gson.toJson(newsArticles));
+    }
+
+    private void handleAllPreferences(HttpServletResponse resp, int userId) throws IOException {
+        List<NotificationPreference> prefs = notificationService.getAllPreferences(userId);
+        resp.getWriter().write(gson.toJson(prefs));
+    }
+
+    private void handleCategoryPreferences(HttpServletResponse resp, int userId) throws IOException {
+        List<NotificationPreference> prefs = notificationService.getCategoryPreferences(userId);
+        resp.getWriter().write(gson.toJson(prefs));
+    }
+
+    private void handleKeywordPreferences(HttpServletResponse resp, int userId) throws IOException {
+        NotificationPreference pref = notificationService.getKeywordPreferences(userId);
+        resp.getWriter().write(gson.toJson(pref));
+    }
+
+    private void handleCategoryConfigUpdate(HttpServletRequest req, HttpServletResponse resp, int userId) throws IOException {
+        Map<String, Object> body = parseJsonBody(req);
+        int categoryId = Integer.parseInt((String) body.get("categoryId"));
+        @SuppressWarnings("unchecked")
+        List<String> keywords = (List<String>) body.get("keywords");
+
+        boolean updated = notificationService.updateCategoryConfig(userId, categoryId, keywords);
+        writeSuccess(resp, updated, "Preference updated");
+    }
+
+    private void handleAddKeywords(HttpServletRequest req, HttpServletResponse resp, int userId) throws IOException {
+        Map<String, Object> body = parseJsonBody(req);
+        @SuppressWarnings("unchecked")
+        List<String> keywords = (List<String>) body.get("keywords");
+
+        boolean success = notificationService.addKeywords(userId, keywords);
+        writeSuccess(resp, success, "Keyword(s) added");
+    }
+
+    private void handleCategoryConfigDelete(HttpServletRequest req, HttpServletResponse resp, int userId) throws IOException {
+        Map<String, Object> body = parseJsonBody(req);
+        int categoryId = Integer.parseInt((String) body.get("categoryId"));
+
+        boolean updated = notificationService.updateCategoryConfig(userId, categoryId);
+        writeSuccess(resp, updated, "Preference updated");
+    }
+
+    private void handleRemoveKeywords(HttpServletResponse resp, int userId) throws IOException {
+        boolean success = notificationService.removeKeywords(userId);
+        writeSuccess(resp, success, "Keyword(s) removed");
+    }
+
     @SuppressWarnings("unchecked")
-	private Map<String, Object> parseJsonBody(HttpServletRequest req) throws IOException {
+    private Map<String, Object> parseJsonBody(HttpServletRequest req) throws IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader reader = req.getReader();
         String line;
@@ -126,17 +168,15 @@ public class NotificationServlet extends HttpServlet {
         }
     }
 
-    private String errorJson(String msg) {
-        return "{\"error\": \"" + msg + "\"}";
+    private void respondError(HttpServletResponse resp, String msg) throws IOException {
+        resp.getWriter().write("{\"error\": \"" + msg + "\"}");
     }
 
     private int getUserIdFromSession(HttpServletRequest req) {
-    	Object userObj = req.getSession().getAttribute("user");
-    	int userId = -1;
+        Object userObj = req.getSession().getAttribute("user");
         if (userObj instanceof backend.newsaggregation.model.User user) {
-            userId = user.getId();
-            System.out.println("User id: " + userId);
+            return user.getId();
         }
-        return userId;
+        return -1;
     }
 }
