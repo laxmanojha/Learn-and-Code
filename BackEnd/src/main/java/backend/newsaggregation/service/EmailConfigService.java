@@ -7,8 +7,12 @@ public class EmailConfigService {
     private static EmailConfigService instance;
     private final EmailConfigDao emailConfigDao;
 
-    private EmailConfigService() {
+    public EmailConfigService() {
         this.emailConfigDao = EmailConfigDao.getInstance();
+    }
+    
+    public EmailConfigService(EmailConfigDao emailConfigDao) {
+        this.emailConfigDao = emailConfigDao;
     }
 
     public static EmailConfigService getInstance() {

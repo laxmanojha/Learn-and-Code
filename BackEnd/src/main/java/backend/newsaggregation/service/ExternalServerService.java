@@ -12,11 +12,11 @@ public class ExternalServerService {
 	private ExternalServerDao serverDao;
 	private NewsDao newsDaoImpl;
 	
-	private ExternalServerService() {
+	public ExternalServerService() {
 		this(ExternalServerDao.getInstance(), NewsDao.getInstance());
 	}
 	
-	private ExternalServerService(ExternalServerDao serverDao, NewsDao newsDaoImpl) {
+	public ExternalServerService(ExternalServerDao serverDao, NewsDao newsDaoImpl) {
         this.serverDao = serverDao;
         this.newsDaoImpl = newsDaoImpl;
     }

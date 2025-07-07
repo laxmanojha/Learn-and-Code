@@ -7,11 +7,11 @@ public class NewsReactionService {
     private NewsReactionDao reactionDao;
     private static NewsReactionService instance;
 	
-	private NewsReactionService() {
+	public NewsReactionService() {
 		this(NewsReactionDao.getInstance());
 	}
 	
-	private NewsReactionService(NewsReactionDao reactionDao) {
+	public NewsReactionService(NewsReactionDao reactionDao) {
         this.reactionDao = reactionDao;
     }
 

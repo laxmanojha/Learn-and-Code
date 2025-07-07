@@ -8,11 +8,11 @@ public class AdminKeywordService {
 	private static AdminKeywordService instance;
 	private HiddenKeywordDao hiddenKeywordDao;
 	
-	private AdminKeywordService() {
+	public AdminKeywordService() {
 		this(HiddenKeywordDao.getInstance());
 	}
 	
-	private AdminKeywordService(HiddenKeywordDao hiddenKeywordDao) {
+	public AdminKeywordService(HiddenKeywordDao hiddenKeywordDao) {
         this.hiddenKeywordDao = hiddenKeywordDao;
     }
 

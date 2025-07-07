@@ -13,11 +13,11 @@ public class NewsReportService {
     private static NewsReportService instance;
     private StaticConfigurations configurations;
 	
-	private NewsReportService() {
+	public NewsReportService() {
 		this(NewsReportDao.getInstance(), NewsDao.getInstance(), StaticConfigurations.getInstance());
 	}
 	
-	private NewsReportService(NewsReportDao newsReportDao, NewsDao newsDao, StaticConfigurations configurations) {
+	public NewsReportService(NewsReportDao newsReportDao, NewsDao newsDao, StaticConfigurations configurations) {
         this.newsReportDao = newsReportDao;
         this.newsDao = newsDao;
         this.configurations = configurations;

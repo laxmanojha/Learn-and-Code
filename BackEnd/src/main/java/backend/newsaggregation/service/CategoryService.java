@@ -10,11 +10,11 @@ public class CategoryService {
 	private static CategoryService instance;
 	private CategoryDao categoryDao;
 	
-	private CategoryService() {
+	public CategoryService() {
 		this(CategoryDao.getInstance());
 	}
 	
-	private CategoryService(CategoryDao categoryDao) {
+	public CategoryService(CategoryDao categoryDao) {
         this.categoryDao = categoryDao;
     }
 
