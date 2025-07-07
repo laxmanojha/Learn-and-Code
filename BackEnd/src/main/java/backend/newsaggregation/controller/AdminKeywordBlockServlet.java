@@ -20,8 +20,16 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AdminKeywordBlockServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
-	private static AdminKeywordService adminKeywordService = AdminKeywordService.getInstance();
+	private AdminKeywordService adminKeywordService;
     private final Gson gson = new Gson();
+    
+    public AdminKeywordBlockServlet() {
+        this(AdminKeywordService.getInstance());
+    }
+
+    public AdminKeywordBlockServlet(AdminKeywordService adminKeywordService) {
+        this.adminKeywordService = adminKeywordService;
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

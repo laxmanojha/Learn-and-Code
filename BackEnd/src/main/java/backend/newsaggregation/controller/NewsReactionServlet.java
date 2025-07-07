@@ -21,8 +21,16 @@ import java.util.Map;
 public class NewsReactionServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private final NewsReactionService service = NewsReactionService.getInstance();
+    private final NewsReactionService service;
     private final ObjectMapper mapper = new ObjectMapper();
+    
+    public NewsReactionServlet() {
+        this(NewsReactionService.getInstance());
+    }
+
+    public NewsReactionServlet(NewsReactionService service) {
+        this.service = service;
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

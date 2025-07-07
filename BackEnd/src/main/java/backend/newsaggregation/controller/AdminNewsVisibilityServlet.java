@@ -14,8 +14,16 @@ import backend.newsaggregation.service.NewsReportService;
 public class AdminNewsVisibilityServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private static final NewsReportService newsReportService = NewsReportService.getInstance();
+    private final NewsReportService newsReportService;
 
+    public AdminNewsVisibilityServlet() {
+        this(NewsReportService.getInstance());
+    }
+
+    public AdminNewsVisibilityServlet(NewsReportService newsReportService) {
+        this.newsReportService = newsReportService;
+    }
+    
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");

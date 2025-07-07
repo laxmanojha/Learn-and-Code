@@ -29,12 +29,24 @@ public class NewsServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private final NewsService newsService = NewsService.getInstance();
-    private final SavedArticleService savedArticleService = SavedArticleService.getInstance();
-    private final SearchNewsService searchNewsService = SearchNewsService.getInstance();
-    private final CategoryService categoryService = CategoryService.getInstance();
-    private final PersonalizedNewsService personalizedNewsService = PersonalizedNewsService.getInstance();
+    private final NewsService newsService;
+    private final SavedArticleService savedArticleService;
+    private final SearchNewsService searchNewsService;
+    private final CategoryService categoryService;
+    private final PersonalizedNewsService personalizedNewsService;
     private final Gson gson = new Gson();
+    
+    public NewsServlet() {
+        this(NewsService.getInstance(), SavedArticleService.getInstance(), SearchNewsService.getInstance(), CategoryService.getInstance(), PersonalizedNewsService.getInstance());
+    }
+
+    public NewsServlet(NewsService newsService, SavedArticleService savedArticleService, SearchNewsService searchNewsService, CategoryService categoryService, PersonalizedNewsService personalizedNewsService) {
+        this.newsService = newsService;
+        this.savedArticleService = savedArticleService;
+        this.searchNewsService = searchNewsService;
+        this.categoryService = categoryService;
+        this.personalizedNewsService = personalizedNewsService;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

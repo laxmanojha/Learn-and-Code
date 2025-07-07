@@ -3,6 +3,7 @@ package backend.newsaggregation.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import com.google.gson.JsonObject;
+
 import backend.newsaggregation.service.CategoryService;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,7 +14,15 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AdminCategoryVisibilityServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private static final CategoryService categoryService = CategoryService.getInstance();
+    private final CategoryService categoryService;
+    
+    public AdminCategoryVisibilityServlet() {
+        this(CategoryService.getInstance());
+    }
+
+    public AdminCategoryVisibilityServlet(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {

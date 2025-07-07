@@ -23,10 +23,18 @@ import java.util.Map;
 public class NewsReportServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private final NewsReportService reportService = NewsReportService.getInstance();
+    private final NewsReportService reportService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Gson gson = new Gson();
 
+    public NewsReportServlet() {
+        this(NewsReportService.getInstance());
+    }
+
+    public NewsReportServlet(NewsReportService reportService) {
+        this.reportService = reportService;
+    }
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         prepareJsonResponse(response);

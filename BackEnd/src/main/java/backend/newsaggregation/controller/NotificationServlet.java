@@ -18,8 +18,16 @@ import jakarta.servlet.http.HttpServletResponse;
 public class NotificationServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private final NotificationService notificationService = NotificationService.getInstance();
+    private final NotificationService notificationService;
     private final Gson gson = new Gson();
+    
+    public NotificationServlet() {
+        this(NotificationService.getInstance());
+    }
+
+    public NotificationServlet(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

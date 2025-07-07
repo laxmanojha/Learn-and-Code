@@ -20,8 +20,16 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ExternalServerServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private final ExternalServerService serverService = ExternalServerService.getInstance();
+    private final ExternalServerService serverService;
     private final Gson gson = new Gson();
+
+    public ExternalServerServlet() {
+        this(ExternalServerService.getInstance());
+    }
+
+    public ExternalServerServlet(ExternalServerService serverService) {
+        this.serverService = serverService;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -34,21 +42,19 @@ public class ExternalServerServlet extends HttpServlet {
         prepareJsonResponse(response);
 
         String path = request.getPathInfo();
-        try (PrintWriter out = response.getWriter()) {
-            switch (path == null ? "" : path) {
-                case "":
-                case "/":
-                    respondWithJson(response, HttpServletResponse.SC_OK,
-                            gson.toJson(serverService.getAllServersBasicDetails()));
-                    break;
-                case "/details":
-                    respondWithJson(response, HttpServletResponse.SC_OK,
-                            gson.toJson(serverService.getAllServersWithApiKeys()));
-                    break;
-                default:
-                    respondWithError(response, HttpServletResponse.SC_NOT_FOUND, "Invalid endpoint");
-                    break;
-            }
+        switch (path == null ? "" : path) {
+            case "":
+            case "/":
+                respondWithJson(response, HttpServletResponse.SC_OK,
+                        gson.toJson(serverService.getAllServersBasicDetails()));
+                break;
+            case "/details":
+                respondWithJson(response, HttpServletResponse.SC_OK,
+                        gson.toJson(serverService.getAllServersWithApiKeys()));
+                break;
+            default:
+                respondWithError(response, HttpServletResponse.SC_NOT_FOUND, "Invalid endpoint");
+                break;
         }
     }
 
