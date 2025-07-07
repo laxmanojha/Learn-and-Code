@@ -6,3 +6,4 @@ BackEnd/.classpath
 BackEnd/.project
 BackEnd/.settings
 BackEnd/src/main/webapp/META-INF/MANIFEST.MF
+BackEnd/logs/
