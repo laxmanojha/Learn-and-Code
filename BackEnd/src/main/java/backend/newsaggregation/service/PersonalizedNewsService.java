@@ -22,11 +22,11 @@ public class PersonalizedNewsService {
     private final CategoryDao categoryDao;
     private final SearchNewsService searchNewsService;
 
-    private PersonalizedNewsService() {
+    public PersonalizedNewsService() {
 		this(NotificationCategoryPrefDao.getInstance(), NotificationKeywordPrefDao.getInstance(), NewsReactionDao.getInstance(), SavedArticleDao.getInstance(), CategoryDao.getInstance(), SearchNewsService.getInstance());
 	}
 	
-	private PersonalizedNewsService(NotificationCategoryPrefDao notificationCategoryPrefDao, NotificationKeywordPrefDao notificationKeywordPrefDao, NewsReactionDao newsReactionDao, SavedArticleDao savedArticleDao, CategoryDao categoryDao, SearchNewsService searchNewsService) {
+	public PersonalizedNewsService(NotificationCategoryPrefDao notificationCategoryPrefDao, NotificationKeywordPrefDao notificationKeywordPrefDao, NewsReactionDao newsReactionDao, SavedArticleDao savedArticleDao, CategoryDao categoryDao, SearchNewsService searchNewsService) {
         this.notificationCategoryPrefDao = notificationCategoryPrefDao;
         this.notificationKeywordPrefDao = notificationKeywordPrefDao;
         this.newsReactionDao = newsReactionDao;

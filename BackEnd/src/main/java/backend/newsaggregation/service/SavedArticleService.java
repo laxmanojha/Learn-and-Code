@@ -19,11 +19,11 @@ public class SavedArticleService {
     private final NewsDao newsDao;
     private final HiddenKeywordDao hiddenKeywordDao;
 
-    private SavedArticleService() {
+    public SavedArticleService() {
 		this(SavedArticleDao.getInstance(), NewsDao.getInstance(), HiddenKeywordDao.getInstance());
 	}
 	
-	private SavedArticleService(SavedArticleDao savedArticleDao, NewsDao newsDao, HiddenKeywordDao hiddenKeywordDao) {
+	public SavedArticleService(SavedArticleDao savedArticleDao, NewsDao newsDao, HiddenKeywordDao hiddenKeywordDao) {
         this.savedArticleDao = savedArticleDao;
         this.newsDao = newsDao;
         this.hiddenKeywordDao = hiddenKeywordDao;

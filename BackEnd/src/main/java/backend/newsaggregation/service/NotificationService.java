@@ -28,11 +28,11 @@ public class NotificationService {
     private final NotificationDao notificationDao;
     private final NewsDao newsDao;
 
-    private NotificationService() {
+    public NotificationService() {
 		this(UserDao.getInstance(), CategoryDao.getInstance(), NotificationCategoryPrefDao.getInstance(), NotificationKeywordPrefDao.getInstance(), NotificationDao.getInstance(), NewsDao.getInstance());
 	}
 	
-	private NotificationService(UserDao userDao, CategoryDao categoryDao, NotificationCategoryPrefDao notificationCategoryPrefDao, NotificationKeywordPrefDao notificationKeywordPrefDao, NotificationDao notificationDao, NewsDao newsDao) {
+	public NotificationService(UserDao userDao, CategoryDao categoryDao, NotificationCategoryPrefDao notificationCategoryPrefDao, NotificationKeywordPrefDao notificationKeywordPrefDao, NotificationDao notificationDao, NewsDao newsDao) {
         this.userDao = userDao;
 		this.categoryDao = categoryDao;
 		this.notificationCategoryPrefDao = notificationCategoryPrefDao;

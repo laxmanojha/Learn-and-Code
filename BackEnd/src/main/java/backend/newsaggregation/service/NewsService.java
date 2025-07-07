@@ -31,11 +31,11 @@ public class NewsService {
     private final SavedArticleDao savedArticleDao;
     private final CategoryDao categoryDao;
 
-    private NewsService() {
+    public NewsService() {
 		this(NewsDao.getInstance(), HiddenKeywordDao.getInstance(), NotificationCategoryPrefDao.getInstance(), NotificationKeywordPrefDao.getInstance(), NewsReactionDao.getInstance(), SavedArticleDao.getInstance(), CategoryDao.getInstance());
 	}
 	
-	private NewsService(NewsDao newsDao, HiddenKeywordDao hiddenKeywordDao, NotificationCategoryPrefDao notificationCategoryPrefDao, NotificationKeywordPrefDao notificationKeywordPrefDao, NewsReactionDao newsReactionDao, SavedArticleDao savedArticleDao, CategoryDao categoryDao) {
+	public NewsService(NewsDao newsDao, HiddenKeywordDao hiddenKeywordDao, NotificationCategoryPrefDao notificationCategoryPrefDao, NotificationKeywordPrefDao notificationKeywordPrefDao, NewsReactionDao newsReactionDao, SavedArticleDao savedArticleDao, CategoryDao categoryDao) {
         this.newsDao = newsDao;
         this.hiddenKeywordDao = hiddenKeywordDao;
         this.notificationCategoryPrefDao = notificationCategoryPrefDao;

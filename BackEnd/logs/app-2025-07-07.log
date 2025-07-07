@@ -85,3 +85,64 @@
 2025-07-07 13:26:06 [pool-9-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
 2025-07-07 13:26:06 [pool-9-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: john.doe.matrix@yopmail.com
 2025-07-07 13:26:06 [pool-9-thread-1] INFO  b.n.ingestion.NewsScheduler - Saved total 3 articles to DB.
+2025-07-07 13:27:11 [pool-11-thread-1] INFO  b.n.ingestion.NewsScheduler - Scheduler is running at: Mon Jul 07 13:27:11 IST 2025
+2025-07-07 13:27:11 [Catalina-utility-1] INFO  b.n.ingestion.AppStartUpListener - [AppStartupListener] Scheduler started.
+2025-07-07 13:27:11 [pool-11-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from NewsApi
+2025-07-07 13:27:22 [pool-11-thread-1] ERROR b.newsaggregation.ingestion.NewsApi - [Ljava.lang.StackTraceElement;@54786517
+2025-07-07 13:27:22 [pool-11-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 0 articles from NewsApi
+2025-07-07 13:27:52 [pool-11-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from TheNewsApi
+2025-07-07 13:28:06 [pool-11-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 3 articles from TheNewsApi
+2025-07-07 13:28:42 [pool-11-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to gunnirathod56@gmail.com
+2025-07-07 13:28:42 [pool-11-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: gunnirathod56@gmail.com
+2025-07-07 13:28:47 [pool-11-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
+2025-07-07 13:28:47 [pool-11-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: john.doe.matrix@yopmail.com
+2025-07-07 13:28:47 [pool-11-thread-1] INFO  b.n.ingestion.NewsScheduler - Saved total 3 articles to DB.
+2025-07-07 13:31:51 [Catalina-utility-2] INFO  b.n.ingestion.AppStartUpListener - [AppStartupListener] Scheduler started.
+2025-07-07 13:31:51 [pool-13-thread-1] INFO  b.n.ingestion.NewsScheduler - Scheduler is running at: Mon Jul 07 13:31:51 IST 2025
+2025-07-07 13:31:51 [pool-13-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from NewsApi
+2025-07-07 13:31:51 [pool-13-thread-1] ERROR b.newsaggregation.ingestion.NewsApi - [Ljava.lang.StackTraceElement;@dad6964
+2025-07-07 13:31:51 [pool-13-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 0 articles from NewsApi
+2025-07-07 13:32:13 [Catalina-utility-1] INFO  b.n.ingestion.AppStartUpListener - [AppStartupListener] Scheduler started.
+2025-07-07 13:32:13 [pool-15-thread-1] INFO  b.n.ingestion.NewsScheduler - Scheduler is running at: Mon Jul 07 13:32:13 IST 2025
+2025-07-07 13:32:13 [pool-15-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from NewsApi
+2025-07-07 13:32:13 [pool-15-thread-1] ERROR b.newsaggregation.ingestion.NewsApi - [Ljava.lang.StackTraceElement;@7cbafd44
+2025-07-07 13:32:13 [pool-15-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 0 articles from NewsApi
+2025-07-07 13:32:43 [pool-15-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from TheNewsApi
+2025-07-07 13:32:51 [pool-15-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 3 articles from TheNewsApi
+2025-07-07 13:33:38 [pool-15-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to gunnirathod56@gmail.com
+2025-07-07 13:33:38 [pool-15-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: gunnirathod56@gmail.com
+2025-07-07 13:33:42 [pool-15-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
+2025-07-07 13:33:42 [pool-15-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: john.doe.matrix@yopmail.com
+2025-07-07 13:33:42 [pool-15-thread-1] INFO  b.n.ingestion.NewsScheduler - Saved total 3 articles to DB.
+2025-07-07 13:35:29 [Catalina-utility-1] INFO  b.n.ingestion.AppStartUpListener - [AppStartupListener] Scheduler started.
+2025-07-07 13:35:29 [pool-17-thread-1] INFO  b.n.ingestion.NewsScheduler - Scheduler is running at: Mon Jul 07 13:35:29 IST 2025
+2025-07-07 13:35:29 [pool-17-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from NewsApi
+2025-07-07 13:35:30 [pool-17-thread-1] ERROR b.newsaggregation.ingestion.NewsApi - [Ljava.lang.StackTraceElement;@760333d7
+2025-07-07 13:35:30 [pool-17-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 0 articles from NewsApi
+2025-07-07 13:36:00 [pool-17-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from TheNewsApi
+2025-07-07 13:36:06 [pool-17-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 3 articles from TheNewsApi
+2025-07-07 13:36:40 [pool-17-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to gunnirathod56@gmail.com
+2025-07-07 13:36:40 [pool-17-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: gunnirathod56@gmail.com
+2025-07-07 13:36:44 [pool-17-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
+2025-07-07 13:36:44 [pool-17-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: john.doe.matrix@yopmail.com
+2025-07-07 13:36:44 [pool-17-thread-1] INFO  b.n.ingestion.NewsScheduler - Saved total 3 articles to DB.
+2025-07-07 13:38:25 [Catalina-utility-2] INFO  b.n.ingestion.AppStartUpListener - [AppStartupListener] Scheduler started.
+2025-07-07 13:38:25 [pool-19-thread-1] INFO  b.n.ingestion.NewsScheduler - Scheduler is running at: Mon Jul 07 13:38:25 IST 2025
+2025-07-07 13:38:25 [pool-19-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from NewsApi
+2025-07-07 13:38:32 [pool-19-thread-1] ERROR b.newsaggregation.ingestion.NewsApi - [Ljava.lang.StackTraceElement;@2274e509
+2025-07-07 13:38:32 [pool-19-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 0 articles from NewsApi
+2025-07-07 13:39:02 [pool-19-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from TheNewsApi
+2025-07-07 13:39:08 [pool-19-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 3 articles from TheNewsApi
+2025-07-07 13:39:43 [pool-19-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to gunnirathod56@gmail.com
+2025-07-07 13:39:43 [pool-19-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: gunnirathod56@gmail.com
+2025-07-07 13:39:47 [pool-19-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
+2025-07-07 13:39:47 [pool-19-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: john.doe.matrix@yopmail.com
+2025-07-07 13:39:47 [pool-19-thread-1] INFO  b.n.ingestion.NewsScheduler - Saved total 3 articles to DB.
+2025-07-07 13:47:32 [main] INFO  b.n.controller.AuthServlet - Login failed for user: john
+2025-07-07 13:47:33 [main] INFO  b.n.controller.AuthServlet - Login failed for user: john
+2025-07-07 13:47:33 [main] INFO  b.n.controller.AuthServlet - User signup success.
+2025-07-07 13:47:33 [main] INFO  b.n.controller.AuthServlet - User signup failed.
+2025-07-07 13:50:16 [main] INFO  b.n.controller.AuthServlet - Login failed for user: john
+2025-07-07 13:50:16 [main] INFO  b.n.controller.AuthServlet - Login failed for user: john
+2025-07-07 13:50:16 [main] INFO  b.n.controller.AuthServlet - User signup failed.
+2025-07-07 13:50:16 [main] INFO  b.n.controller.AuthServlet - User signup failed.
