@@ -31,10 +31,17 @@ public class AuthServlet extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(AuthServlet.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Gson gson = new Gson();
-
-    private final UserService userService = UserService.getInstance();
+    private final UserService userService;
     private final Map<String, BiConsumer<HttpServletRequest, HttpServletResponse>> routeHandlers = new HashMap<>();
 
+    public AuthServlet() {
+        this(UserService.getInstance());
+    }
+
+    public AuthServlet(UserService userService) {
+        this.userService = userService;
+    }
+    
     @Override
     public void init() {
         routeHandlers.put("/login", this::handleLogin);

@@ -72,6 +72,7 @@ public class ExternalServerServletTest {
 
         writer.flush();
         String output = responseOutput.toString();
+        System.out.println("testGetAllServersWithApiKeys_AsAdmin" + output);
         assertTrue(output.contains("[]"));
         verify(response).setStatus(HttpServletResponse.SC_OK);
     }
@@ -111,6 +112,7 @@ public class ExternalServerServletTest {
         writer.flush();
 
         String output = responseOutput.toString();
+        System.out.println("testPut_UpdateApiKey_Success: " + output);
         assertTrue(output.contains("updated successfully"));
         verify(response).setStatus(HttpServletResponse.SC_OK);
     }
