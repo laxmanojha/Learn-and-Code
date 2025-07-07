@@ -35,8 +35,6 @@ public class AuthServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        System.out.println("Working Directory: " + System.getProperty("user.dir"));
-
         String pathInfo = request.getPathInfo();
         if (pathInfo == null) {
             sendJsonResponse(response, false, "Invalid endpoint", HttpServletResponse.SC_NOT_FOUND);

@@ -13,11 +13,11 @@ public class UserService {
 	private UserDao userDao;
 	private Util util;
 	
-	private UserService() {
+	public UserService() {
 		this(UserDao.getInstance(), Util.getInstance());
 	}
 	
-	private UserService(UserDao userDao, Util util) {
+	public UserService(UserDao userDao, Util util) {
         this.userDao = userDao;
         this.util = util;
     }

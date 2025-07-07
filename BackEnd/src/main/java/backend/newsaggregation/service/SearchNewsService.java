@@ -22,11 +22,11 @@ public class SearchNewsService {
     private final HiddenKeywordDao hiddenKeywordDao;
     private final UserSearchHistoryDao userSearchHistoryDao;
 
-    private SearchNewsService() {
+    public SearchNewsService() {
 		this(SearchDao.getInstance(), NewsDao.getInstance(), HiddenKeywordDao.getInstance(), UserSearchHistoryDao.getInstance());
 	}
 	
-	private SearchNewsService(SearchDao searchDao, NewsDao newsDao, HiddenKeywordDao hiddenKeywordDao, UserSearchHistoryDao userSearchHistoryDao) {
+	public SearchNewsService(SearchDao searchDao, NewsDao newsDao, HiddenKeywordDao hiddenKeywordDao, UserSearchHistoryDao userSearchHistoryDao) {
         this.searchDao = searchDao;
         this.newsDao = newsDao;
         this.hiddenKeywordDao = hiddenKeywordDao;
