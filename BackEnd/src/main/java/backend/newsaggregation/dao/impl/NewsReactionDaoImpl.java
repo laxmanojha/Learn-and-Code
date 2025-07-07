@@ -7,7 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.cj.protocol.Resultset;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import backend.newsaggregation.dao.interfaces.NewsReactionDao;
 import backend.newsaggregation.util.DatabaseConfig;
@@ -16,6 +17,7 @@ public class NewsReactionDaoImpl implements NewsReactionDao{
 
 	private static NewsReactionDaoImpl instance;
     private static Connection conn;
+	private static final Logger logger = LoggerFactory.getLogger(NewsReactionDaoImpl.class);
 
     private NewsReactionDaoImpl() {}
 
@@ -43,7 +45,7 @@ public class NewsReactionDaoImpl implements NewsReactionDao{
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             return false;
         }
     }
@@ -61,7 +63,7 @@ public class NewsReactionDaoImpl implements NewsReactionDao{
     		}
     		
     	} catch (SQLException e) {
-    		e.printStackTrace();
+    		logger.error(e.getStackTrace().toString());
     	}
     	return newsIds;
     }

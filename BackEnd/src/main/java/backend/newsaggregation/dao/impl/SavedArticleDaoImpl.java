@@ -4,6 +4,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import backend.newsaggregation.dao.interfaces.SavedArticleDao;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.util.DatabaseConfig;
@@ -11,7 +14,8 @@ import backend.newsaggregation.util.DatabaseConfig;
 public class SavedArticleDaoImpl implements SavedArticleDao {
 
     private static SavedArticleDaoImpl instance;
-    private static Connection conn = DatabaseConfig.getConnection();;
+    private static Connection conn = DatabaseConfig.getConnection();
+	private static final Logger logger = LoggerFactory.getLogger(SavedArticleDaoImpl.class);
 
     private SavedArticleDaoImpl() {}
 
@@ -33,7 +37,7 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             return false;
         }
     }
@@ -49,7 +53,7 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             return false;
         }
     }
@@ -65,7 +69,7 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
             return ps.executeQuery().next();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             return false;
         }
     }
@@ -110,7 +114,7 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return savedArticles;
@@ -133,7 +137,7 @@ public class SavedArticleDaoImpl implements SavedArticleDao {
     		}
     		
     	} catch (SQLException e) {
-    		e.printStackTrace();
+    		logger.error(e.getStackTrace().toString());
     	}
     	
     	return savedNewsIds;

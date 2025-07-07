@@ -8,10 +8,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class EmailConfigDaoImpl implements EmailConfigDao {
 
 	private static EmailConfigDaoImpl instance;
 	Connection conn = DatabaseConfig.getConnection();
+	private static final Logger logger = LoggerFactory.getLogger(EmailConfigDaoImpl.class);
 
     private EmailConfigDaoImpl() {}
 
@@ -39,7 +43,7 @@ public class EmailConfigDaoImpl implements EmailConfigDao {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return null;

@@ -8,6 +8,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import backend.newsaggregation.dao.interfaces.NotificationDao;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.util.DatabaseConfig;
@@ -16,6 +19,7 @@ public class NotificationDaoImpl implements NotificationDao{
 	
 	private static NotificationDaoImpl instance;
     private static Connection connection = DatabaseConfig.getConnection();
+	private static final Logger logger = LoggerFactory.getLogger(NotificationDaoImpl.class);
 
     private NotificationDaoImpl() {}
 
@@ -40,7 +44,7 @@ public class NotificationDaoImpl implements NotificationDao{
 			if (hasGlobalKeywords) result.addAll(getNotificationByGlobalKeywords(userId, from, to));
 			
 		}  catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 		
         return result;

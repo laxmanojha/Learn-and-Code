@@ -7,10 +7,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class UserSearchHistoryDaoImpl implements UserSearchHistoryDao {
 
     private static UserSearchHistoryDaoImpl instance;
     private static Connection conn;
+	private static final Logger logger = LoggerFactory.getLogger(UserSearchHistoryDaoImpl.class);
 
     private UserSearchHistoryDaoImpl() {
         conn = DatabaseConfig.getConnection();
@@ -36,7 +40,7 @@ public class UserSearchHistoryDaoImpl implements UserSearchHistoryDao {
             stmt.setString(2, keyword);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
     }
 
@@ -58,7 +62,7 @@ public class UserSearchHistoryDaoImpl implements UserSearchHistoryDao {
                 keywords.add(rs.getString("keyword"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return keywords;

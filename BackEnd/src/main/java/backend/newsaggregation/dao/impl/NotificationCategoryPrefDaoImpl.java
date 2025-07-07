@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import backend.newsaggregation.dao.interfaces.NotificationCategoryPrefDao;
 import backend.newsaggregation.model.NotificationPreference;
 import backend.newsaggregation.util.DatabaseConfig;
@@ -14,6 +17,7 @@ public class NotificationCategoryPrefDaoImpl implements NotificationCategoryPref
 
     private static NotificationCategoryPrefDaoImpl instance;
     private static Connection conn = DatabaseConfig.getConnection();
+	private static final Logger logger = LoggerFactory.getLogger(NotificationCategoryPrefDaoImpl.class);
 
     private NotificationCategoryPrefDaoImpl() {}
 
@@ -60,7 +64,7 @@ public class NotificationCategoryPrefDaoImpl implements NotificationCategoryPref
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return new ArrayList<>(prefMap.values());
@@ -99,7 +103,7 @@ public class NotificationCategoryPrefDaoImpl implements NotificationCategoryPref
             return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             try {
                 if (conn != null && !conn.getAutoCommit()) {
                     conn.rollback();
@@ -130,7 +134,7 @@ public class NotificationCategoryPrefDaoImpl implements NotificationCategoryPref
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return false;
@@ -151,7 +155,7 @@ public class NotificationCategoryPrefDaoImpl implements NotificationCategoryPref
     		return stmt.executeUpdate() > 0;
     		
     	} catch (SQLException e) {
-    		e.printStackTrace();
+    		logger.error(e.getStackTrace().toString());
     	}
     	
     	return false;

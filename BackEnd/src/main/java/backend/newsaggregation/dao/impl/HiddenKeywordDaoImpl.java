@@ -4,6 +4,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import backend.newsaggregation.dao.interfaces.HiddenKeywordDao;
 import backend.newsaggregation.model.HiddenKeyword;
 import backend.newsaggregation.util.DatabaseConfig;
@@ -11,6 +14,7 @@ import backend.newsaggregation.util.DatabaseConfig;
 public class HiddenKeywordDaoImpl implements HiddenKeywordDao {
 	private static HiddenKeywordDaoImpl instance;
     private static Connection conn;
+	private static final Logger logger = LoggerFactory.getLogger(HiddenKeywordDaoImpl.class);
 
     private HiddenKeywordDaoImpl() {}
 
@@ -32,7 +36,7 @@ public class HiddenKeywordDaoImpl implements HiddenKeywordDao {
             if (e.getSQLState().startsWith("23")) {
                 System.err.println("Keyword already exists.");
             } else {
-                e.printStackTrace();
+                logger.error(e.getStackTrace().toString());
             }
             return false;
         }
@@ -45,7 +49,7 @@ public class HiddenKeywordDaoImpl implements HiddenKeywordDao {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             return false;
         }
     }
@@ -64,7 +68,7 @@ public class HiddenKeywordDaoImpl implements HiddenKeywordDao {
                 keywords.add(hiddenKeyword);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
         return keywords;
     }

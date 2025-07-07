@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import backend.newsaggregation.dao.interfaces.SearchDao;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.util.DatabaseConfig;
@@ -13,6 +16,7 @@ public class SearchDaoImpl implements SearchDao {
 
     private static SearchDaoImpl instance;
     private static Connection conn;
+	private static final Logger logger = LoggerFactory.getLogger(SearchDaoImpl.class);
 
     private SearchDaoImpl() {}
 
@@ -110,7 +114,7 @@ public class SearchDaoImpl implements SearchDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return articles;

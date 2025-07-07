@@ -11,17 +11,19 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import backend.newsaggregation.dao.interfaces.NewsDao;
-import backend.newsaggregation.model.Category;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.model.NewsArticleCategoryInfo;
-import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.util.DatabaseConfig;
 
 public class NewsDaoImpl implements NewsDao {
 
     private static NewsDaoImpl instance;
     private static Connection conn;
+	private static final Logger logger = LoggerFactory.getLogger(NewsDaoImpl.class);
 
     private NewsDaoImpl() {}
 
@@ -96,7 +98,7 @@ public class NewsDaoImpl implements NewsDao {
             System.out.println("Duplicate article, fetching existing ID...");
             return getNewsIdByUrl(item.getUrl());
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
         return -1;
     }
@@ -110,7 +112,7 @@ public class NewsDaoImpl implements NewsDao {
                 return rs.getInt("id");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
         return -1;
     }
@@ -128,7 +130,7 @@ public class NewsDaoImpl implements NewsDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return -1;
@@ -163,7 +165,7 @@ public class NewsDaoImpl implements NewsDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return -1;
@@ -187,7 +189,7 @@ public class NewsDaoImpl implements NewsDao {
                 System.out.println("Mapping already exists for news_id=" + newsId + " and category_id=" + categoryId);
                 return true;
             } else {
-                e.printStackTrace();
+                logger.error(e.getStackTrace().toString());
                 return false;
             }
         }
@@ -238,7 +240,7 @@ public class NewsDaoImpl implements NewsDao {
             return rs.next() ? mapRowToArticle(rs) : null;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             return null;
         }
     }
@@ -255,7 +257,7 @@ public class NewsDaoImpl implements NewsDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
         return articles;
     }
@@ -286,7 +288,7 @@ public class NewsDaoImpl implements NewsDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return result;
@@ -299,7 +301,7 @@ public class NewsDaoImpl implements NewsDao {
             stmt.setInt(1, newsId);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             return false;
         }
     }
@@ -311,7 +313,7 @@ public class NewsDaoImpl implements NewsDao {
             stmt.setInt(1, newsId);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             return false;
         }
     }
@@ -326,7 +328,7 @@ public class NewsDaoImpl implements NewsDao {
                 return rs.getInt("report_count");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
         return 0;
     }

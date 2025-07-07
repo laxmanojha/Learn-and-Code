@@ -13,11 +13,15 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class NewsApi implements ExternalNewsApi {
 
     private static final String NEWS_API_KEY = ExternalServerService.getInstance().getApiKeyByServerName("NewsApi");
     private static final String HEADLINES_URL = "https://newsapi.org/v2/top-headlines?country=us&apiKey=" + NEWS_API_KEY;
     private static final String SOURCES_URL = "https://newsapi.org/v2/top-headlines/sources?apiKey=" + NEWS_API_KEY;
+	private static final Logger logger = LoggerFactory.getLogger(NewsApi.class);
 
     public String fetchNewsApiData(String apiUrl) {
         StringBuilder response = new StringBuilder();
@@ -34,7 +38,7 @@ public class NewsApi implements ExternalNewsApi {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return response.toString();
@@ -43,7 +47,6 @@ public class NewsApi implements ExternalNewsApi {
     @Override
     public List<NewsArticle> parseExternalApiData() {
         List<NewsArticle> result = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
         try {
@@ -92,7 +95,7 @@ public class NewsApi implements ExternalNewsApi {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+        	logger.error(e.getStackTrace().toString());
         }
 
         return result;

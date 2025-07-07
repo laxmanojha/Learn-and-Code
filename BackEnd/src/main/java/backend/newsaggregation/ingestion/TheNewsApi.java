@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,6 +22,7 @@ public class TheNewsApi implements ExternalNewsApi{
 	
 	private static final String NEWS_API_KEY = ExternalServerService.getInstance().getApiKeyByServerName("TheNewsApi");
     private static final String NEWS_URL = "https://api.thenewsapi.com/v1/news/top?api_token=" + NEWS_API_KEY;
+	private static final Logger logger = LoggerFactory.getLogger(TheNewsApi.class);
 	
 	@Override
 	public List<NewsArticle> parseExternalApiData() {
@@ -66,7 +70,7 @@ public class TheNewsApi implements ExternalNewsApi{
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return dataList;
@@ -92,12 +96,12 @@ public class TheNewsApi implements ExternalNewsApi{
                     }
                 }
             } else {
-                System.err.println("GET request failed. Response Code: " + status);
+                logger.error("GET request failed. Response Code: " + status);
             }
 
             connection.disconnect();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return response.toString();

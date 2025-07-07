@@ -3,6 +3,10 @@ package backend.newsaggregation.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -15,17 +19,23 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import backend.newsaggregation.service.UserService;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.util.StatusPrinter;
+
 
 @WebServlet("/api/auth/*")
 public class AuthServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 	private final UserService userService = UserService.getInstance();
-
+	private static final Logger logger = LoggerFactory.getLogger(AuthServlet.class);
+	
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
+        System.out.println("Working Directory: " + System.getProperty("user.dir"));
 
         String pathInfo = request.getPathInfo();
         if (pathInfo == null) {
@@ -42,6 +52,9 @@ public class AuthServlet extends HttpServlet {
                 break;
             case "/logout":
                 request.getSession().invalidate();
+
+				LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+				StatusPrinter.print(context);
                 sendJsonResponse(response, true, "Logged out successfully.", HttpServletResponse.SC_OK);
                 break;
             default:
@@ -88,9 +101,10 @@ public class AuthServlet extends HttpServlet {
             request.getSession().setAttribute("user", fullUser);
             
             System.out.println("session object: " + request.getSession().getAttribute("user"));
-
+            logger.info("Login successful for user: " + username);
             sendJsonResponse(response, true, message, HttpServletResponse.SC_OK, fullUser);
         } else {
+        	logger.info("Login failed for user: " + username);
             sendJsonResponse(response, false, message, HttpServletResponse.SC_BAD_REQUEST);
         }
     }
@@ -130,8 +144,10 @@ public class AuthServlet extends HttpServlet {
         String message = resultParts[1];
 
         if (isRegistered == 1) {
+        	logger.info("User signup success.");
             sendJsonResponse(response, true, message, HttpServletResponse.SC_OK);
         } else {
+        	logger.info("User signup failed.");	
             sendJsonResponse(response, false, message, HttpServletResponse.SC_BAD_REQUEST);
         }
     }

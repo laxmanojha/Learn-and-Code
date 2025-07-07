@@ -6,6 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import backend.newsaggregation.dao.interfaces.NewsReportDao;
 import backend.newsaggregation.model.NewsArticleReport;
 import backend.newsaggregation.util.DatabaseConfig;
@@ -14,6 +18,7 @@ public class NewsReportDaoImpl implements NewsReportDao{
 
 	private static NewsReportDaoImpl instance;
     private static Connection conn;
+	private static final Logger logger = LoggerFactory.getLogger(NewsReportDaoImpl.class);
 
     private NewsReportDaoImpl() {}
 
@@ -38,7 +43,7 @@ public class NewsReportDaoImpl implements NewsReportDao{
             return rows > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             return false;
         }
     }
@@ -64,7 +69,7 @@ public class NewsReportDaoImpl implements NewsReportDao{
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return reports;

@@ -14,11 +14,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class NewsScheduler {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final UserService userService = UserService.getInstance();
     private final PersonalizedNewsService personalizedNewsService = PersonalizedNewsService.getInstance();
+	private static final Logger logger = LoggerFactory.getLogger(NewsScheduler.class);
 
     private final List<ExternalNewsApi> apis = Arrays.asList(
             new NewsApi(),
@@ -27,25 +31,25 @@ public class NewsScheduler {
 
     public void start() {
         Runnable fetchTask = () -> {
-        	System.out.println("Scheduler is running at: " + new java.util.Date());
+        	logger.info("Scheduler is running at: " + new java.util.Date());
             ExternalServerService serverService = ExternalServerService.getInstance();
             List<NewsArticle> allNews = new ArrayList<>();
 
             for (ExternalNewsApi api : apis) {
                 String apiName = api.getClass().getSimpleName();
-                System.out.println("Fetching from " + apiName);
+                logger.info("Fetching from " + apiName);
 
                 try {
                     List<NewsArticle> fetchedNews = api.parseExternalApiData();
                     allNews.addAll(fetchedNews);
 
-                    System.out.println("Fetched " + fetchedNews.size() + " articles from " + apiName);
+                    logger.info("Fetched " + fetchedNews.size() + " articles from " + apiName);
 
                     serverService.updateServerStatus(apiName, true);
 
                 } catch (Exception e) {
-                    System.err.println("Error occurred while fetching from " + apiName + ": " + e.getMessage());
-                    e.printStackTrace();
+                    logger.error("Error occurred while fetching from " + apiName + ": " + e.getMessage());
+                    logger.error(e.getStackTrace().toString());
 
                     serverService.updateServerStatus(apiName, false);
                 }
@@ -54,6 +58,7 @@ public class NewsScheduler {
                     Thread.sleep(30_000);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                    logger.error(e.getStackTrace().toString());
                 }
             }
 
@@ -68,22 +73,22 @@ public class NewsScheduler {
 
                     List<NewsArticle> userPreferedArticles = personalizedNewsService.getPersonalizedArticles(userId, allNews);
                     if (userPreferedArticles == null || userPreferedArticles.isEmpty()) {
-                        System.out.println("No personalized articles for: " + email);
+                        logger.info("No personalized articles for: " + email);
                         continue;
                     }
 
                     try {
                         EmailUtil.sendNewsDigestEmail(email, userPreferedArticles);
-                        System.out.println("Sent personalized news to: " + email);
+                        logger.info("Sent personalized news to: " + email);
                     } catch (Exception e) {
-                        System.err.println("Failed to send email to: " + email);
-                        e.printStackTrace();
+                        logger.error("Failed to send email to: " + email);
+                        logger.error(e.getStackTrace().toString());
                     }
                 }
 
-                System.out.println("Saved total " + allNews.size() + " articles to DB.");
+                logger.info("Saved total " + allNews.size() + " articles to DB.");
             } else {
-                System.out.println("No articles fetched in this cycle.");
+                logger.info("No articles fetched in this cycle.");
             }
         };
 
@@ -92,7 +97,7 @@ public class NewsScheduler {
 
     public void stop() {
         scheduler.shutdown();
-        System.out.println("Scheduler stopped.");
+        logger.info("Scheduler stopped.");
     }
 
     public static void main(String[] args) {

@@ -4,9 +4,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import backend.newsaggregation.dao.interfaces.NotificationCategoryPrefDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import backend.newsaggregation.dao.interfaces.NotificationKeywordPrefDao;
-import backend.newsaggregation.model.NotificationPref;
 import backend.newsaggregation.model.NotificationPreference;
 import backend.newsaggregation.util.DatabaseConfig;
 
@@ -14,6 +15,7 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
 
     private static NotificationKeywordPrefDaoImpl instance;
     Connection conn = DatabaseConfig.getConnection();
+	private static final Logger logger = LoggerFactory.getLogger(NotificationKeywordPrefDaoImpl.class);
 
     private NotificationKeywordPrefDaoImpl() {}
 
@@ -45,7 +47,7 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
             pref.setKeywords(keywords);
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return pref;
@@ -84,7 +86,7 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
             return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             try (Connection rollbackConn = DatabaseConfig.getConnection()) {
                 if (rollbackConn != null && !rollbackConn.getAutoCommit()) {
                     rollbackConn.rollback();
@@ -114,7 +116,7 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
     		return stmt.executeUpdate() > 0;
     		
     	} catch (SQLException e) {
-    		e.printStackTrace();
+    		logger.error(e.getStackTrace().toString());
     	}
     	
     	return false;
@@ -152,7 +154,7 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
             return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             try (Connection conn = DatabaseConfig.getConnection()) {
                 if (conn != null && !conn.getAutoCommit()) {
                     conn.rollback();
@@ -196,7 +198,7 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
             return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             try {
                 if (conn != null && !conn.getAutoCommit()) {
                     conn.rollback();
@@ -223,7 +225,7 @@ public class NotificationKeywordPrefDaoImpl implements NotificationKeywordPrefDa
     		return stmt.executeUpdate() > 0;
     		
     	} catch (SQLException e) {
-    		e.printStackTrace();
+    		logger.error(e.getStackTrace().toString());
     	}
     	
     	return false;

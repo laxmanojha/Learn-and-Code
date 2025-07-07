@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import backend.newsaggregation.dao.interfaces.CategoryDao;
 import backend.newsaggregation.model.Category;
 import backend.newsaggregation.util.DatabaseConfig;
@@ -18,6 +21,7 @@ public class CategoryDaoImpl implements CategoryDao{
 	
 	private static CategoryDaoImpl instance;
 	Connection conn = DatabaseConfig.getConnection();
+	private static final Logger logger = LoggerFactory.getLogger(CategoryDaoImpl.class);
 
     private CategoryDaoImpl() {}
 
@@ -39,7 +43,7 @@ public class CategoryDaoImpl implements CategoryDao{
             return rows > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
         return false;
     }
@@ -56,7 +60,7 @@ public class CategoryDaoImpl implements CategoryDao{
     		}
     		
     	} catch (SQLException e) {
-    		e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
     	}
     	return categories;
     }
@@ -68,7 +72,7 @@ public class CategoryDaoImpl implements CategoryDao{
             stmt.setInt(1, categoryId);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             return false;
         }
     }
@@ -80,7 +84,7 @@ public class CategoryDaoImpl implements CategoryDao{
             stmt.setInt(1, categoryId);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
             return false;
         }
     }
@@ -112,7 +116,7 @@ public class CategoryDaoImpl implements CategoryDao{
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return categoryTypes;

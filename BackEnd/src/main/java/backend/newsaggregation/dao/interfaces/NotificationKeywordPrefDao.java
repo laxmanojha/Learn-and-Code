@@ -3,7 +3,6 @@ package backend.newsaggregation.dao.interfaces;
 import java.util.List;
 
 import backend.newsaggregation.dao.impl.NotificationKeywordPrefDaoImpl;
-import backend.newsaggregation.model.NotificationPref;
 import backend.newsaggregation.model.NotificationPreference;
 
 public interface NotificationKeywordPrefDao {

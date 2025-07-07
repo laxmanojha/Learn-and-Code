@@ -4,6 +4,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import backend.newsaggregation.dao.interfaces.ExternalServerDao;
 import backend.newsaggregation.model.ExternalServer;
 import backend.newsaggregation.util.DatabaseConfig;
@@ -12,6 +15,7 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
 
     private static ExternalServerDaoImpl instance;
     Connection conn = DatabaseConfig.getConnection();
+	private static final Logger logger = LoggerFactory.getLogger(ExternalServerDaoImpl.class);
 
     private ExternalServerDaoImpl() {}
 
@@ -41,7 +45,7 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
         return servers;
     }
@@ -63,7 +67,7 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
         return servers;
     }
@@ -88,7 +92,7 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return server;
@@ -106,7 +110,7 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
             return rows > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
 
         return false;
@@ -126,7 +130,7 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
         return false;
     }
@@ -149,7 +153,7 @@ public class ExternalServerDaoImpl implements ExternalServerDao {
                 return server;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace().toString());
         }
         return null;
     }

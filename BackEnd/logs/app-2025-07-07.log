@@ -1,4 +1,6 @@
-2025-07-07 01:55:32 [main] INFO  b.newsaggregation.util.EmailUtil - Demo logs generated
-2025-07-07 01:55:39 [main] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
-2025-07-07 01:56:21 [main] INFO  b.newsaggregation.util.EmailUtil - Demo logs generated
-2025-07-07 01:56:27 [main] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to gunnirathod56@gmail.com
+2025-07-07 10:31:01 [pool-5-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to gunnirathod56@gmail.com
+2025-07-07 10:31:06 [pool-5-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
+2025-07-07 10:31:15 [http-nio-8080-exec-12] INFO  b.n.controller.AuthServlet - ====== Logger initialized test ======
+2025-07-07 10:31:15 [http-nio-8080-exec-12] INFO  b.n.controller.AuthServlet - Login successful for user: laxman
+2025-07-07 10:33:56 [pool-7-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to gunnirathod56@gmail.com
+2025-07-07 10:34:00 [pool-7-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
