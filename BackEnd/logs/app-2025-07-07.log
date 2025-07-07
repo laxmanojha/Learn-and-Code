@@ -4,3 +4,28 @@
 2025-07-07 10:31:15 [http-nio-8080-exec-12] INFO  b.n.controller.AuthServlet - Login successful for user: laxman
 2025-07-07 10:33:56 [pool-7-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to gunnirathod56@gmail.com
 2025-07-07 10:34:00 [pool-7-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
+2025-07-07 10:57:55 [main] INFO  b.n.ingestion.AppStartUpListener - [AppStartupListener] Scheduler started.
+2025-07-07 10:57:55 [pool-1-thread-1] INFO  b.n.ingestion.NewsScheduler - Scheduler is running at: Mon Jul 07 10:57:55 IST 2025
+2025-07-07 10:57:55 [pool-1-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from NewsApi
+2025-07-07 10:58:17 [pool-1-thread-1] ERROR b.newsaggregation.ingestion.NewsApi - [Ljava.lang.StackTraceElement;@59de1756
+2025-07-07 10:58:17 [pool-1-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 0 articles from NewsApi
+2025-07-07 10:58:47 [pool-1-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from TheNewsApi
+2025-07-07 10:58:51 [pool-1-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 3 articles from TheNewsApi
+2025-07-07 10:59:27 [pool-1-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to gunnirathod56@gmail.com
+2025-07-07 10:59:27 [pool-1-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: gunnirathod56@gmail.com
+2025-07-07 10:59:31 [pool-1-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
+2025-07-07 10:59:31 [pool-1-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: john.doe.matrix@yopmail.com
+2025-07-07 10:59:31 [pool-1-thread-1] INFO  b.n.ingestion.NewsScheduler - Saved total 3 articles to DB.
+2025-07-07 11:00:08 [pool-3-thread-1] INFO  b.n.ingestion.NewsScheduler - Scheduler is running at: Mon Jul 07 11:00:08 IST 2025
+2025-07-07 11:00:08 [Catalina-utility-1] INFO  b.n.ingestion.AppStartUpListener - [AppStartupListener] Scheduler started.
+2025-07-07 11:00:08 [pool-3-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from NewsApi
+2025-07-07 11:00:08 [pool-3-thread-1] ERROR b.newsaggregation.ingestion.NewsApi - [Ljava.lang.StackTraceElement;@3ac616eb
+2025-07-07 11:00:08 [pool-3-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 0 articles from NewsApi
+2025-07-07 11:00:38 [pool-3-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetching from TheNewsApi
+2025-07-07 11:00:43 [pool-3-thread-1] INFO  b.n.ingestion.NewsScheduler - Fetched 3 articles from TheNewsApi
+2025-07-07 11:01:18 [pool-3-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to gunnirathod56@gmail.com
+2025-07-07 11:01:18 [pool-3-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: gunnirathod56@gmail.com
+2025-07-07 11:01:22 [pool-3-thread-1] INFO  b.newsaggregation.util.EmailUtil - Email sent successfully to john.doe.matrix@yopmail.com
+2025-07-07 11:01:22 [pool-3-thread-1] INFO  b.n.ingestion.NewsScheduler - Sent personalized news to: john.doe.matrix@yopmail.com
+2025-07-07 11:01:22 [pool-3-thread-1] INFO  b.n.ingestion.NewsScheduler - Saved total 3 articles to DB.
+2025-07-07 11:01:44 [http-nio-8080-exec-4] INFO  b.n.controller.AuthServlet - Login successful for user: laxman

@@ -1,6 +1,5 @@
 package backend.newsaggregation.service;
 
-import backend.newsaggregation.dao.interfaces.CategoryDao;
 import backend.newsaggregation.dao.interfaces.NewsReactionDao;
 
 public class NewsReactionService {

@@ -1,11 +1,9 @@
 package backend.newsaggregation.service;
+
 import backend.newsaggregation.model.Category;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.model.NewsArticleCategoryInfo;
-import backend.newsaggregation.model.NotificationPref;
 import backend.newsaggregation.model.NotificationPreference;
-import backend.newsaggregation.dao.impl.CategoryDaoImpl;
-import backend.newsaggregation.dao.impl.NotificationDaoImpl;
 import backend.newsaggregation.dao.interfaces.CategoryDao;
 import backend.newsaggregation.dao.interfaces.NewsDao;
 import backend.newsaggregation.dao.interfaces.NotificationCategoryPrefDao;

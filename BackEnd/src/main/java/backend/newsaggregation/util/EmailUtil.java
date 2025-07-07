@@ -2,13 +2,10 @@ package backend.newsaggregation.util;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
-
 import java.util.List;
 import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import backend.newsaggregation.model.EmailConfig;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.service.EmailConfigService;
@@ -20,7 +17,7 @@ public class EmailUtil {
     public static void sendNewsDigestEmail(String toEmail, List<NewsArticle> articles) {
     	EmailConfig config = EmailConfigService.getInstance().getEmailConfig();
     	if (config == null) {
-    	    System.err.println("Email config not found in DB!");
+    	    logger.error("Email config not found in DB!");
     	    return;
     	}
     	final String fromEmail = config.getSenderEmail();
@@ -68,7 +65,6 @@ public class EmailUtil {
             // Send message
             Transport.send(message);
 
-            System.out.println("Email sent successfully to " + toEmail);
             logger.info("Email sent successfully to " + toEmail);
 
         } catch (Exception e) {

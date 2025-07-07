@@ -20,17 +20,19 @@ public class PersonalizedNewsService {
     private final NewsReactionDao newsReactionDao;
     private final SavedArticleDao savedArticleDao;
     private final CategoryDao categoryDao;
+    private final SearchNewsService searchNewsService;
 
     private PersonalizedNewsService() {
-		this(NotificationCategoryPrefDao.getInstance(), NotificationKeywordPrefDao.getInstance(), NewsReactionDao.getInstance(), SavedArticleDao.getInstance(), CategoryDao.getInstance());
+		this(NotificationCategoryPrefDao.getInstance(), NotificationKeywordPrefDao.getInstance(), NewsReactionDao.getInstance(), SavedArticleDao.getInstance(), CategoryDao.getInstance(), SearchNewsService.getInstance());
 	}
 	
-	private PersonalizedNewsService(NotificationCategoryPrefDao notificationCategoryPrefDao, NotificationKeywordPrefDao notificationKeywordPrefDao, NewsReactionDao newsReactionDao, SavedArticleDao savedArticleDao, CategoryDao categoryDao) {
+	private PersonalizedNewsService(NotificationCategoryPrefDao notificationCategoryPrefDao, NotificationKeywordPrefDao notificationKeywordPrefDao, NewsReactionDao newsReactionDao, SavedArticleDao savedArticleDao, CategoryDao categoryDao, SearchNewsService searchNewsService) {
         this.notificationCategoryPrefDao = notificationCategoryPrefDao;
         this.notificationKeywordPrefDao = notificationKeywordPrefDao;
         this.newsReactionDao = newsReactionDao;
         this.savedArticleDao = savedArticleDao;
         this.categoryDao = categoryDao;
+        this.searchNewsService = searchNewsService;
     }
 
     public static PersonalizedNewsService getInstance() {
@@ -53,6 +55,7 @@ public class PersonalizedNewsService {
         }
         NotificationPreference keywordPreference = notificationKeywordPrefDao.getPreferencesByUser(userId);
         userKeywords.addAll(keywordPreference.getKeywords());
+        userKeywords.addAll(searchNewsService.getRecentSearchKeywords(userId));
         likedNewsIds.addAll(newsReactionDao.getLikedNewsIds(userId));
         savedNewsIds.addAll(savedArticleDao.getSavedNewsIds(userId));
         preferredCategoryIds.addAll(categoryDao.getCategoryTypesForNews(likedNewsIds));

@@ -107,4 +107,9 @@ public class SearchNewsService {
         String content = (title + " " + description + " " + snippet).toLowerCase();
         return blockedKeywords.stream().anyMatch(kw -> content.contains(kw.getKeyword().toLowerCase()));
     }
+    
+    public List<String> getRecentSearchKeywords(int userId) {
+    	int KEYWORD_LIMIT = 20;
+    	return userSearchHistoryDao.getRecentSearchKeywords(userId, KEYWORD_LIMIT);
+    }
 }

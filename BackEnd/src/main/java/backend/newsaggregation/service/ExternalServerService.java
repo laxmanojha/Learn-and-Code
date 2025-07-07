@@ -4,25 +4,21 @@ import java.util.List;
 
 import backend.newsaggregation.dao.interfaces.ExternalServerDao;
 import backend.newsaggregation.dao.interfaces.NewsDao;
-import backend.newsaggregation.ingestion.TheNewsApi;
 import backend.newsaggregation.model.NewsArticle;
 import backend.newsaggregation.model.ExternalServer;
-import backend.newsaggregation.util.Util;
 
 public class ExternalServerService {
 	private static ExternalServerService instance;
 	private ExternalServerDao serverDao;
 	private NewsDao newsDaoImpl;
-	private Util util;
 	
 	private ExternalServerService() {
-		this(ExternalServerDao.getInstance(), NewsDao.getInstance(), Util.getInstance());
+		this(ExternalServerDao.getInstance(), NewsDao.getInstance());
 	}
 	
-	private ExternalServerService(ExternalServerDao serverDao, NewsDao newsDaoImpl, Util util) {
+	private ExternalServerService(ExternalServerDao serverDao, NewsDao newsDaoImpl) {
         this.serverDao = serverDao;
         this.newsDaoImpl = newsDaoImpl;
-        this.util = util;
     }
 
     public static ExternalServerService getInstance() {
