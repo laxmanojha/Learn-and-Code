@@ -17,13 +17,13 @@ public class UserDashboard {
 	private static final AuthService authService = AuthService.getInstance();
 
     public static void startUserMenu(User user) {
-        showWelcomeMessage(user);
         
         while (true) {
         	if (AppState.shouldExitToHome()) {
                 AppState.reset();
                 return;
             }
+        	showWelcomeMessage(user);
             System.out.println("\nPlease choose the options below:");
             System.out.println("1. Headlines");
             System.out.println("2. Saved Articles");
@@ -63,7 +63,8 @@ public class UserDashboard {
         String date = now.format(dateFormatter);
         String time = now.format(timeFormatter);
 
-        System.out.println("\nWelcome to the News Application, " + user.getUsername() + "! Date: " + date);
+        System.out.println("\nWelcome to the News Application, " + user.getUsername() + "!");
+        System.out.println("Date: " + date);
         System.out.println("Time: " + time);
     }
 }

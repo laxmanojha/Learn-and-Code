@@ -54,7 +54,6 @@ public class ExternalServerService {
 
         try {
             HttpResponse<String> response = HttpUtil.sendGetRequest(url);
-            System.out.println(response.body());
             if (response.statusCode() == 200) {
                 String json = response.body();
                 Gson gson = new Gson();

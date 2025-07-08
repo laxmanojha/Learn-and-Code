@@ -51,7 +51,7 @@ public class NewsReportDaoImpl implements NewsReportDao{
     @Override
     public List<NewsArticleReport> getReportedArticles() {
         List<NewsArticleReport> reports = new ArrayList<>();
-        String sql = "SELECT * FROM news_article_report";
+        String sql = "SELECT * FROM news_article_report nar INNER JOIN news_article na ON nar.news_id = na.id;";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -62,7 +62,9 @@ public class NewsReportDaoImpl implements NewsReportDao{
                         rs.getInt("user_id"),
                         rs.getInt("news_id"),
                         rs.getString("reason"),
-                        rs.getTimestamp("reported_at")
+                        rs.getTimestamp("reported_at"),
+                        rs.getString("title"),
+                        rs.getInt("is_hidden")
                     );
                     reports.add(report);
                 }

@@ -36,8 +36,6 @@ public class AuthService {
             if (success) {
                 JsonObject userInfo = jsonResponse.getAsJsonObject("user");
                 User user = new Gson().fromJson(userInfo, User.class);
-                System.out.println("Login Successful: " + jsonResponse.get("message").getAsString());
-                System.out.println(user.toString());
                 return user;
             } else {
                 System.out.println("Login Failed: " + jsonResponse.get("message").getAsString());

@@ -46,8 +46,6 @@ public class Main {
 
         User loggedInUser = authService.login(username, password);
         if (loggedInUser != null) {
-            System.out.println("Welcome " + loggedInUser.getUsername() + "!");
-            System.out.println(loggedInUser.getRoleType());
             if ("admin".equalsIgnoreCase(loggedInUser.getRoleType())) {
                 AdminDashboard.startAdminMenu(loggedInUser);
             } else {

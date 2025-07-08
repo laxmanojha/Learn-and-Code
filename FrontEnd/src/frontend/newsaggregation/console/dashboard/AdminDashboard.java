@@ -1,5 +1,11 @@
 package frontend.newsaggregation.console.dashboard;
 
+import java.time.LocalDateTime;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import frontend.newsaggregation.model.Category;
@@ -30,7 +36,7 @@ public class AdminDashboard {
                 AppState.reset();
                 return;
             }
-            System.out.println("\nWelcome " + user.getUsername() + "! Please choose an option:");
+        	showWelcomeMessage(user);
             System.out.println("1. View the list of external servers and status");
             System.out.println("2. View the external server’s details");
             System.out.println("3. Update/Edit the external server’s details");
@@ -78,6 +84,19 @@ public class AdminDashboard {
             }
         }
     }
+
+    private static void showWelcomeMessage(User user) {
+    	DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mma");
+
+        LocalDateTime now = LocalDateTime.now();
+        String date = now.format(dateFormatter);
+        String time = now.format(timeFormatter);
+
+        System.out.println("\nWelcome to the News Application, " + user.getUsername() + "!");
+        System.out.println("Date: " + date);
+        System.out.println("Time: " + time);
+    }
     
     private static void handleExternalServerWithStatus() {
     	List<ExternalServer> servers = serverService.getAllServers();
@@ -86,11 +105,14 @@ public class AdminDashboard {
             System.out.println("No external servers found.");
         } else {
             System.out.println("\nList of external servers:");
+            System.out.printf("%-5s %-20s %-10s %-20s%n", "No.", "Server Name", "Status", "Last Accessed");
+            System.out.println("---------------------------------------------------------------");
+
             int count = 1;
             for (ExternalServer server : servers) {
                 String status = serverService.formatStatus(server.getServerStatus());
                 String lastAccessed = serverService.formatDate(server.getLastAccessed());
-                System.out.println(count++ + ". " + server.getServerName() + " - " + status + " - last accessed: " + lastAccessed);
+                System.out.printf("%-5d %-20s %-10s %-20s%n", count++, server.getServerName(), status, lastAccessed);
             }
         }
     }
@@ -102,10 +124,14 @@ public class AdminDashboard {
             System.out.println("No external server details found.");
         } else {
             System.out.println("\nList of external server details:");
+            System.out.printf("%-5s %-20s %-50s%n", "No.", "Server Name", "API Key");
+            System.out.println("--------------------------------------------------------------------------------");
+
             int count = 1;
             for (ExternalServer server : serverDetails) {
-                System.out.println(count++ + ". " + server.getServerName() + " - " + server.getApiKey());
+                System.out.printf("%-5d %-20s %-50s%n", count++, server.getServerName(), server.getApiKey());
             }
+
         }
     }
     
@@ -191,10 +217,7 @@ public class AdminDashboard {
         }
 
         System.out.println("\nReported Articles:");
-        for (NewsArticleReport report : reports) {
-            System.out.println(report);
-            System.out.println("------------------------------------");
-        }
+        showReportedNewsDetails(reports);
 
         while (true) {
             System.out.println("Options:");
@@ -218,6 +241,46 @@ public class AdminDashboard {
                     System.out.println("Invalid option. Try again.");
             }
         }
+    }
+    
+    private static void showReportedNewsDetails(List<NewsArticleReport> reports) {
+
+    	SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+
+    	System.out.println("\nReported Articles:");
+    	System.out.printf("%-5s %-10s %-60s %-20s %-12s %-15s %-10s%n", 
+    	    "No.", "News ID", "Title", "Reason", "Reported At", "Report Count", "Hidden");
+    	System.out.println("---------------------------------------------------------------------------------------------------------------------------");
+
+    	Map<Integer, List<NewsArticleReport>> groupedByNews = reports.stream()
+    	        .collect(Collectors.groupingBy(NewsArticleReport::getNewsId));
+
+    	int count = 1;
+    	for (Map.Entry<Integer, List<NewsArticleReport>> entry : groupedByNews.entrySet()) {
+    	    int newsId = entry.getKey();
+    	    List<NewsArticleReport> reportList = entry.getValue();
+
+    	    NewsArticleReport latestReport = reportList.stream()
+    	            .max(Comparator.comparing(NewsArticleReport::getReportedAt))
+    	            .orElse(null);
+
+    	    if (latestReport != null) {
+    	        System.out.printf("%-5d %-10d %-60s %-20s %-12s %-15d %-10s%n",
+    	                count++,
+    	                newsId,
+    	                truncate(latestReport.getNewsArticle(), 58),
+    	                truncate(latestReport.getReason(), 18),
+    	                sdf.format(latestReport.getReportedAt()),
+    	                reportList.size(),
+    	                latestReport.getIsHidden() == 1 ? "Yes" : "No"
+    	        );
+    	    }
+    	}
+    }
+    
+    private static String truncate(String str, int maxLength) {
+        if (str == null) return "";
+        return str.length() > maxLength ? str.substring(0, maxLength - 3) + "..." : str;
     }
     
     private static void manageKeywordFilters() {
