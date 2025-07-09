@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import frontend.newsaggregation.constant.StaticConfiguration;
 import frontend.newsaggregation.model.Category;
@@ -14,7 +15,7 @@ import frontend.newsaggregation.util.HttpUtil;
 public class AdminCategoryService {
 
     private static final String BASE_URL = StaticConfiguration.getBaseUrl() + "admin/category";
-    private static final String CATEGORY_LIST_URL = StaticConfiguration.getBaseUrl() + "news/category";
+    private static final String CATEGORY_URL = StaticConfiguration.getBaseUrl() + "news/category";
     private static final Gson gson = new Gson();
     private static AdminCategoryService instance; 
 
@@ -24,10 +25,23 @@ public class AdminCategoryService {
         }
         return instance;
     }
+    
+    public boolean addCategory(String categoryName) {
+        try {
+            JsonObject json = new JsonObject();
+            json.addProperty("name", categoryName);
+
+            HttpResponse<String> response = HttpUtil.sendPostRequest(CATEGORY_URL, json.toString());
+            return HttpUtil.processResponse(response, "Add Category");
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Error while adding category: " + e.getMessage());
+            return false;
+        }
+    }
 
     public List<Category> fetchAllCategories() {
         try {
-            HttpResponse<String> response = HttpUtil.sendGetRequest(CATEGORY_LIST_URL);
+            HttpResponse<String> response = HttpUtil.sendGetRequest(CATEGORY_URL);
             if (response.statusCode() == 200) {
                 return gson.fromJson(response.body(), new TypeToken<List<Category>>() {}.getType());
             } else {

@@ -2,6 +2,7 @@ package frontend.newsaggregation.console.menu;
 
 import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -83,48 +84,68 @@ public class HeadlineMenu {
     }
 
     private static String selectCategory() {
-        String url = StaticConfiguration.getBaseUrl() + "/news/category";
+        List<Category> categories = fetchCategories();
+        if (categories.isEmpty()) {
+            System.out.println("No categories available. Using default 'general'.");
+            return "general";
+        }
 
+        displayCategoryMenu(categories);
+
+        int selectedIndex = getUserCategoryChoice(categories.size());
+        return resolveCategoryName(selectedIndex, categories);
+    }
+
+    private static List<Category> fetchCategories() {
+        String url = StaticConfiguration.getBaseUrl() + "/news/category";
         try {
             HttpResponse<String> response = HttpUtil.sendGetRequest(url);
-            if (response.statusCode() != 200) {
-                System.out.println("Failed to fetch categories. Using default 'general'.");
-                return "general";
-            }
-
-            // Parse JSON array to List<Category>
-            Gson gson = new Gson();
-            Type listType = new TypeToken<List<Category>>() {}.getType();
-            List<Category> categories = gson.fromJson(response.body(), listType);
-
-            // Show menu
-            System.out.println("\nSelect Category:");
-            System.out.println("0. All");
-
-            for (int index = 0; index < categories.size(); index++) {
-                System.out.printf("%d. %s%n", index + 1, capitalize(categories.get(index).getName()));
-            }
-
-            String choice = InputUtil.readLine("Enter your choice: ");
-            int index = Integer.parseInt(choice);
-
-            if (index == 0) {
-                return "general";
-            }
-
-            if (index > 0 && index <= categories.size()) {
-                return categories.get(index - 1).getName();
+            if (response.statusCode() == 200) {
+                Type listType = new TypeToken<List<Category>>() {}.getType();
+                return new Gson().fromJson(response.body(), listType);
             } else {
-                System.out.println("Invalid choice. Using default 'general'.");
-                return "general";
+                System.out.println("Failed to fetch categories.");
             }
-
         } catch (Exception e) {
             System.out.println("Error fetching categories: " + e.getMessage());
-            return "general";
+        }
+        return new ArrayList<>();
+    }
+
+    private static void displayCategoryMenu(List<Category> categories) {
+        System.out.println("\nSelect Category:");
+        System.out.println("0. All");
+        for (int index = 0; index < categories.size(); index++) {
+            System.out.printf("%d. %s%n", index + 1, capitalize(categories.get(index).getName()));
         }
     }
 
+    private static int getUserCategoryChoice(int maxIndex) {
+        try {
+            String input = InputUtil.readLine("Enter your choice: ");
+            int index = Integer.parseInt(input);
+            if (index >= 0 && index <= maxIndex) {
+                return index;
+            } else {
+                System.out.println("Invalid choice.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        }
+        return -1;
+    }
+
+    private static String resolveCategoryName(int index, List<Category> categories) {
+        if (index == 0) {
+            return "general";
+        } else if (index > 0 && index <= categories.size()) {
+            return categories.get(index - 1).getName();
+        } else {
+            System.out.println("Using default 'general'.");
+            return "general";
+        }
+    }
+    
     private static String capitalize(String word) {
         if (word == null || word.isEmpty()) return word;
         return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
