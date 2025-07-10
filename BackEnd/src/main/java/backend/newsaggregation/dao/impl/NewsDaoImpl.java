@@ -95,7 +95,7 @@ public class NewsDaoImpl implements NewsDao {
 
         } catch (SQLIntegrityConstraintViolationException e) {
             // Duplicate URL detected — fetch existing article ID
-            System.out.println("Duplicate article, fetching existing ID...");
+            logger.debug("Duplicate article, fetching existing ID...");
             return getNewsIdByUrl(item.getUrl());
         } catch (SQLException e) {
             logger.error(e.getStackTrace().toString());

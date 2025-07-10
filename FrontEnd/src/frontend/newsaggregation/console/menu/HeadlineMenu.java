@@ -18,6 +18,9 @@ import frontend.newsaggregation.service.HeadlineService;
 import frontend.newsaggregation.util.AppState;
 import frontend.newsaggregation.util.HttpUtil;
 import frontend.newsaggregation.util.InputUtil;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class HeadlineMenu {
 
@@ -26,7 +29,8 @@ public class HeadlineMenu {
     private static final AuthService authService = new AuthService();
 
     public static void startHeadlineMenu(User user) {
-        while (true) {
+    	boolean continueLoop = true;
+        while (continueLoop) {
         	if (AppState.shouldExitToHome()) {
                 return;
             }
@@ -70,8 +74,20 @@ public class HeadlineMenu {
     }
 
     private static void showDateRangeHeadlines(User user) {
-        String startDate = InputUtil.readLine("Enter start date (YYYY-MM-DD): ");
-        String endDate = InputUtil.readLine("Enter end date (YYYY-MM-DD): ");
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String startDate, endDate;
+
+        while (true) {
+            startDate = InputUtil.readLine("Enter start date (YYYY-MM-DD): ");
+            if (isValidDate(startDate, formatter)) break;
+            System.out.println("Invalid start date format. Please use YYYY-MM-DD.");
+        }
+
+        while (true) {
+            endDate = InputUtil.readLine("Enter end date (YYYY-MM-DD): ");
+            if (isValidDate(endDate, formatter)) break;
+            System.out.println("Invalid end date format. Please use YYYY-MM-DD.");
+        }
         String category = selectCategory();
         boolean personalizedPreference = InputUtil.readYesNo("Make it personalized");
 
@@ -81,6 +97,15 @@ public class HeadlineMenu {
             return;
         }
         handleArticleActions(articles, user);
+    }
+    
+    private static boolean isValidDate(String input, DateTimeFormatter formatter) {
+        try {
+            LocalDate.parse(input, formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
     }
 
     private static String selectCategory() {
@@ -154,7 +179,8 @@ public class HeadlineMenu {
     private static void handleArticleActions(List<NewsArticle> articles, User user) {
     	int page = 0;
         int pageSize = 5;
-        while (true) {
+        boolean continueLoop = true;
+        while (continueLoop) {
             if (AppState.shouldExitToHome()) {
                 return;
             }

@@ -13,7 +13,8 @@ public class Main {
     private static final AuthService authService = AuthService.getInstance();
 
     public static void main(String[] args) {
-        while (true) {
+    	boolean continueLoop = true;
+        while (continueLoop) {
             System.out.println("\nWelcome to the News Aggregator application. Please choose the options below.");
             System.out.println("1. Login");
             System.out.println("2. Sign up");

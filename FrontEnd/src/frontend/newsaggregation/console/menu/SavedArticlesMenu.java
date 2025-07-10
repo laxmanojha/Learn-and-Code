@@ -28,7 +28,8 @@ public class SavedArticlesMenu {
     private static void handleArticleActions(List<NewsArticle> articles, User user) {
     	int page = 0;
         int pageSize = 5;
-        while (true) {
+        boolean continueLoop = true;
+        while (continueLoop) {
             if (AppState.shouldExitToHome()) {
                 return;
             }
@@ -82,6 +83,7 @@ public class SavedArticlesMenu {
                     System.out.println("ArticleID: " + articleId);
                     boolean deleted = savedService.deleteSavedArticle(articleId);
                     if (deleted) {
+                    	articles = savedService.fetchSavedArticles();
                         System.out.println("Article deleted successfully.");
                     } else {
                         System.out.println("Failed to delete the article.");

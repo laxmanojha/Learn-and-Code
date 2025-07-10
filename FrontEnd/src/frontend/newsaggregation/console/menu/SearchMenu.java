@@ -1,15 +1,16 @@
 package frontend.newsaggregation.console.menu;
 
 import frontend.newsaggregation.model.NewsArticle;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import frontend.newsaggregation.model.User;
 import frontend.newsaggregation.service.ArticleActionService;
 import frontend.newsaggregation.service.AuthService;
 import frontend.newsaggregation.service.SearchService;
-import frontend.newsaggregation.service.SavedArticlesService;
 import frontend.newsaggregation.util.AppState;
 import frontend.newsaggregation.util.DateUtil;
 import frontend.newsaggregation.util.InputUtil;
-
 import java.util.List;
 
 public class SearchMenu {
@@ -30,13 +31,41 @@ public class SearchMenu {
         String startDate = null;
         String endDate = null;
         if (applyDate.equalsIgnoreCase("Y")) {
-            startDate = InputUtil.readLine("Enter start date (yyyy-MM-dd): ");
-            endDate = InputUtil.readLine("Enter end date (yyyy-MM-dd): ");
+        	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        	
+        	while (true) {
+        		startDate = InputUtil.readLine("Enter start date (YYYY-MM-DD): ");
+        		if (isValidDate(startDate, formatter)) break;
+        		System.out.println("Invalid start date format. Please use YYYY-MM-DD.");
+        	}
+        	
+        	while (true) {
+        		endDate = InputUtil.readLine("Enter end date (YYYY-MM-DD): ");
+        		if (isValidDate(endDate, formatter)) break;
+        		System.out.println("Invalid end date format. Please use YYYY-MM-DD.");
+        	}
         }
 
         // Sorting
-        String sort = null;
-        String sortChoice = InputUtil.readLine("Sort by \n1. Likes \n2. Dislikes \n3. No Sorting\nEnter choice: ");
+        String sort = getSortChoice();
+        boolean personalizedPreference = InputUtil.readYesNo("Make it personalized");
+
+        // Fetch results
+        List<NewsArticle> articles = searchService.searchArticles(query, startDate, endDate, sort, personalizedPreference);
+        
+        articles = getSortedArticles(articles, sort);
+        
+        if (articles.isEmpty()) {
+            System.out.println("No articles found for your query-> " + query);
+            return;
+        }
+
+        handleArticleActions(articles, user, query);
+    }
+    
+    private static String getSortChoice() {
+    	String sort = null;
+    	String sortChoice = InputUtil.readLine("Sort by \n1. Likes \n2. Dislikes \n3. No Sorting\nEnter choice: ");
         switch (sortChoice) {
             case "1":
                 sort = "likes";
@@ -50,30 +79,32 @@ public class SearchMenu {
             default:
                 System.out.println("Invalid sort option. Skipping sort.");
         }
-
-        boolean personalizedPreference = InputUtil.readYesNo("Make it personalized");
-
-        // Fetch results
-        List<NewsArticle> articles = searchService.searchArticles(query, startDate, endDate, sort, personalizedPreference);
-        
-        if ("likes".equalsIgnoreCase(sort)) {
+        return sort;
+    }
+    
+    private static List<NewsArticle> getSortedArticles(List<NewsArticle> articles, String sort) {
+    	if ("likes".equalsIgnoreCase(sort)) {
             articles.sort((a, b) -> Integer.compare(b.getLikeCount(), a.getLikeCount())); // Descending by likes
         } else if ("dislikes".equalsIgnoreCase(sort)) {
             articles.sort((a, b) -> Integer.compare(b.getDislikeCount(), a.getDislikeCount())); // Descending by dislikes
         }
-        
-        if (articles.isEmpty()) {
-            System.out.println("No articles found for your query-> " + query);
-            return;
+    	return articles;
+    }
+    
+    private static boolean isValidDate(String input, DateTimeFormatter formatter) {
+        try {
+            LocalDate.parse(input, formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
         }
-
-        handleArticleActions(articles, user, query);
     }
     
     private static void handleArticleActions(List<NewsArticle> articles, User user, String query) {
     	int page = 0;
         int pageSize = 5;
-        while (true) {
+        boolean continueLoop = true;
+        while (continueLoop) {
             if (AppState.shouldExitToHome()) {
                 return;
             }
@@ -93,9 +124,10 @@ public class SearchMenu {
             System.out.println("Options: n (Next), p (Previous)");
             System.out.println("1. Back");
             System.out.println("2. Logout");
-            System.out.println("3. Save Article");
-            System.out.println("4. Like/Dislike Article");
-            System.out.println("5. Report Article");
+            System.out.println("3. Sort");
+            System.out.println("4. Save Article");
+            System.out.println("5. Like/Dislike Article");
+            System.out.println("6. Report Article");
 
             String action = InputUtil.readLine("Enter your choice: ");
             
@@ -125,10 +157,14 @@ public class SearchMenu {
                     }
                     break;
                 case "3":
-                    int saveId = InputUtil.readInt("Enter Article ID to save: ");
-                    articleService.saveArticle(saveId);
+                    String sort = getSortChoice();
+                    articles = getSortedArticles(articles, sort);
                     break;
                 case "4":
+                	int saveId = InputUtil.readInt("Enter Article ID to save: ");
+                	articleService.saveArticle(saveId);
+                	break;
+                case "5":
                     int reactId = InputUtil.readInt("Enter Article ID to react: ");
                     String reaction = InputUtil.readLine("Enter reaction (like/dislike): ").toLowerCase();
                     if (reaction.equals("like") || reaction.equals("dislike")) {
@@ -137,7 +173,7 @@ public class SearchMenu {
                         System.out.println("Invalid reaction. Use 'like' or 'dislike'.");
                     }
                     break;
-                case "5":
+                case "6":
                     int reportId = InputUtil.readInt("Enter Article ID to report: ");
                     String comment = InputUtil.readLine("Comment(press enter to skip):");
                     articleService.reportArticle(reportId, comment);

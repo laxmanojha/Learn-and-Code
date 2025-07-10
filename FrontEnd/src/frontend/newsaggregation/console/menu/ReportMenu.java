@@ -85,7 +85,8 @@ public class ReportMenu {
 
         showReportedNewsDetails(reports);
 
-        while (true) {
+        boolean continueLoop = true;
+        while (continueLoop) {
             System.out.println("Options:");
             System.out.println("1. Hide Article by ID");
             System.out.println("2. Unhide Article by ID");
@@ -149,7 +150,8 @@ public class ReportMenu {
     }
     
     public static void manageKeywordFilters() {
-        while (true) {
+    	boolean continueLoop = true;
+        while (continueLoop) {
             List<HiddenKeyword> keywords = adminKeywordService.getHiddenKeywords();
 
             if (keywords.isEmpty()) {

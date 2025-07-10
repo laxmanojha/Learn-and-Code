@@ -17,13 +17,13 @@ public class UserDashboard {
 	private static final AuthService authService = AuthService.getInstance();
 
     public static void startUserMenu(User user) {
-        
-        while (true) {
+    	showWelcomeMessage(user);
+    	boolean continueLoop = true;
+        while (continueLoop) {
         	if (AppState.shouldExitToHome()) {
                 AppState.reset();
                 return;
             }
-        	showWelcomeMessage(user);
             System.out.println("\nPlease choose the options below:");
             System.out.println("1. Headlines");
             System.out.println("2. Saved Articles");

@@ -15,12 +15,13 @@ public class AdminDashboard {
 	private static final AuthService authService = AuthService.getInstance();
 
     public static void startAdminMenu(User user) {
-        while (true) {
+    	showWelcomeMessage(user);
+    	boolean continueLoop = true;
+        while (continueLoop) {
         	if (AppState.shouldExitToHome()) {
                 AppState.reset();
                 return;
             }
-        	showWelcomeMessage(user);
             System.out.println("1. View the list of external servers and status");
             System.out.println("2. View the external server’s details");
             System.out.println("3. Update/Edit the external server’s details");

@@ -16,7 +16,8 @@ public class NotificationMenu {
     private static final NotificationService notificationService = new NotificationService();
 
     public static void startNotificationMenu(User user) {
-        while (true) {
+    	boolean continueLoop = true;
+        while (continueLoop) {
         	if (AppState.shouldExitToHome()) {
                 return;
             }
@@ -55,7 +56,8 @@ public class NotificationMenu {
 
         int page = 0;
         int pageSize = 5;
-        while (true) {
+        boolean continueLoop = true;
+        while (continueLoop) {
             if (AppState.shouldExitToHome()) {
                 return;
             }
@@ -104,7 +106,8 @@ public class NotificationMenu {
     }
 
     private static void configureNotifications() {
-        while (true) {
+    	boolean continueLoop = true;
+        while (continueLoop) {
             if (AppState.shouldExitToHome()) {
                 return;
             }
