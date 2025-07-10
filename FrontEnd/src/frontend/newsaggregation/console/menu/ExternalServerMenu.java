@@ -50,7 +50,10 @@ public class ExternalServerMenu {
     public static void updateExternalServerDetails() {
     	ExternalServerService updateService = new ExternalServerService();
 
-        String idInput = InputUtil.readLine("Enter the external server ID: ");
+        String idInput = InputUtil.readLine("Enter the external server ID or 'back' to return: ");
+        if (idInput.equalsIgnoreCase("back")) {
+            return;
+        }
         int serverId;
         try {
             serverId = Integer.parseInt(idInput);

@@ -21,7 +21,10 @@ public class CategoryMenu {
 	public static void handleAddingNewCategory() {
 		List<Category> categories = fetchCategories();
 		displayCategoryMenu(categories);
-        String categoryName = InputUtil.readLine("Enter new news category name: ");
+		String categoryName = InputUtil.readLine("\nEnter news category or 'back' to return: ");
+        if (categoryName.equalsIgnoreCase("back")) {
+            return;
+        }
 
         if (categoryName.trim().isEmpty()) {
             System.out.println("Category name cannot be empty.");

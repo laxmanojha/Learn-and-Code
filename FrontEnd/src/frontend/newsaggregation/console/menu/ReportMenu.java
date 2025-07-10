@@ -26,15 +26,8 @@ public class ReportMenu {
         if (categories.isEmpty()) {
             System.out.println("No categories found.");
             return;
-        }
-
-        System.out.println("\nCategory Visibility:");
-        for (Category cat : categories) {
-            System.out.printf("ID: %d | %s [%s]%n",
-                cat.getId(),
-                cat.getName(),
-                cat.getIsHidden() ? "Hidden" : "Visible"
-            );
+        } else {
+        	showCategory(categories);
         }
 
         String input = InputUtil.readLine("\nEnter category ID to toggle visibility or 'back' to return: ");
@@ -64,6 +57,23 @@ public class ReportMenu {
             System.out.println("Invalid input.");
         }
     }
+	
+	private static void showCategory(List<Category> categories) {
+		System.out.println("\nCategory Visibility:");
+		System.out.printf("%-5s %-30s %-10s%n", "ID", "Category Name", "Visibility");
+		System.out.println("-----------------------------------------------------------");
+
+		for (Category cat : categories) {
+		    String name = capitalize(cat.getName());
+		    String visibility = cat.getIsHidden() ? "Hidden" : "Visible";
+		    System.out.printf("%-5d %-30s %-10s%n", cat.getId(), name, visibility);
+		}
+	}
+	
+	private static String capitalize(String word) {
+	    if (word == null || word.isEmpty()) return word;
+	    return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+	}
     
     public static void manageReportedArticles() {
         List<NewsArticleReport> reports = adminNewsService.getReportedArticles();
@@ -73,7 +83,6 @@ public class ReportMenu {
             return;
         }
 
-        System.out.println("\nReported Articles:");
         showReportedNewsDetails(reports);
 
         while (true) {
@@ -101,13 +110,12 @@ public class ReportMenu {
     }
     
     public static void showReportedNewsDetails(List<NewsArticleReport> reports) {
-
     	SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy hh:mm a");
 
     	System.out.println("\nReported Articles:");
-    	System.out.printf("%-5s %-10s %-60s %-20s %-12s %-15s %-10s%n", 
+    	System.out.printf("%-5s %-10s %-60s %-20s %-22s %-15s %-10s%n", 
     	    "No.", "News ID", "Title", "Reason", "Reported At", "Report Count", "Hidden");
-    	System.out.println("---------------------------------------------------------------------------------------------------------------------------");
+    	System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------");
 
     	Map<Integer, List<NewsArticleReport>> groupedByNews = reports.stream()
     	        .collect(Collectors.groupingBy(NewsArticleReport::getNewsId));
@@ -122,7 +130,7 @@ public class ReportMenu {
     	            .orElse(null);
 
     	    if (latestReport != null) {
-    	        System.out.printf("%-5d %-10d %-60s %-20s %-12s %-15d %-10s%n",
+    	        System.out.printf("%-5d %-10d %-60s %-20s %-22s %-15d %-10s%n",
     	                count++,
     	                newsId,
     	                truncate(latestReport.getNewsArticle(), 58),
@@ -144,13 +152,10 @@ public class ReportMenu {
         while (true) {
             List<HiddenKeyword> keywords = adminKeywordService.getHiddenKeywords();
 
-            System.out.println("\n--- Hidden Keywords ---");
             if (keywords.isEmpty()) {
                 System.out.println("No hidden keywords.");
             } else {
-                for (HiddenKeyword k : keywords) {
-                    System.out.println(k);
-                }
+            	showHiddenKeywords(keywords);
             }
 
             System.out.println("\nOptions:");
@@ -178,5 +183,22 @@ public class ReportMenu {
                     System.out.println("Invalid option.");
             }
         }
+    }
+    
+    private static void showHiddenKeywords(List<HiddenKeyword> keywords) {
+    	System.out.println("\nList of Hidden Keywords:");
+    	System.out.printf("%-5s %-20s %-25s%n", "ID", "Keyword", "Created At");
+    	System.out.println("-------------------------------------------------------");
+
+    	SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+
+    	for (HiddenKeyword k : keywords) {
+    	    System.out.printf(
+    	        "%-5d %-20s %-25s%n",
+    	        k.getId(),
+    	        k.getKeyword(),
+    	        sdf.format(k.getCreatedAt())
+    	    );
+    	}
     }
 }
