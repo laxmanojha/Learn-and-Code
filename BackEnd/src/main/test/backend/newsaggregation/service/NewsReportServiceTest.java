@@ -108,4 +108,10 @@ public class NewsReportServiceTest {
         assertEquals(2, result.size());
         assertEquals("Misleading", result.get(0).getReason());
     }
+
+    @Test
+    public void testSingletonInstance_NotNull() {
+        NewsReportService instance = NewsReportService.getInstance();
+        assertNotNull(instance);
+    }
 }

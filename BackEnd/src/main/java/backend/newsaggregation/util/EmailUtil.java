@@ -23,14 +23,12 @@ public class EmailUtil {
     	final String fromEmail = config.getSenderEmail();
     	final String password = config.getAppPassword();
 
-        // SMTP server config
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com"); // for Gmail
         props.put("mail.smtp.port", "587");
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
 
-        // Auth
         Authenticator auth = new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(fromEmail, password);
@@ -40,7 +38,6 @@ public class EmailUtil {
         Session session = Session.getInstance(props, auth);
 
         try {
-            // Construct the email
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(fromEmail, "News Aggregator"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
@@ -59,10 +56,8 @@ public class EmailUtil {
 
             content.append("</ul><br><i>Powered by News Aggregation System</i>");
 
-            // Set content
             message.setContent(content.toString(), "text/html; charset=utf-8");
-
-            // Send message
+            
             Transport.send(message);
 
             logger.info("Email sent successfully to " + toEmail);

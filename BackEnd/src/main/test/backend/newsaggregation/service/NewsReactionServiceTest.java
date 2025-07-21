@@ -49,6 +49,19 @@ public class NewsReactionServiceTest {
     }
 
     @Test
+    public void testReactToArticle_Dislike_Failure() {
+        int userId = 10;
+        int newsId = 110;
+        String reaction = "dislike";
+
+        when(reactionDao.reactToArticle(userId, newsId, "dislike")).thenReturn(false);
+
+        boolean result = newsReactionService.reactToArticle(userId, newsId, reaction);
+        assertFalse(result);
+        verify(reactionDao).reactToArticle(userId, newsId, "dislike");
+    }
+
+    @Test
     public void testReactToArticle_InvalidReaction_ThrowsException() {
         int userId = 3;
         int newsId = 103;
@@ -74,5 +87,11 @@ public class NewsReactionServiceTest {
         boolean result = newsReactionService.reactToArticle(userId, newsId, reaction);
         assertTrue(result);
         verify(reactionDao).reactToArticle(userId, newsId, "like");
+    }
+
+    @Test
+    public void testGetInstance_NotNull() {
+        NewsReactionService instance = NewsReactionService.getInstance();
+        assertNotNull(instance);
     }
 }

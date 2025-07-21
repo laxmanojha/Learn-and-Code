@@ -127,7 +127,7 @@ public class NotificationService {
     	return newsArticle;
     }
     
-    private static List<NewsArticle> filterUniqueById(List<NewsArticle> articles) {
+    static List<NewsArticle> filterUniqueById(List<NewsArticle> articles) {
         Map<Integer, NewsArticle> uniqueMap = new LinkedHashMap<>();
         for (NewsArticle article : articles) {
             uniqueMap.putIfAbsent(article.getId(), article);

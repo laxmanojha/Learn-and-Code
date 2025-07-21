@@ -38,4 +38,20 @@ public class EmailConfigServiceTest {
         assertEquals("secret", result.getAppPassword());
         verify(emailConfigDao).getEmailConfig();
     }
+
+    @Test
+    public void testGetEmailConfig_ReturnsNull() {
+        when(emailConfigDao.getEmailConfig()).thenReturn(null);
+
+        EmailConfig result = emailConfigService.getEmailConfig();
+
+        assertNull(result);
+        verify(emailConfigDao).getEmailConfig();
+    }
+
+    @Test
+    public void testSingletonInstance_NotNull() {
+        EmailConfigService instance = EmailConfigService.getInstance();
+        assertNotNull(instance);
+    }
 }

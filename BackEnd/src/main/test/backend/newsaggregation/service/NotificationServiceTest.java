@@ -1,12 +1,13 @@
 package backend.newsaggregation.service;
 
 import backend.newsaggregation.dao.interfaces.*;
-import backend.newsaggregation.model.Category;
-import backend.newsaggregation.model.NotificationPreference;
+import backend.newsaggregation.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -60,6 +61,9 @@ public class NotificationServiceTest {
 
         List<NotificationPreference> result = notificationService.getAllPreferences(userId);
         assertEquals(2, result.size());
+        assertEquals(10, result.get(0).getCategoryId());
+        assertEquals("Politics", result.get(0).getCategoryType());
+        assertFalse(result.get(0).isEnabled());
     }
 
     @Test
@@ -118,5 +122,46 @@ public class NotificationServiceTest {
         when(keywordPrefDaoMock.updateKeywordPreference(10, null, true)).thenReturn(true);
         boolean result = notificationService.updateKeywordStatus(10, "ai", true);
         assertTrue(result);
+    }
+
+    @Test
+    public void testGetConsoleNotifications_shouldReturnNewsAndUpdateViewedTime() {
+        int userId = 12;
+        Timestamp past = Timestamp.from(Instant.now().minusSeconds(3600));
+        Timestamp now = Timestamp.from(Instant.now());
+        NewsArticle news1 = new NewsArticle();
+        news1.setId(1);
+        news1.setCategories(new ArrayList<>());
+
+        NewsArticleCategoryInfo categoryInfo = new NewsArticleCategoryInfo();
+        categoryInfo.setNewsId(1);
+        categoryInfo.setCategoryType("Tech");
+
+        when(userDaoMock.getNotificationViewedTime(userId)).thenReturn(past);
+        when(notificationDaoMock.getNewsForConsoleNotification(eq(userId), any(), any())).thenReturn(List.of(news1));
+        when(newsDaoMock.getAllCategory(1)).thenReturn(List.of(categoryInfo));
+
+        List<NewsArticle> result = notificationService.getConsoleNotifications(userId);
+
+        assertEquals(1, result.size());
+        assertEquals("Tech", result.get(0).getCategories().get(0));
+        verify(userDaoMock).saveNotificationViewedTime(eq(userId), any());
+    }
+
+    @Test
+    public void testFilterUniqueById_shouldRemoveDuplicates() {
+        NewsArticle article1 = new NewsArticle();
+        article1.setId(1);
+        NewsArticle article2 = new NewsArticle();
+        article2.setId(1); // duplicate
+        NewsArticle article3 = new NewsArticle();
+        article3.setId(2);
+
+        List<NewsArticle> input = List.of(article1, article2, article3);
+        List<NewsArticle> output = NotificationService.filterUniqueById(input);
+
+        assertEquals(2, output.size());
+        assertTrue(output.stream().anyMatch(a -> a.getId() == 1));
+        assertTrue(output.stream().anyMatch(a -> a.getId() == 2));
     }
 }
