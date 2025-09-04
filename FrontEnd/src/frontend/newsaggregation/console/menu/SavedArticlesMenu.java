@@ -78,34 +78,59 @@ public class SavedArticlesMenu {
                         return;
                     }
                     break;
-                case "3":
-                    int articleId = InputUtil.readInt("Enter Article ID to delete: ");
-                    System.out.println("ArticleID: " + articleId);
-                    boolean deleted = savedService.deleteSavedArticle(articleId);
-                    if (deleted) {
-                    	articles = savedService.fetchSavedArticles();
-                        System.out.println("Article deleted successfully.");
-                    } else {
-                        System.out.println("Failed to delete the article.");
+                case "3": {
+                    int articleId = readValidArticleId("Enter Article ID to delete: ");
+                    if (articleId > 0) {
+                        boolean deleted = savedService.deleteSavedArticle(articleId);
+                        if (deleted) {
+                            articles = savedService.fetchSavedArticles();
+                            System.out.println("Article deleted successfully.");
+                        } else {
+                            System.out.println("Failed to delete the article.");
+                        }
                     }
                     break;
-                case "4":
-                    int reactId = InputUtil.readInt("Enter Article ID to react: ");
-                    String reaction = InputUtil.readLine("Enter reaction (like/dislike): ").toLowerCase();
-                    if (reaction.equals("like") || reaction.equals("dislike")) {
-                        articleService.reactToArticle(reactId, reaction);
-                    } else {
-                        System.out.println("Invalid reaction. Use 'like' or 'dislike'.");
+                }
+
+                case "4": {
+                    int reactId = readValidArticleId("Enter Article ID to react: ");
+                    if (reactId > 0) {
+                        String reaction = InputUtil.readLine("Enter reaction (like/dislike): ").toLowerCase();
+                        if (reaction.equals("like") || reaction.equals("dislike")) {
+                            articleService.reactToArticle(reactId, reaction);
+                        } else {
+                            System.out.println("Invalid reaction. Use 'like' or 'dislike'.");
+                        }
                     }
                     break;
-                case "5":
-                    int reportId = InputUtil.readInt("Enter Article ID to report: ");
-                    String comment = InputUtil.readLine("Comment(press enter to skip):");
-                    articleService.reportArticle(reportId, comment);
+                }
+
+                case "5": {
+                    int reportId = readValidArticleId("Enter Article ID to report: ");
+                    if (reportId > 0) {
+                        String comment = InputUtil.readLine("Comment (press enter to skip):");
+                        articleService.reportArticle(reportId, comment);
+                    }
                     break;
+                }
                 default:
                     System.out.println("Invalid choice. Try again.");
             }
         }
     }
+    
+    private static int readValidArticleId(String prompt) {
+        try {
+            int id = InputUtil.readInt(prompt);
+            if (id <= 0) {
+                System.out.println("Invalid ID. Please enter a positive number.");
+                return -1;
+            }
+            return id;
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            return -1;
+        }
+    }
+
 }

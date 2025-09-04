@@ -91,6 +91,7 @@ public class HeadlineMenu {
         String category = selectCategory();
         boolean personalizedPreference = InputUtil.readYesNo("Make it personalized");
 
+        System.out.println("startdate: " + startDate + " endDate: " + endDate + " category: " + category + " personlized: " + personalizedPreference);
         List<NewsArticle> articles = headlineService.fetchHeadlinesByDateRange(startDate, endDate, category, personalizedPreference);
         if (articles.isEmpty()) {
             System.out.println("No articles found for the selected date range.");
@@ -228,27 +229,51 @@ public class HeadlineMenu {
                         return;
                     }
                     break;
-                case "3":
-                    int saveId = InputUtil.readInt("Enter Article ID to save: ");
-                    articleService.saveArticle(saveId);
-                    break;
-                case "4":
-                    int reactId = InputUtil.readInt("Enter Article ID to react: ");
-                    String reaction = InputUtil.readLine("Enter reaction (like/dislike): ").toLowerCase();
-                    if (reaction.equals("like") || reaction.equals("dislike")) {
-                        articleService.reactToArticle(reactId, reaction);
-                    } else {
-                        System.out.println("Invalid reaction. Use 'like' or 'dislike'.");
+                case "3": {
+                    int saveId = readValidArticleId("Enter Article ID to save: ");
+                    if (saveId > 0) {
+                        articleService.saveArticle(saveId);
                     }
                     break;
-                case "5":
-                    int reportId = InputUtil.readInt("Enter Article ID to report: ");
-                    String comment = InputUtil.readLine("Comment(press enter to skip):");
-                    articleService.reportArticle(reportId, comment);
+                }
+                case "4": {
+                    int reactId = readValidArticleId("Enter Article ID to react: ");
+                    if (reactId > 0) {
+                        String reaction = InputUtil.readLine("Enter reaction (like/dislike): ").toLowerCase();
+                        if (reaction.equals("like") || reaction.equals("dislike")) {
+                            articleService.reactToArticle(reactId, reaction);
+                        } else {
+                            System.out.println("Invalid reaction. Use 'like' or 'dislike'.");
+                        }
+                    }
                     break;
+                }
+                case "5": {
+                    int reportId = readValidArticleId("Enter Article ID to report: ");
+                    if (reportId > 0) {
+                        String comment = InputUtil.readLine("Comment (press enter to skip):");
+                        articleService.reportArticle(reportId, comment);
+                    }
+                    break;
+                }
                 default:
                     System.out.println("Invalid choice. Try again.");
             }
         }
     }
+    
+    private static int readValidArticleId(String prompt) {
+        try {
+            int id = InputUtil.readInt(prompt);
+            if (id <= 0) {
+                System.out.println("Invalid ID. Must be a positive number.");
+                return -1;
+            }
+            return id;
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            return -1;
+        }
+    }
+
 }
