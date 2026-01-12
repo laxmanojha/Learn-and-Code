@@ -1,0 +1,43 @@
+package backend.newsaggregation.service;
+
+import java.util.List;
+
+import backend.newsaggregation.dao.interfaces.CategoryDao;
+import backend.newsaggregation.model.Category;
+
+public class CategoryService {
+	
+	private static CategoryService instance;
+	private CategoryDao categoryDao;
+	
+	public CategoryService() {
+		this(CategoryDao.getInstance());
+	}
+	
+	public CategoryService(CategoryDao categoryDao) {
+        this.categoryDao = categoryDao;
+    }
+
+    public static CategoryService getInstance() {
+        if (instance == null) {
+            instance = new CategoryService();
+        }
+        return instance;
+    }
+
+    public boolean addCategory(String name) throws Exception {
+        return categoryDao.addCategory(name);
+    }
+    
+    public List<Category> getAllCategory() {
+    	return categoryDao.getAllCategory();
+    }
+    
+    public boolean hideCategory(int categoryId) {
+        return categoryDao.hideCategory(categoryId);
+    }
+
+    public boolean unhideCategory(int categoryId) {
+        return categoryDao.unhideCategory(categoryId);
+    }
+}

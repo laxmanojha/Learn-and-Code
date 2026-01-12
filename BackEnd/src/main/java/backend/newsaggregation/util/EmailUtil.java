@@ -1,0 +1,69 @@
+package backend.newsaggregation.util;
+
+import jakarta.mail.*;
+import jakarta.mail.internet.*;
+import java.util.List;
+import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import backend.newsaggregation.model.EmailConfig;
+import backend.newsaggregation.model.NewsArticle;
+import backend.newsaggregation.service.EmailConfigService;
+
+public class EmailUtil {
+	
+	private static final Logger logger = LoggerFactory.getLogger(EmailUtil.class);
+
+    public static void sendNewsDigestEmail(String toEmail, List<NewsArticle> articles) {
+    	EmailConfig config = EmailConfigService.getInstance().getEmailConfig();
+    	if (config == null) {
+    	    logger.error("Email config not found in DB!");
+    	    return;
+    	}
+    	final String fromEmail = config.getSenderEmail();
+    	final String password = config.getAppPassword();
+
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com"); // for Gmail
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+
+        Authenticator auth = new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(fromEmail, password);
+            }
+        };
+
+        Session session = Session.getInstance(props, auth);
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(fromEmail, "News Aggregator"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setSubject("Your Personalized News Digest");
+
+            StringBuilder content = new StringBuilder();
+            content.append("<h2>Here are your personalized news articles:</h2><ul>");
+
+            for (NewsArticle article : articles) {
+                content.append("<li><b>")
+                       .append(article.getTitle())
+                       .append("</b><br>")
+                       .append(article.getDescription() != null ? article.getDescription() : "")
+                       .append("<br><a href=\"").append(article.getUrl()).append("\">Read More</a></li><br><br>");
+            }
+
+            content.append("</ul><br><i>Powered by News Aggregation System</i>");
+
+            message.setContent(content.toString(), "text/html; charset=utf-8");
+            
+            Transport.send(message);
+
+            logger.info("Email sent successfully to " + toEmail);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
